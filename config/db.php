@@ -26,3 +26,8 @@ function getPDO(): PDO {
     }
     return $pdo;
 }
+
+// Alias for compatibility with student portal files
+function getDB(): PDO {
+    return getPDO();
+}
