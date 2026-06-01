@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CollegeKampus Online — Find Your Dream College in India</title>
+    <meta name="description" content="Discover top colleges in India. Compare courses, fees, placements and apply online at CollegeKampus — India's trusted college discovery platform.">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/css/portal.css">
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="ck-topbar d-none d-md-block">
+    <div class="container d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-envelope-fill me-1"></i>info@collegekampus.in</span>
+        <span><i class="bi bi-telephone-fill me-1"></i>1800-123-4567 (Toll Free)</span>
+    </div>
+</div>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg ck-navbar sticky-top" id="mainNav">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+            <div class="ck-logo-icon">CK</div>
+            <div class="lh-1">
+                <span class="ck-brand-main">CollegeKampus</span>
+                <span class="ck-brand-sub d-block">Online</span>
+            </div>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+            <i class="bi bi-list fs-4 text-white"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navMain">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-1">
+                <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="colleges.php">Colleges</a></li>
+                <li class="nav-item"><a class="nav-link" href="courses.php">Courses</a></li>
+                <li class="nav-item"><a class="nav-link" href="#about">About Us</a></li>
+                <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
+                <li class="nav-item ms-lg-2">
+                    <a class="btn btn-ck-primary btn-sm px-3" href="colleges.php"><i class="bi bi-search me-1"></i>Find College</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-section" id="home">
+    <div class="container">
+        <div class="row align-items-center min-vh-hero">
+            <div class="col-lg-6">
+                <div class="hero-badge mb-3">
+                    <i class="bi bi-award me-2"></i>India's #1 College Discovery Platform
+                </div>
+                <h1 class="hero-title">Find Your <span class="text-gradient">Dream College</span> in India</h1>
+                <p class="hero-subtitle">Compare 500+ colleges, explore 200+ courses, check fees & placements — all in one place. Apply online in minutes.</p>
+                <div class="hero-search">
+                    <div class="search-box">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" id="hero-search" placeholder="Search colleges, courses, cities…" autocomplete="off">
+                        <button class="search-btn" onclick="window.location.href='colleges.php?search='+document.getElementById('hero-search').value">
+                            Search
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-tags mt-3">
+                    <span class="tag-label">Popular:</span>
+                    <a href="courses.php?category=engineering" class="hero-tag">Engineering</a>
+                    <a href="courses.php?category=management" class="hero-tag">MBA</a>
+                    <a href="courses.php?category=medical" class="hero-tag">Medical</a>
+                    <a href="courses.php?category=law" class="hero-tag">Law</a>
+                    <a href="courses.php?category=design" class="hero-tag">Design</a>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-flex justify-content-center">
+                <div class="hero-illustration">
+                    <div class="hero-card-float card-1">
+                        <i class="bi bi-mortarboard-fill"></i>
+                        <span>500+ Colleges</span>
+                    </div>
+                    <div class="hero-card-float card-2">
+                        <i class="bi bi-book-fill"></i>
+                        <span>200+ Courses</span>
+                    </div>
+                    <div class="hero-card-float card-3">
+                        <i class="bi bi-people-fill"></i>
+                        <span>50K+ Students</span>
+                    </div>
+                    <div class="hero-graphic">
+                        <i class="bi bi-building-fill" style="font-size:8rem;color:rgba(255,255,255,.08)"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Bar -->
+<section class="stats-bar py-4">
+    <div class="container">
+        <div class="row g-3 text-center">
+            <div class="col-6 col-md-3">
+                <div class="stat-item"><div class="stat-number" data-target="500">0</div><div class="stat-label">Colleges Listed</div></div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item"><div class="stat-number" data-target="200">0</div><div class="stat-label">Courses Available</div></div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item"><div class="stat-number" data-target="50000">0</div><div class="stat-label">Happy Students</div></div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item"><div class="stat-number" data-target="28">0</div><div class="stat-label">States Covered</div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Colleges -->
+<section class="section-featured py-5 bg-light">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <span class="section-badge">Top Picks</span>
+            <h2 class="section-title">Featured <span class="text-gradient">Colleges</span></h2>
+            <p class="section-subtitle">Handpicked top-ranked institutions offering world-class education</p>
+        </div>
+        <div class="row g-4" id="featured-colleges-grid">
+            <!-- Loaded via JS / static fallback below -->
+            <div class="col-12 text-center py-4">
+                <div class="ck-spinner mx-auto"></div>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <a href="colleges.php" class="btn btn-ck-primary btn-lg px-5">
+                <i class="bi bi-grid me-2"></i>View All Colleges
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Course Categories -->
+<section class="section-categories py-5">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <span class="section-badge">Explore</span>
+            <h2 class="section-title">Browse by <span class="text-gradient">Category</span></h2>
+            <p class="section-subtitle">Find the right stream for your career goals</p>
+        </div>
+        <div class="row g-3">
+            <?php
+            $cats = [
+                ['icon'=>'bi-cpu-fill',        'label'=>'Engineering',  'slug'=>'engineering',  'color'=>'#007bff'],
+                ['icon'=>'bi-briefcase-fill',   'label'=>'Management',   'slug'=>'management',   'color'=>'#28a745'],
+                ['icon'=>'bi-heart-pulse-fill', 'label'=>'Medical',      'slug'=>'medical',      'color'=>'#dc3545'],
+                ['icon'=>'bi-balance-scale',    'label'=>'Law',          'slug'=>'law',          'color'=>'#fd7e14'],
+                ['icon'=>'bi-palette-fill',     'label'=>'Arts',         'slug'=>'arts',         'color'=>'#6f42c1'],
+                ['icon'=>'bi-flask-fill',       'label'=>'Science',      'slug'=>'science',      'color'=>'#20c997'],
+                ['icon'=>'bi-graph-up-arrow',   'label'=>'Commerce',     'slug'=>'commerce',     'color'=>'#0dcaf0'],
+                ['icon'=>'bi-pen-fill',         'label'=>'Design',       'slug'=>'design',       'color'=>'#e83e8c'],
+            ];
+            foreach ($cats as $cat): ?>
+            <div class="col-6 col-md-3">
+                <a href="courses.php?category=<?= $cat['slug'] ?>" class="category-card text-decoration-none">
+                    <div class="cat-icon" style="background:<?= $cat['color'] ?>22;color:<?= $cat['color'] ?>">
+                        <i class="bi <?= $cat['icon'] ?>"></i>
+                    </div>
+                    <div class="cat-label"><?= $cat['label'] ?></div>
+                </a>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+
+<!-- How it Works -->
+<section class="section-how py-5 bg-light">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <span class="section-badge">Simple Steps</span>
+            <h2 class="section-title">How It <span class="text-gradient">Works</span></h2>
+        </div>
+        <div class="row g-4 text-center">
+            <div class="col-md-3">
+                <div class="how-step">
+                    <div class="step-num">1</div>
+                    <i class="bi bi-search step-icon"></i>
+                    <h5>Search</h5>
+                    <p class="text-muted small">Search colleges by name, city, state or course</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="how-step">
+                    <div class="step-num">2</div>
+                    <i class="bi bi-sliders step-icon"></i>
+                    <h5>Filter</h5>
+                    <p class="text-muted small">Filter by type, fees, category and ranking</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="how-step">
+                    <div class="step-num">3</div>
+                    <i class="bi bi-file-earmark-text step-icon"></i>
+                    <h5>Compare</h5>
+                    <p class="text-muted small">View detailed profiles, courses, fees and placement data</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="how-step">
+                    <div class="step-num">4</div>
+                    <i class="bi bi-send step-icon"></i>
+                    <h5>Apply</h5>
+                    <p class="text-muted small">Submit your application directly from our portal</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Us Section -->
+<section class="section-about py-5" id="about">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="section-badge">About Us</span>
+                <h2 class="section-title mt-2">About <span class="text-gradient">CollegeKampus Online</span></h2>
+                <p class="text-muted">CollegeKampus Online is India's fastest-growing college discovery and admissions platform. Founded with the mission to democratise access to quality higher education, we connect students with the right institutions — wherever they are in India.</p>
+                <p class="text-muted">We partner with 500+ colleges across 28 states to bring you accurate, up-to-date information on courses, fees, eligibility criteria and placement statistics.</p>
+                <ul class="list-unstyled about-points mt-3">
+                    <li><i class="bi bi-check-circle-fill text-success me-2"></i>Free college comparison tool</li>
+                    <li><i class="bi bi-check-circle-fill text-success me-2"></i>Verified college information</li>
+                    <li><i class="bi bi-check-circle-fill text-success me-2"></i>Expert admissions counselling</li>
+                    <li><i class="bi bi-check-circle-fill text-success me-2"></i>Online application support</li>
+                </ul>
+                <a href="contact.php" class="btn btn-ck-primary mt-3">Get Free Counselling</a>
+            </div>
+            <div class="col-lg-6">
+                <div class="about-visual">
+                    <div class="av-card av-card-1"><i class="bi bi-shield-check-fill text-success"></i><span>NAAC Verified Colleges</span></div>
+                    <div class="av-card av-card-2"><i class="bi bi-star-fill text-warning"></i><span>Top Ranked Institutions</span></div>
+                    <div class="av-card av-card-3"><i class="bi bi-headset text-primary"></i><span>Free Counselling Support</span></div>
+                    <div class="av-bg-shape"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="section-cta py-5">
+    <div class="container text-center">
+        <h2 class="text-white fw-bold mb-2">Ready to Find Your College?</h2>
+        <p class="text-white-50 mb-4">Join 50,000+ students who discovered their dream college on CollegeKampus.</p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a href="colleges.php" class="btn btn-light btn-lg px-5 fw-semibold">Browse Colleges</a>
+            <a href="contact.php" class="btn btn-outline-light btn-lg px-5">Talk to Counsellor</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="ck-footer mt-auto">
+    <div class="container">
+        <div class="row gy-4 py-5">
+            <div class="col-lg-4 col-md-6">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="ck-logo-icon">CK</div>
+                    <div class="lh-1">
+                        <span class="ck-brand-main text-white">CollegeKampus</span>
+                        <span class="ck-brand-sub d-block text-white-50">Online</span>
+                    </div>
+                </div>
+                <p class="text-white-50 small">India's trusted college discovery platform. Compare 500+ colleges, explore courses and apply online.</p>
+                <div class="d-flex gap-3 mt-3">
+                    <a href="#" class="ck-social-link" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="ck-social-link" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="ck-social-link" aria-label="Twitter/X"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#" class="ck-social-link" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-3 col-6">
+                <h6 class="text-white fw-semibold mb-3 text-uppercase">Explore</h6>
+                <ul class="list-unstyled ck-footer-links">
+                    <li><a href="colleges.php">All Colleges</a></li>
+                    <li><a href="courses.php">All Courses</a></li>
+                    <li><a href="colleges.php?type=government">Govt Colleges</a></li>
+                    <li><a href="colleges.php?type=private">Private Colleges</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-2 col-md-3 col-6">
+                <h6 class="text-white fw-semibold mb-3 text-uppercase">Courses</h6>
+                <ul class="list-unstyled ck-footer-links">
+                    <li><a href="courses.php?category=engineering">Engineering</a></li>
+                    <li><a href="courses.php?category=management">Management</a></li>
+                    <li><a href="courses.php?category=medical">Medical</a></li>
+                    <li><a href="courses.php?category=law">Law</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <h6 class="text-white fw-semibold mb-3 text-uppercase">Contact</h6>
+                <ul class="list-unstyled ck-footer-links">
+                    <li><i class="bi bi-geo-alt-fill me-2 text-ck-green"></i>123 Education Hub, New Delhi</li>
+                    <li class="mt-2"><i class="bi bi-telephone-fill me-2 text-ck-green"></i>1800-123-4567</li>
+                    <li class="mt-2"><i class="bi bi-envelope-fill me-2 text-ck-green"></i>info@collegekampus.in</li>
+                </ul>
+            </div>
+        </div>
+        <hr class="border-secondary">
+        <div class="row align-items-center py-3">
+            <div class="col-md-6 text-center text-md-start">
+                <small class="text-white-50">&copy; 2026 CollegeKampus Online. All rights reserved.</small>
+            </div>
+            <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
+                <small class="ck-footer-links"><a href="#">Privacy Policy</a> &bull; <a href="#">Terms of Use</a></small>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="script.js"></script>
+<script>
+// Load featured colleges on homepage
+fetch('api/colleges.php?featured=1')
+    .then(r => r.json())
+    .then(data => {
+        const grid = document.getElementById('featured-colleges-grid');
+        if (!data.colleges || !data.colleges.length) { grid.innerHTML = '<div class="col-12 text-center text-muted">No featured colleges available.</div>'; return; }
+        function initials(n){ return n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase(); }
+        function feeINR(n){ return n ? '&#8377;' + Number(n).toLocaleString('en-IN') : 'N/A'; }
+        function typeClass(t){ return {government:'badge-government',private:'badge-private',deemed:'badge-deemed'}[t]||'bg-secondary'; }
+        grid.innerHTML = data.colleges.map(c => `
+        <div class="col-md-6 col-lg-4">
+            <div class="ck-college-card">
+                <div class="card-body">
+                    <div class="d-flex gap-3 align-items-start mb-3">
+                        <div class="ck-college-logo">${c.logo_url ? '<img src="'+c.logo_url+'" alt="">' : '<span>'+initials(c.name)+'</span>'}</div>
+                        <div>
+                            <h5 class="card-title">${c.name}</h5>
+                            <div class="d-flex flex-wrap gap-1"><span class="badge ${typeClass(c.type)} small">${c.type.charAt(0).toUpperCase()+c.type.slice(1)}</span>
+                            <span class="text-muted small"><i class="bi bi-geo-alt me-1"></i>${c.city}, ${c.state}</span></div>
+                        </div>
+                    </div>
+                    ${c.accreditation ? '<p class="small text-muted mb-2"><i class="bi bi-patch-check-fill text-success me-1"></i>'+c.accreditation+'</p>' : ''}
+                    <div class="small text-muted mt-auto"><i class="bi bi-currency-rupee me-1"></i>Fees from <strong>${feeINR(c.min_fees)}/yr</strong></div>
+                </div>
+                <div class="card-footer d-flex justify-content-between align-items-center">
+                    <small class="text-muted"><i class="bi bi-star-fill text-warning me-1"></i>${c.ranking_score}</small>
+                    <a href="college-detail.php?slug=${c.slug}" class="btn btn-ck-primary btn-sm">View Details</a>
+                </div>
+            </div>
+        </div>`).join('');
+    })
+    .catch(() => {
+        document.getElementById('featured-colleges-grid').innerHTML = '<div class="col-12 text-center text-muted py-3">Unable to load colleges. <a href="colleges.php">Browse all colleges</a></div>';
+    });
+</script>
+</body>
+</html>
