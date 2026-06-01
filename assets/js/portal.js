@@ -1,164 +1,304 @@
-/**
- * CollegeKampus Online -- Portal JS
- * Live filter & search via fetch to /api/colleges.php
- */
-(function () {
-    'use strict';
-    function qs(sel, ctx) { return (ctx || document).querySelector(sel); }
+/* ===== PORTAL.JS ===== */
+'use strict';
 
-    function formatINR(amount) {
-        if (!amount || amount == 0) return 'N/A';
-        return '\u20B9' + Number(amount).toLocaleString('en-IN');
+/* ---- Compare state ---- */
+let compareList = JSON.parse(sessionStorage.getItem('ck_compare') || '[]'); // [{id, name}]
+
+function saveCompare() {
+  sessionStorage.setItem('ck_compare', JSON.stringify(compareList));
+}
+
+function addToCompare(id, name) {
+  id = String(id);
+  if (compareList.find(c => c.id === id)) {
+    removeFromCompare(id);
+    return;
+  }
+  if (compareList.length >= 3) {
+    alert('You can compare up to 3 colleges at a time.');
+    return;
+  }
+  compareList.push({ id, name });
+  saveCompare();
+  renderCompareBar();
+  updateCompareButtons();
+  updateNavCount();
+}
+
+function removeFromCompare(id) {
+  id = String(id);
+  compareList = compareList.filter(c => c.id !== id);
+  saveCompare();
+  renderCompareBar();
+  updateCompareButtons();
+  updateNavCount();
+}
+
+function clearCompare() {
+  compareList = [];
+  saveCompare();
+  renderCompareBar();
+  updateCompareButtons();
+  updateNavCount();
+}
+
+function goToCompare() {
+  const ids = compareList.map(c => c.id).join(',');
+  window.location.href = '/compare.php?ids=' + ids;
+}
+
+function renderCompareBar() {
+  const bar = document.getElementById('compareBar');
+  if (!bar) return;
+  if (compareList.length === 0) {
+    bar.classList.remove('visible');
+    return;
+  }
+  bar.classList.add('visible');
+  const chips = document.getElementById('compareChips');
+  if (chips) {
+    chips.innerHTML = compareList.map(c =>
+      `<span class="compare-chip">${escHtml(c.name)}
+        <button class="compare-chip-remove" onclick="removeFromCompare('${c.id}')" title="Remove">&times;</button>
+      </span>`
+    ).join('');
+  }
+}
+
+function updateCompareButtons() {
+  document.querySelectorAll('.btn-compare-add').forEach(btn => {
+    const id = String(btn.dataset.id);
+    const inList = compareList.find(c => c.id === id);
+    if (inList) {
+      btn.classList.add('added');
+      btn.textContent = 'Added ✓';
+    } else {
+      btn.classList.remove('added');
+      btn.textContent = '+ Compare';
     }
-    function typeLabel(type) {
-        return {government:'Government',private:'Private',deemed:'Deemed'}[type] || type;
-    }
-    function typeBadgeClass(type) {
-        return {government:'badge-government',private:'badge-private',deemed:'badge-deemed'}[type] || 'badge-secondary';
-    }
-    function collegeInitials(name) {
-        return name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
-    }
+  });
+}
 
-    function renderCollegeCard(c) {
-        const logoHtml = c.logo_url
-            ? '<img src="' + c.logo_url + '" alt="' + c.name + '">'
-            : '<span>' + collegeInitials(c.name) + '</span>';
-        const coursesPills = (c.top_courses || []).slice(0,3).map(course =>
-            '<span class="ck-course-pill">' + course + '</span>'
-        ).join('');
-        const minFees = c.min_fees ? formatINR(c.min_fees) + '/yr' : 'Varies';
-        const maxFees = c.max_fees ? formatINR(c.max_fees) + '/yr' : '';
-        return `
-        <div class="col">
-            <div class="ck-college-card">
-                <div class="card-body">
-                    <div class="d-flex gap-3 align-items-start mb-3">
-                        <div class="ck-college-logo">${logoHtml}</div>
-                        <div class="flex-grow-1">
-                            <h5 class="card-title">${c.name}</h5>
-                            <div class="d-flex flex-wrap gap-1 align-items-center">
-                                <span class="badge ${typeBadgeClass(c.type)} small">${typeLabel(c.type)}</span>
-                                <span class="text-muted small"><i class="bi bi-geo-alt me-1"></i>${c.city}, ${c.state}</span>
-                            </div>
-                        </div>
-                    </div>
-                    ${c.accreditation ? '<p class="small text-muted mb-2"><i class="bi bi-patch-check-fill text-success me-1"></i>'+c.accreditation+'</p>' : ''}
-                    <div class="mb-2">${coursesPills || '<span class="text-muted small">No courses listed</span>'}</div>
-                    <div class="mt-auto"><div class="small text-muted"><i class="bi bi-currency-rupee me-1"></i>Fees: <strong class="text-dark">${minFees}${maxFees && maxFees !== minFees ? ' - ' + maxFees : ''}</strong></div></div>
-                </div>
-                <div class="card-footer d-flex justify-content-between align-items-center">
-                    ${c.ranking_score > 0 ? '<small class="text-muted"><i class="bi bi-star-fill text-warning me-1"></i>Score: ' + c.ranking_score + '</small>' : '<span></span>'}
-                    <a href="/college-detail.php?slug=${c.slug}" class="btn btn-ck-primary btn-sm">View Details</a>
-                </div>
-            </div>
-        </div>`;
-    }
+function updateNavCount() {
+  const span = document.getElementById('navCompareCount');
+  const btn = document.getElementById('navCompareBtn');
+  if (span) span.textContent = compareList.length;
+  if (btn) btn.style.display = compareList.length > 0 ? '' : 'none';
+}
 
-    const collegeGrid    = qs('#ck-college-grid');
-    const collegesCount  = qs('#ck-colleges-count');
-    const filterForm     = qs('#ck-filter-form');
-    const searchInput    = qs('#ck-search-input');
-    const paginationWrap = qs('#ck-pagination');
+function escHtml(str) {
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
 
-    if (!collegeGrid) return;
+/* ---- Load Colleges ---- */
+let currentPage = 1;
+let currentFilters = {};
+let debounceTimer = null;
 
-    let currentPage = 1;
-    let debounceTimer;
-    const PER_PAGE = 12;
+function loadColleges(filters, page) {
+  page = page || 1;
+  currentFilters = filters || currentFilters;
+  currentPage = page;
 
-    function buildParams(page) {
-        const params = new URLSearchParams();
-        if (page > 1) params.set('page', page);
-        if (searchInput && searchInput.value.trim()) params.set('search', searchInput.value.trim());
-        if (filterForm) {
-            const fd = new FormData(filterForm);
-            for (const [key, val] of fd.entries()) {
-                if (val) params.append(key, val);
-            }
-        }
-        return params;
-    }
+  const grid = document.getElementById('collegesGrid');
+  const countEl = document.getElementById('resultCount');
+  if (!grid) return;
 
-    function showSpinner() {
-        collegeGrid.innerHTML = '<div class="col-12"><div class="ck-spinner"></div></div>';
-    }
+  grid.innerHTML = Array(6).fill('<div class="skeleton skeleton-card"></div>').join('');
 
-    function renderPagination(total, page) {
-        if (!paginationWrap) return;
-        const totalPages = Math.ceil(total / PER_PAGE);
-        if (totalPages <= 1) { paginationWrap.innerHTML = ''; return; }
-        let html = '<ul class="pagination justify-content-center flex-wrap gap-1">';
-        html += `<li class="page-item ${page<=1?'disabled':''}"><button class="page-link" data-page="${page-1}">&laquo;</button></li>`;
-        for (let i=1; i<=totalPages; i++) {
-            if (i===1||i===totalPages||Math.abs(i-page)<=2) {
-                html += `<li class="page-item ${i===page?'active':''}"><button class="page-link" data-page="${i}">${i}</button></li>`;
-            } else if (Math.abs(i-page)===3) {
-                html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
-            }
-        }
-        html += `<li class="page-item ${page>=totalPages?'disabled':''}"><button class="page-link" data-page="${page+1}">&raquo;</button></li>`;
-        html += '</ul>';
-        paginationWrap.innerHTML = html;
-        paginationWrap.querySelectorAll('button[data-page]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const p = parseInt(btn.dataset.page);
-                if (p>=1 && p<=totalPages) { currentPage=p; loadColleges(); }
-            });
-        });
-    }
+  const params = new URLSearchParams();
+  Object.entries(currentFilters).forEach(([k, v]) => { if (v !== '' && v !== null && v !== undefined) params.set(k, v); });
+  params.set('page', page);
+  params.set('limit', 12);
 
-    function loadColleges() {
-        showSpinner();
-        const params = buildParams(currentPage);
-        fetch('/api/colleges.php?' + params.toString())
-            .then(r => r.json())
-            .then(data => {
-                if (!data.colleges || data.colleges.length === 0) {
-                    collegeGrid.innerHTML = '<div class="col-12"><div class="ck-empty-state"><i class="bi bi-building-slash"></i><p>No colleges found matching your criteria.</p><a href="/colleges.php" class="btn btn-ck-primary mt-2">Reset Filters</a></div></div>';
-                    if (collegesCount) collegesCount.textContent = '0';
-                    renderPagination(0, 1);
-                    return;
-                }
-                collegeGrid.innerHTML = data.colleges.map(renderCollegeCard).join('');
-                if (collegesCount) collegesCount.textContent = data.total || data.colleges.length;
-                renderPagination(data.total || data.colleges.length, currentPage);
-            })
-            .catch(() => {
-                collegeGrid.innerHTML = '<div class="col-12"><div class="alert alert-danger ck-flash">Failed to load colleges. Please try again.</div></div>';
-            });
-    }
-
-    if (searchInput) {
-        searchInput.addEventListener('input', () => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => { currentPage=1; loadColleges(); }, 350);
-        });
-    }
-
-    if (filterForm) {
-        filterForm.querySelectorAll('input, select').forEach(el => {
-            el.addEventListener('change', () => { currentPage=1; loadColleges(); });
-        });
-        const feeRange = filterForm.querySelector('#fee-range');
-        const feeLabel = filterForm.querySelector('#fee-range-label');
-        if (feeRange && feeLabel) {
-            feeRange.addEventListener('input', () => {
-                const v = parseInt(feeRange.value);
-                feeLabel.textContent = v >= 1000000 ? 'Any' : '\u20B9' + v.toLocaleString('en-IN');
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => { currentPage=1; loadColleges(); }, 400);
-            });
-        }
-    }
-
-    loadColleges();
-
-    document.querySelectorAll('.ck-flash.alert-success').forEach(el => {
-        setTimeout(() => {
-            el.style.transition = 'opacity .5s';
-            el.style.opacity = '0';
-            setTimeout(() => el.remove(), 500);
-        }, 4000);
+  fetch('/api/colleges.php?' + params.toString())
+    .then(r => r.json())
+    .then(data => {
+      if (!data.colleges || data.colleges.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#64748b;">No colleges found matching your criteria.</div>';
+        if (countEl) countEl.textContent = '0 colleges found';
+        renderPagination(0, page);
+        return;
+      }
+      if (countEl) countEl.textContent = data.total_count + ' colleges found';
+      grid.innerHTML = data.colleges.map(renderCollegeCard).join('');
+      renderPagination(data.total_count, page);
+      updateCompareButtons();
+    })
+    .catch(err => {
+      console.error(err);
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#ef4444;">Failed to load colleges. Please try again.</div>';
     });
-})();
+}
+
+function renderCollegeCard(c) {
+  const typeBadge = c.type ? `<span class="college-badge badge-${escHtml(c.type.toLowerCase())}">${escHtml(c.type)}</span>` : '';
+  const courses = c.top_courses ? `<div class="college-courses">${escHtml(c.top_courses)}</div>` : '';
+  const fees = c.fees_display ? `<div class="college-fees">Fees: <span>${escHtml(c.fees_display)}</span></div>` : '';
+  return `<div class="college-card">
+    <div class="college-card-body">
+      <div class="college-card-name">${escHtml(c.name)}</div>
+      <div class="college-card-location">${escHtml((c.city ? c.city + ', ' : '') + (c.state || ''))}</div>
+      ${typeBadge}
+      ${courses}
+      ${fees}
+    </div>
+    <div class="college-card-footer">
+      <a href="/college-detail.php?id=${encodeURIComponent(c.id)}" class="btn-view">View Details</a>
+      <button class="btn-compare-add" data-id="${escHtml(String(c.id))}" data-name="${escHtml(c.name)}" onclick="addToCompare(this.dataset.id, this.dataset.name)">+ Compare</button>
+    </div>
+  </div>`;
+}
+
+function renderPagination(total, page) {
+  const wrap = document.getElementById('paginationWrap');
+  if (!wrap) return;
+  const totalPages = Math.ceil(total / 12);
+  if (totalPages <= 1) { wrap.innerHTML = ''; return; }
+
+  let html = '';
+  if (page > 1) html += `<button class="page-btn" onclick="loadColleges(null,${page-1})">&laquo; Prev</button>`;
+
+  const start = Math.max(1, page - 2);
+  const end = Math.min(totalPages, page + 2);
+  for (let i = start; i <= end; i++) {
+    html += `<button class="page-btn${i===page?' active':''}" onclick="loadColleges(null,${i})">${i}</button>`;
+  }
+  if (page < totalPages) html += `<button class="page-btn" onclick="loadColleges(null,${page+1})">Next &raquo;</button>`;
+  wrap.innerHTML = html;
+}
+
+/* ---- Filter form wiring (colleges.php) ---- */
+function initFilters() {
+  const form = document.getElementById('filterForm');
+  if (!form) return;
+
+  function getFilters() {
+    const fd = new FormData(form);
+    const f = {};
+    for (const [k, v] of fd.entries()) {
+      if (f[k]) {
+        f[k] = [].concat(f[k], v);
+      } else {
+        f[k] = v;
+      }
+    }
+    // Flatten arrays to comma-separated
+    Object.keys(f).forEach(k => { if (Array.isArray(f[k])) f[k] = f[k].join(','); });
+    return f;
+  }
+
+  form.addEventListener('input', function() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => loadColleges(getFilters(), 1), 400);
+  });
+
+  form.addEventListener('change', function() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => loadColleges(getFilters(), 1), 200);
+  });
+
+  // Reset
+  const resetBtn = document.getElementById('resetFilters');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', function() {
+      form.reset();
+      loadColleges({}, 1);
+    });
+  }
+
+  // Initial load
+  loadColleges(getFilters(), 1);
+}
+
+/* ---- Multi-step apply form ---- */
+function initStepForm() {
+  const form = document.getElementById('applyForm');
+  if (!form) return;
+
+  let step = 1;
+  const totalSteps = 3;
+
+  function showStep(n) {
+    document.querySelectorAll('.apply-step').forEach(el => el.classList.remove('active'));
+    const s = document.getElementById('step' + n);
+    if (s) s.classList.add('active');
+
+    document.querySelectorAll('.step-item').forEach((el, idx) => {
+      el.classList.remove('active', 'done');
+      if (idx + 1 < n) el.classList.add('done');
+      if (idx + 1 === n) el.classList.add('active');
+    });
+
+    if (n === 3) buildReview();
+    step = n;
+  }
+
+  function buildReview() {
+    const fd = new FormData(form);
+    const fields = {
+      'Full Name': fd.get('full_name'),
+      'Email': fd.get('email'),
+      'Phone': fd.get('phone'),
+      'Date of Birth': fd.get('dob'),
+      'City': fd.get('city'),
+      'State': fd.get('state'),
+      '10th %': fd.get('tenth_pct'),
+      '12th %': fd.get('twelfth_pct'),
+      'Entrance Exam': fd.get('entrance_exam'),
+      'Exam Score': fd.get('exam_score'),
+    };
+    const wrap = document.getElementById('reviewContent');
+    if (wrap) {
+      wrap.innerHTML = Object.entries(fields).filter(([,v]) => v).map(([l,v]) =>
+        `<div class="review-row"><span class="review-label">${escHtml(l)}</span><span class="review-val">${escHtml(v)}</span></div>`
+      ).join('');
+    }
+  }
+
+  document.querySelectorAll('.btn-next').forEach(btn => {
+    btn.addEventListener('click', function() {
+      if (step < totalSteps) showStep(step + 1);
+    });
+  });
+
+  document.querySelectorAll('.btn-back').forEach(btn => {
+    btn.addEventListener('click', function() {
+      if (step > 1) showStep(step - 1);
+    });
+  });
+
+  showStep(1);
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const btn = form.querySelector('.btn-submit-final');
+    if (btn) btn.disabled = true;
+    fetch('/api/leads.php', { method: 'POST', body: new FormData(form) })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('applyFormWrap').innerHTML = `
+            <div class="success-box">
+              <div class="success-icon">&#x2705;</div>
+              <h2>Application Submitted!</h2>
+              <p>Thank you! Our counsellor will contact you within 24 hours.<br>Application ID: <strong>${data.application_id || 'CK' + Date.now()}</strong></p>
+              <a href="/colleges.php" class="btn-view" style="display:inline-block;margin-top:20px;padding:12px 24px;">Browse More Colleges</a>
+            </div>`;
+        } else {
+          alert(data.message || 'Submission failed. Please try again.');
+          if (btn) btn.disabled = false;
+        }
+      })
+      .catch(() => { alert('Network error. Please try again.'); if (btn) btn.disabled = false; });
+  });
+}
+
+/* ---- Init on DOM ready ---- */
+document.addEventListener('DOMContentLoaded', function() {
+  renderCompareBar();
+  updateCompareButtons();
+  updateNavCount();
+  initFilters();
+  initStepForm();
+});

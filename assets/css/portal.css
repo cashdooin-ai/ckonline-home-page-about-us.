@@ -1,94 +1,241 @@
+/* ===== PORTAL CSS — matches style.css variables ===== */
 :root {
-    --green:       #28a745;
-    --green-dark:  #1e7e34;
-    --green-light: #d4edda;
-    --blue:        #007bff;
-    --blue-dark:   #0056b3;
-    --blue-light:  #cce5ff;
-    --orange:      #fd7e14;
-    --orange-light:#fff3cd;
-    --dark:        #1a1a2e;
-    --dark2:       #16213e;
-    --dark3:       #0f3460;
-    --text-muted:  #6c757d;
-    --card-shadow: 0 2px 12px rgba(0,0,0,.08);
-    --card-shadow-hover: 0 8px 32px rgba(0,0,0,.15);
-    --radius:      12px;
-    --transition:  .2s ease;
+  --green: #22c55e;
+  --green-dark: #16a34a;
+  --blue: #2563eb;
+  --blue-dark: #1d4ed8;
+  --dark: #0f172a;
+  --dark2: #1e293b;
+  --gray: #64748b;
+  --light-gray: #f1f5f9;
+  --white: #ffffff;
+  --orange: #f97316;
+  --purple: #8b5cf6;
+  --font: 'Inter', sans-serif;
 }
-body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8f9fa; color: #212529; display: flex; flex-direction: column; min-height: 100vh; }
-a { color: var(--blue); } a:hover { color: var(--blue-dark); }
-.ck-topbar { background: var(--dark); color: #ffffffcc; font-size: .8rem; padding: .35rem 0; }
-.ck-navbar { background: var(--dark2); box-shadow: 0 2px 12px rgba(0,0,0,.3); padding: .6rem 0; }
-.ck-navbar .navbar-nav .nav-link { color: #ffffffcc; font-size: .9rem; padding: .45rem .75rem; border-radius: 6px; transition: background var(--transition), color var(--transition); }
-.ck-navbar .navbar-nav .nav-link:hover, .ck-navbar .navbar-nav .nav-link.active { background: rgba(255,255,255,.1); color: #fff; }
-.ck-logo-icon { width: 42px; height: 42px; background: linear-gradient(135deg, var(--green), var(--blue)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; color: #fff; flex-shrink: 0; }
-.ck-brand-main { font-size: 1.05rem; font-weight: 700; color: #fff; }
-.ck-brand-sub   { font-size: .7rem; font-weight: 400; color: #ffffffaa; letter-spacing: .05em; text-transform: uppercase; }
-.btn-ck-primary { background: linear-gradient(135deg, var(--green), #20c997); color: #fff; border: none; border-radius: 8px; font-weight: 600; transition: opacity var(--transition), transform var(--transition); }
-.btn-ck-primary:hover { opacity: .9; transform: translateY(-1px); color: #fff; }
-.ck-page-hero { background: linear-gradient(135deg, var(--dark) 0%, var(--dark3) 100%); color: #fff; padding: 3.5rem 0 2.5rem; }
-.ck-page-hero h1 { font-weight: 700; }
-.ck-page-hero p  { color: #ffffffcc; }
-.ck-filter-card { background: #fff; border-radius: var(--radius); box-shadow: var(--card-shadow); padding: 1.5rem; position: sticky; top: 80px; }
-.ck-filter-card h6 { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); margin-bottom: .75rem; font-weight: 700; }
-.ck-filter-card .form-check-label { font-size: .9rem; cursor: pointer; }
-.ck-filter-card .form-check-input:checked { background-color: var(--green); border-color: var(--green); }
-.ck-fee-range { accent-color: var(--green); }
-.ck-college-card { background: #fff; border-radius: var(--radius); box-shadow: var(--card-shadow); overflow: hidden; transition: box-shadow var(--transition), transform var(--transition); height: 100%; display: flex; flex-direction: column; border: 1px solid rgba(0,0,0,.05); }
-.ck-college-card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-4px); }
-.ck-college-logo { width: 64px; height: 64px; border-radius: 12px; background: linear-gradient(135deg, var(--dark3), var(--dark2)); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; color: #fff; flex-shrink: 0; overflow: hidden; }
-.ck-college-logo img { width: 100%; height: 100%; object-fit: contain; }
-.ck-college-card .card-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
-.ck-college-card .card-title { font-size: 1rem; font-weight: 700; margin-bottom: .25rem; line-height: 1.3; color: var(--dark); }
-.ck-college-card .card-footer { background: #f8f9fa; border-top: 1px solid rgba(0,0,0,.06); padding: .75rem 1.25rem; }
-.badge-government { background: var(--green-light); color: var(--green-dark); border: 1px solid #b7dfbe; }
-.badge-private     { background: var(--blue-light);  color: var(--blue-dark);  border: 1px solid #b8daff; }
-.badge-deemed      { background: var(--orange-light); color: #854d0e;          border: 1px solid #fde68a; }
-.ck-course-pill { display: inline-block; background: #f0f4ff; color: var(--blue-dark); border-radius: 20px; padding: .2rem .65rem; font-size: .75rem; font-weight: 500; margin: .1rem; border: 1px solid #c3d7ff; }
-.ck-banner { width: 100%; height: 320px; object-fit: cover; border-radius: 0 0 var(--radius) var(--radius); }
-.ck-banner-placeholder { width: 100%; height: 320px; background: linear-gradient(135deg, var(--dark3), var(--dark)); border-radius: 0 0 var(--radius) var(--radius); display: flex; align-items: center; justify-content: center; color: #ffffff44; font-size: 3rem; }
-.ck-detail-logo { width: 90px; height: 90px; border-radius: 16px; border: 4px solid #fff; box-shadow: 0 4px 20px rgba(0,0,0,.2); background: #fff; overflow: hidden; flex-shrink: 0; }
-.ck-stat-box { background: #fff; border-radius: 10px; padding: 1rem; box-shadow: var(--card-shadow); text-align: center; }
-.ck-stat-box .ck-stat-val { font-size: 1.4rem; font-weight: 800; color: var(--dark3); }
-.ck-stat-box .ck-stat-lbl { font-size: .75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; }
-.ck-courses-table th { background: var(--dark); color: #fff; font-size: .82rem; text-transform: uppercase; letter-spacing: .05em; }
-.ck-courses-table td { vertical-align: middle; font-size: .9rem; }
-.ck-courses-table tr:hover td { background: #f0f7ff; }
-.ck-inquiry-card { background: linear-gradient(160deg, var(--dark3), var(--dark2)); border-radius: var(--radius); padding: 2rem; color: #fff; position: sticky; top: 80px; }
-.ck-inquiry-card h5 { color: #fff; font-weight: 700; }
-.ck-inquiry-card .form-control, .ck-inquiry-card .form-select { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.2); color: #fff; }
-.ck-inquiry-card .form-control::placeholder { color: rgba(255,255,255,.5); }
-.ck-inquiry-card .form-control:focus, .ck-inquiry-card .form-select:focus { background: rgba(255,255,255,.18); border-color: var(--green); color: #fff; box-shadow: 0 0 0 .2rem rgba(40,167,69,.25); }
-.ck-inquiry-card .form-select option { background: var(--dark2); }
-.ck-category-header { background: linear-gradient(90deg, var(--dark3), var(--dark2)); color: #fff; border-radius: 10px; padding: .75rem 1.25rem; margin-bottom: 1rem; display: flex; align-items: center; gap: .75rem; }
-.ck-category-icon { width: 38px; height: 38px; border-radius: 8px; background: rgba(255,255,255,.15); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
-.ck-course-row { background: #fff; border-radius: 10px; box-shadow: var(--card-shadow); padding: 1rem 1.25rem; margin-bottom: .75rem; transition: box-shadow var(--transition); border: 1px solid rgba(0,0,0,.05); }
-.ck-course-row:hover { box-shadow: var(--card-shadow-hover); }
-.ck-form-card { background: #fff; border-radius: var(--radius); box-shadow: var(--card-shadow); padding: 2rem; }
-.ck-form-card .form-label { font-size: .88rem; font-weight: 600; color: #495057; }
-.ck-form-card .form-control:focus, .ck-form-card .form-select:focus { border-color: var(--green); box-shadow: 0 0 0 .2rem rgba(40,167,69,.15); }
-.ck-flash { border-radius: 10px; font-size: .92rem; }
-.pagination .page-link { border-radius: 8px !important; margin: 0 2px; color: var(--blue); }
-.pagination .page-item.active .page-link { background: var(--green); border-color: var(--green); }
-.pagination .page-link:hover { background: var(--green-light); }
-.ck-footer { background: var(--dark); color: #ffffffaa; margin-top: auto; }
-.ck-footer-links { list-style: none; padding: 0; margin: 0; }
-.ck-footer-links li, .ck-footer-links a { font-size: .875rem; color: #ffffffaa; text-decoration: none; line-height: 2; transition: color var(--transition); }
-.ck-footer-links a:hover { color: var(--green); }
-.ck-social-link { color: #ffffffaa; font-size: 1.2rem; transition: color var(--transition), transform var(--transition); display: inline-flex; }
-.ck-social-link:hover { color: var(--green); transform: translateY(-2px); }
-.text-ck-green { color: var(--green) !important; }
-.ck-search-wrap { position: relative; }
-.ck-search-wrap .ck-search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
-.ck-search-wrap input { padding-left: 2.5rem; border-radius: 8px; }
-.ck-spinner { width: 48px; height: 48px; border: 4px solid #e9ecef; border-top-color: var(--green); border-radius: 50%; animation: ck-spin .7s linear infinite; margin: 2rem auto; }
-@keyframes ck-spin { to { transform: rotate(360deg); } }
-.ck-empty-state { text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
-.ck-empty-state i { font-size: 3rem; margin-bottom: 1rem; }
-@media (max-width: 767.98px) {
-    .ck-filter-card { position: static; margin-bottom: 1.5rem; }
-    .ck-inquiry-card { position: static; }
-    .ck-banner, .ck-banner-placeholder { height: 200px; }
-    .ck-page-hero { padding: 2rem 0 1.5rem; }
+
+/* Page wrapper */
+.page-wrapper { margin-top: 68px; min-height: calc(100vh - 68px); }
+
+/* ===== COLLEGE CARDS ===== */
+.colleges-layout { display: grid; grid-template-columns: 280px 1fr; gap: 28px; padding: 32px 0; }
+@media (max-width: 900px) { .colleges-layout { grid-template-columns: 1fr; } }
+
+.filter-sidebar {
+  background: var(--white);
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 24px;
+  height: fit-content;
+  position: sticky;
+  top: 88px;
 }
+.filter-sidebar h3 { font-size: 1rem; font-weight: 700; margin-bottom: 20px; color: var(--dark); }
+.filter-group { margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 20px; }
+.filter-group:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.filter-group label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--gray); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em; }
+.filter-group select,
+.filter-group input[type=text],
+.filter-group input[type=number] {
+  width: 100%; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px;
+  font-size: 0.88rem; color: var(--dark); background: var(--white);
+  transition: border-color 0.2s;
+}
+.filter-group select:focus,
+.filter-group input:focus { outline: none; border-color: var(--blue); }
+.check-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 0.88rem; color: var(--dark); cursor: pointer; }
+.check-item input[type=checkbox] { accent-color: var(--blue); width: 15px; height: 15px; }
+.fees-row { display: flex; gap: 8px; }
+.fees-row input { flex: 1; }
+.btn-filter-reset { width: 100%; padding: 8px; background: var(--light-gray); border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; color: var(--gray); margin-top: 12px; transition: background 0.2s; }
+.btn-filter-reset:hover { background: #e2e8f0; }
+
+/* College grid */
+.colleges-main {}
+.colleges-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+.colleges-toolbar .result-count { font-size: 0.9rem; color: var(--gray); }
+.colleges-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+
+.college-card {
+  background: var(--white);
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  overflow: hidden;
+  transition: box-shadow 0.25s, transform 0.2s, border-color 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+.college-card:hover { box-shadow: 0 10px 36px rgba(0,0,0,0.09); transform: translateY(-3px); border-color: #c7d2fe; }
+.college-card-body { padding: 20px; flex: 1; }
+.college-card-name { font-size: 1rem; font-weight: 700; color: var(--dark); margin-bottom: 4px; line-height: 1.35; }
+.college-card-location { font-size: 0.82rem; color: var(--gray); margin-bottom: 10px; }
+.college-badge { display: inline-block; font-size: 0.7rem; font-weight: 600; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.05em; margin-right: 4px; margin-bottom: 8px; }
+.badge-private { background: #ede9fe; color: #7c3aed; }
+.badge-government { background: #dcfce7; color: #16a34a; }
+.badge-deemed { background: #fef3c7; color: #d97706; }
+.badge-university { background: #dbeafe; color: var(--blue-dark); }
+.badge-online { background: #e0f2fe; color: #0369a1; }
+.college-courses { font-size: 0.82rem; color: var(--gray); margin: 8px 0; line-height: 1.5; }
+.college-fees { font-size: 0.88rem; font-weight: 600; color: var(--dark); margin-top: 8px; }
+.college-fees span { color: var(--green-dark); }
+.college-card-footer { padding: 14px 20px; border-top: 1px solid #f1f5f9; display: flex; gap: 8px; }
+.btn-view { flex: 1; text-align: center; padding: 8px; background: var(--blue); color: #fff; border-radius: 8px; font-size: 0.82rem; font-weight: 600; transition: background 0.2s; border: none; cursor: pointer; text-decoration: none; display: inline-block; }
+.btn-view:hover { background: var(--blue-dark); color: #fff; }
+.btn-compare-add { flex: 1; text-align: center; padding: 8px; background: var(--light-gray); color: var(--dark); border-radius: 8px; font-size: 0.82rem; font-weight: 600; transition: background 0.2s; border: none; cursor: pointer; }
+.btn-compare-add:hover, .btn-compare-add.added { background: var(--green); color: #fff; }
+
+/* Pagination */
+.pagination-wrap { display: flex; justify-content: center; gap: 6px; margin-top: 32px; flex-wrap: wrap; }
+.page-btn { padding: 8px 14px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; color: var(--dark); }
+.page-btn:hover, .page-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+.page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ===== COMPARE BAR ===== */
+.compare-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--dark2);
+  padding: 12px 24px;
+  display: flex; align-items: center; gap: 16px;
+  z-index: 900;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+  transform: translateY(100%);
+  transition: transform 0.3s;
+}
+.compare-bar.visible { transform: translateY(0); }
+.compare-bar-label { color: rgba(255,255,255,0.6); font-size: 0.82rem; white-space: nowrap; }
+.compare-chips { display: flex; gap: 8px; flex: 1; flex-wrap: wrap; }
+.compare-chip { background: rgba(255,255,255,0.1); color: #fff; padding: 6px 10px; border-radius: 6px; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; }
+.compare-chip-remove { cursor: pointer; opacity: 0.6; transition: opacity 0.2s; font-size: 1rem; line-height: 1; background: none; border: none; color: #fff; padding: 0; }
+.compare-chip-remove:hover { opacity: 1; }
+.btn-go-compare { background: var(--green); color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 0.88rem; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; transition: background 0.2s; }
+.btn-go-compare:hover { background: var(--green-dark); }
+.btn-clear-compare { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: rgba(255,255,255,0.6); padding: 10px 16px; border-radius: 8px; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; }
+.btn-clear-compare:hover { border-color: #fff; color: #fff; }
+
+/* ===== COLLEGE DETAIL ===== */
+.college-hero { background: linear-gradient(135deg, var(--dark) 0%, #1e3a5f 100%); padding: 60px 0 40px; color: #fff; }
+.college-hero-inner { display: flex; align-items: flex-end; gap: 28px; flex-wrap: wrap; }
+.college-logo-placeholder { width: 80px; height: 80px; background: rgba(255,255,255,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 2rem; flex-shrink: 0; }
+.college-hero-info h1 { font-size: clamp(1.4rem, 3vw, 2.2rem); font-weight: 800; margin-bottom: 6px; }
+.college-hero-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; }
+.college-hero-meta span { font-size: 0.85rem; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 4px; }
+.college-hero-meta .accr-badge { background: var(--green); color: #fff; padding: 3px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; }
+
+.detail-layout { display: grid; grid-template-columns: 1fr 320px; gap: 28px; padding: 32px 0; align-items: start; }
+@media (max-width: 900px) { .detail-layout { grid-template-columns: 1fr; } }
+
+.detail-tabs .nav-tabs { border-bottom: 2px solid #e2e8f0; margin-bottom: 24px; }
+.detail-tabs .nav-link { color: var(--gray); font-weight: 600; font-size: 0.9rem; border: none; padding: 10px 18px; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+.detail-tabs .nav-link.active { color: var(--blue); border-bottom-color: var(--blue); background: none; }
+
+.courses-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.courses-table th { background: var(--light-gray); font-weight: 700; color: var(--dark); padding: 10px 14px; text-align: left; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.courses-table td { padding: 12px 14px; border-bottom: 1px solid #f1f5f9; color: var(--dark); vertical-align: middle; }
+.courses-table tr:hover td { background: #f8fafc; }
+
+.inquiry-sidebar { background: var(--white); border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px; position: sticky; top: 88px; }
+.inquiry-sidebar h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+.inquiry-sidebar p { font-size: 0.82rem; color: var(--gray); margin-bottom: 20px; }
+.form-field { margin-bottom: 14px; }
+.form-field label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--gray); margin-bottom: 5px; }
+.form-field input, .form-field select, .form-field textarea {
+  width: 100%; padding: 9px 12px; border: 1px solid #e2e8f0; border-radius: 8px;
+  font-size: 0.88rem; color: var(--dark); background: var(--white); transition: border-color 0.2s;
+  font-family: var(--font);
+}
+.form-field input:focus, .form-field select:focus, .form-field textarea:focus { outline: none; border-color: var(--blue); }
+.btn-submit { width: 100%; padding: 12px; background: var(--blue); color: #fff; border: none; border-radius: 8px; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+.btn-submit:hover { background: var(--blue-dark); }
+
+/* ===== COURSES PAGE ===== */
+.courses-hero { background: linear-gradient(135deg, var(--dark) 0%, #1e3a5f 100%); padding: 60px 0; color: #fff; text-align: center; }
+.courses-hero h1 { font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 900; margin-bottom: 10px; }
+.courses-hero p { color: rgba(255,255,255,0.7); font-size: 1rem; }
+
+.category-tabs { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding: 28px 0 8px; }
+.cat-tab { padding: 8px 18px; border: 1px solid #e2e8f0; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; background: #fff; color: var(--dark); }
+.cat-tab:hover, .cat-tab.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+.courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 24px 0; }
+.course-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px; transition: box-shadow 0.25s, transform 0.2s; cursor: pointer; }
+.course-card:hover { box-shadow: 0 10px 32px rgba(0,0,0,0.09); transform: translateY(-3px); border-color: #c7d2fe; }
+.course-cat-icon { width: 44px; height: 44px; border-radius: 10px; background: var(--blue); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 14px; }
+.course-card h4 { font-size: 0.98rem; font-weight: 700; margin-bottom: 6px; color: var(--dark); }
+.course-card .course-meta { font-size: 0.8rem; color: var(--gray); margin-bottom: 4px; }
+.course-card .course-colleges { font-size: 0.82rem; font-weight: 600; color: var(--blue); margin-top: 10px; }
+
+/* ===== COMPARE PAGE ===== */
+.compare-hero { background: linear-gradient(135deg, var(--dark) 0%, #1e3a5f 100%); padding: 48px 0; color: #fff; text-align: center; }
+.compare-hero h1 { font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 900; margin-bottom: 8px; }
+
+.compare-table-wrap { overflow-x: auto; padding: 32px 0; }
+.compare-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+.compare-table th { background: var(--light-gray); padding: 14px 18px; text-align: left; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray); border-bottom: 2px solid #e2e8f0; }
+.compare-table th.college-col { background: var(--dark2); color: #fff; font-size: 0.95rem; text-align: center; }
+.compare-table td { padding: 12px 18px; border-bottom: 1px solid #f1f5f9; font-size: 0.88rem; color: var(--dark); vertical-align: top; }
+.compare-table td.college-col { text-align: center; background: #f8fafc; }
+.compare-table tr:hover td { background: #f8fafc; }
+.compare-table tr:hover td.college-col { background: #eef2ff; }
+
+/* ===== APPLY FORM ===== */
+.apply-hero { background: linear-gradient(135deg, var(--dark) 0%, #1e3a5f 100%); padding: 48px 0; color: #fff; text-align: center; }
+.apply-hero h1 { font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 900; margin-bottom: 8px; }
+
+.step-progress { display: flex; justify-content: center; gap: 0; margin: 32px auto; max-width: 480px; }
+.step-item { display: flex; flex-direction: column; align-items: center; flex: 1; position: relative; }
+.step-item::before { content: ''; position: absolute; top: 16px; left: 50%; right: -50%; height: 2px; background: #e2e8f0; z-index: 0; }
+.step-item:last-child::before { display: none; }
+.step-num { width: 32px; height: 32px; border-radius: 50%; background: #e2e8f0; color: var(--gray); font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; justify-content: center; z-index: 1; transition: all 0.3s; }
+.step-item.active .step-num { background: var(--blue); color: #fff; }
+.step-item.done .step-num { background: var(--green); color: #fff; }
+.step-item.done::before { background: var(--green); }
+.step-item.active::before { background: var(--blue); }
+.step-label { font-size: 0.72rem; color: var(--gray); margin-top: 6px; text-align: center; font-weight: 600; }
+.step-item.active .step-label { color: var(--blue); }
+.step-item.done .step-label { color: var(--green-dark); }
+
+.apply-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 36px; max-width: 640px; margin: 0 auto 40px; }
+.apply-step { display: none; }
+.apply-step.active { display: block; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+.step-nav { display: flex; justify-content: space-between; margin-top: 28px; gap: 12px; }
+.btn-next, .btn-back { padding: 11px 28px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.2s; border: none; }
+.btn-next { background: var(--blue); color: #fff; }
+.btn-next:hover { background: var(--blue-dark); }
+.btn-back { background: var(--light-gray); color: var(--dark); }
+.btn-back:hover { background: #e2e8f0; }
+
+.review-row { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+.review-row:last-child { border-bottom: none; }
+.review-label { font-size: 0.82rem; font-weight: 600; color: var(--gray); min-width: 140px; }
+.review-val { font-size: 0.88rem; color: var(--dark); }
+
+.success-box { text-align: center; padding: 48px 24px; }
+.success-icon { font-size: 3rem; margin-bottom: 16px; }
+.success-box h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 10px; }
+.success-box p { color: var(--gray); font-size: 0.95rem; }
+
+/* ===== COUNSELLING & CONTACT PAGES ===== */
+.counsel-hero { background: linear-gradient(135deg, var(--dark) 0%, #1e3a5f 100%); padding: 80px 0; color: #fff; text-align: center; }
+.counsel-hero h1 { font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 900; margin-bottom: 12px; }
+.counsel-hero p { color: rgba(255,255,255,0.7); font-size: 1rem; max-width: 560px; margin: 0 auto; }
+
+.counsel-form-wrap { max-width: 700px; margin: 40px auto; background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 40px; }
+
+.alert-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; border-radius: 8px; padding: 14px 18px; margin-bottom: 20px; font-size: 0.9rem; font-weight: 600; }
+.alert-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; border-radius: 8px; padding: 14px 18px; margin-bottom: 20px; font-size: 0.9rem; }
+
+/* Loading skeleton */
+.skeleton { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+.skeleton-card { height: 240px; border-radius: 14px; }
+
+/* Related colleges */
+.related-section { margin-top: 36px; }
+.related-section h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; color: var(--dark); }
+.related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+.related-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; font-size: 0.85rem; transition: box-shadow 0.2s; }
+.related-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+.related-card h5 { font-size: 0.88rem; font-weight: 700; margin-bottom: 4px; color: var(--dark); }
+.related-card p { color: var(--gray); font-size: 0.78rem; }
