@@ -50,51 +50,32 @@ try {
     if (isset($has['online_mode']))      $sel .= ", c.online_mode";
     if (isset($has['ugc_approved']))     $sel .= ", c.ugc_approved";
 
-    // ── Top streams/courses subquery (uses college_streams) ───────────
+    // ── Top streams subquery: college_streams joins to a streams table via stream_id ──
     $coursesSub = '';
     try {
-        $streamCols = $db->query("SHOW COLUMNS FROM college_streams")->fetchAll(PDO::FETCH_COLUMN);
-        $streamHas  = array_flip($streamCols);
+        // college_streams has: college_id, stream_id → joins to streams/course_streams table
+        $db->query("SELECT 1 FROM college_streams LIMIT 1");
 
-        // college_streams likely has: college_id, stream_name / name / stream
-        $nameCol = 'stream_name';
-        if (!isset($streamHas['stream_name']) && isset($streamHas['name']))        $nameCol = 'name';
-        if (!isset($streamHas[$nameCol])       && isset($streamHas['stream']))     $nameCol = 'stream';
+        // Try 'streams' table first, then fallbacks
+        $streamsTable = null;
+        foreach (['streams', 'course_streams', 'stream_categories', 'ck_streams'] as $t) {
+            try {
+                $cols = $db->query("SHOW COLUMNS FROM `$t`")->fetchAll(PDO::FETCH_COLUMN);
+                if (in_array('name', $cols) || in_array('stream_name', $cols) || in_array('title', $cols)) {
+                    $streamsTable = $t;
+                    $nameField = in_array('name', $cols) ? 'name' : (in_array('stream_name', $cols) ? 'stream_name' : 'title');
+                    break;
+                }
+            } catch (Throwable $e) { continue; }
+        }
 
-        if (isset($streamHas['college_id']) && isset($streamHas[$nameCol])) {
-            $coursesSub = ", (SELECT GROUP_CONCAT(DISTINCT cs.$nameCol ORDER BY cs.$nameCol SEPARATOR ', ')
+        if ($streamsTable) {
+            $coursesSub = ", (SELECT GROUP_CONCAT(DISTINCT st.`$nameField` ORDER BY st.`$nameField` SEPARATOR ', ')
                               FROM college_streams cs
-                              WHERE cs.college_id = c.id
-                              LIMIT 1) AS top_courses";
+                              JOIN `$streamsTable` st ON st.id = cs.stream_id
+                              WHERE cs.college_id = c.id) AS top_courses";
         }
     } catch (Throwable $e) {}
-
-    // Fallback: try college_courses → courses join
-    if ($coursesSub === '') {
-        try {
-            $db->query("SELECT 1 FROM college_courses LIMIT 1");
-            $ccCols  = $db->query("SHOW COLUMNS FROM college_courses")->fetchAll(PDO::FETCH_COLUMN);
-            $ccHas   = array_flip($ccCols);
-
-            // course name might be in college_courses itself or joined from a courses table
-            if (isset($ccHas['college_id']) && isset($ccHas['course_name'])) {
-                $coursesSub = ", (SELECT GROUP_CONCAT(DISTINCT cc.course_name SEPARATOR ', ')
-                                  FROM college_courses cc
-                                  WHERE cc.college_id = c.id
-                                  LIMIT 1) AS top_courses";
-            } elseif (isset($ccHas['college_id']) && isset($ccHas['course_id'])) {
-                // Try joining a courses or ck_exams table
-                try {
-                    $db->query("SELECT 1 FROM courses LIMIT 1");
-                    $coursesSub = ", (SELECT GROUP_CONCAT(DISTINCT cr.name SEPARATOR ', ')
-                                      FROM college_courses cc
-                                      JOIN courses cr ON cr.id = cc.course_id
-                                      WHERE cc.college_id = c.id
-                                      LIMIT 1) AS top_courses";
-                } catch (Throwable $e) {}
-            }
-        } catch (Throwable $e) {}
-    }
 
     // ── WHERE clause ──────────────────────────────────────────────────
     $where  = [];
