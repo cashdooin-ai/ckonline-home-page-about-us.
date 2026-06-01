@@ -7,7 +7,7 @@ $id   = intval($_GET['id'] ?? 0);
 $slug = trim($_GET['slug'] ?? '');
 
 if (!$id && !$slug) {
-    header('Location: /colleges.php');
+    header('Location: ' . SITE_BASE . '/colleges.php');
     exit;
 }
 
@@ -32,14 +32,14 @@ try {
         $stmt = $db->prepare("SELECT $select FROM colleges c WHERE c.id = ?");
         $stmt->execute([$id]);
     } else {
-        if (!in_array('slug', $allCols)) { header('Location: /colleges.php'); exit; }
+        if (!in_array('slug', $allCols)) { header('Location: ' . SITE_BASE . '/colleges.php'); exit; }
         $stmt = $db->prepare("SELECT $select FROM colleges c WHERE c.slug = ?");
         $stmt->execute([$slug]);
     }
     $college = $stmt->fetch();
 
     if (!$college) {
-        header('Location: /colleges.php');
+        header('Location: ' . SITE_BASE . '/colleges.php');
         exit;
     }
     $id = $college['id'];
