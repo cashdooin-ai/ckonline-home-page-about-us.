@@ -135,8 +135,10 @@ function loadColleges(filters, page) {
 function renderCollegeCard(c) {
   const typeVal  = c.type || c.college_type || '';
   const typeBadge = typeVal ? `<span class="college-badge badge-${escHtml(typeVal.toLowerCase())}">${escHtml(typeVal.charAt(0).toUpperCase()+typeVal.slice(1))}</span>` : '';
-  const naac     = c.naac_grade ? `<span class="college-badge badge-naac">NAAC ${escHtml(c.naac_grade)}</span>` : '';
-  const nirf     = c.nirf_rank  ? `<span class="college-badge badge-nirf">NIRF #${escHtml(String(c.nirf_rank))}</span>` : '';
+  const naac     = c.naac_grade  ? `<span class="college-badge badge-naac">NAAC ${escHtml(c.naac_grade)}</span>` : '';
+  const nirf     = c.nirf_rank   ? `<span class="college-badge badge-nirf">NIRF #${escHtml(String(c.nirf_rank))}</span>` : '';
+  const ugc      = c.ugc_approved == 1 ? `<span class="college-badge badge-ugc">UGC Approved</span>` : '';
+  const mode     = c.online_mode ? `<span class="college-badge badge-mode">${escHtml(c.online_mode.charAt(0).toUpperCase()+c.online_mode.slice(1))}</span>` : '';
   const courses  = c.top_courses  ? `<div class="college-courses"><i class="bi bi-book"></i> ${escHtml(c.top_courses)}</div>` : '';
   const fees     = c.fees_display ? `<div class="college-fees">💰 ${escHtml(c.fees_display)}</div>` : '';
   const pkg      = c.avg_package_display ? `<div class="college-fees">🏢 Avg Package: ${escHtml(c.avg_package_display)}</div>` : '';
@@ -150,7 +152,7 @@ function renderCollegeCard(c) {
   return `<div class="college-card">
     <div class="college-card-header">
       ${logo}
-      <div class="college-card-badges">${typeBadge}${naac}${nirf}</div>
+      <div class="college-card-badges">${typeBadge}${naac}${nirf}${ugc}${mode}</div>
     </div>
     <div class="college-card-body">
       <div class="college-card-name">${escHtml(c.name)}</div>

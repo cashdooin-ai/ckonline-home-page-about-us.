@@ -10,8 +10,9 @@ $type      = trim($_GET['type']     ?? '');   // college_type
 $category  = trim($_GET['category'] ?? '');
 $min_fees  = intval($_GET['min_fees'] ?? 0);
 $max_fees  = intval($_GET['max_fees'] ?? 0);
-$featured  = intval($_GET['featured'] ?? 0);
-$page      = max(1, intval($_GET['page']  ?? 1));
+$featured   = intval($_GET['featured']  ?? 0);
+$online_only = intval($_GET['online']   ?? 1);  // default: show only online colleges
+$page       = max(1, intval($_GET['page']  ?? 1));
 $limit     = min(24, max(1, intval($_GET['limit'] ?? 12)));
 $offset    = ($page - 1) * $limit;
 
@@ -45,6 +46,9 @@ try {
     if (isset($has['avg_package']))      $sel .= ", c.avg_package";
     if (isset($has['is_featured']))      $sel .= ", c.is_featured";
     if (isset($has['is_partner']))       $sel .= ", c.is_partner";
+    if (isset($has['is_online']))        $sel .= ", c.is_online";
+    if (isset($has['online_mode']))      $sel .= ", c.online_mode";
+    if (isset($has['ugc_approved']))     $sel .= ", c.ugc_approved";
 
     // ── Top streams/courses subquery (uses college_streams) ───────────
     $coursesSub = '';
@@ -99,6 +103,11 @@ try {
     // Only filter is_active / status if the column exists
     if (isset($has['is_active']))  { $where[] = "c.is_active = 1"; }
     if (isset($has['status']))     { $where[] = "c.status = 'active'"; }
+
+    // Default: only show online colleges on this portal
+    if ($online_only && isset($has['is_online'])) {
+        $where[] = "c.is_online = 1";
+    }
 
     if ($featured && isset($has['is_featured'])) {
         $where[] = "c.is_featured = 1";

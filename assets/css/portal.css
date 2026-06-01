@@ -274,3 +274,6 @@
 .badge-private     { background: #fce7f3; color: #9d174d; }
 .badge-deemed      { background: #ede9fe; color: #5b21b6; }
 .badge-autonomous  { background: #d1fae5; color: #065f46; }
+
+.badge-ugc   { background: #dcfce7; color: #15803d; font-weight: 700; }
+.badge-mode  { background: #e0f2fe; color: #0369a1; }
