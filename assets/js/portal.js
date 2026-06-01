@@ -133,22 +133,36 @@ function loadColleges(filters, page) {
 }
 
 function renderCollegeCard(c) {
-  const typeBadge = c.type ? `<span class="college-badge badge-${escHtml(c.type.toLowerCase())}">${escHtml(c.type)}</span>` : '';
-  const courses = c.top_courses ? `<div class="college-courses">${escHtml(c.top_courses)}</div>` : '';
-  const fees = c.fees_display ? `<div class="college-fees">Fees: <span>${escHtml(c.fees_display)}</span></div>` : '';
+  const typeVal  = c.type || c.college_type || '';
+  const typeBadge = typeVal ? `<span class="college-badge badge-${escHtml(typeVal.toLowerCase())}">${escHtml(typeVal.charAt(0).toUpperCase()+typeVal.slice(1))}</span>` : '';
+  const naac     = c.naac_grade ? `<span class="college-badge badge-naac">NAAC ${escHtml(c.naac_grade)}</span>` : '';
+  const nirf     = c.nirf_rank  ? `<span class="college-badge badge-nirf">NIRF #${escHtml(String(c.nirf_rank))}</span>` : '';
+  const courses  = c.top_courses  ? `<div class="college-courses"><i class="bi bi-book"></i> ${escHtml(c.top_courses)}</div>` : '';
+  const fees     = c.fees_display ? `<div class="college-fees">💰 ${escHtml(c.fees_display)}</div>` : '';
+  const pkg      = c.avg_package_display ? `<div class="college-fees">🏢 Avg Package: ${escHtml(c.avg_package_display)}</div>` : '';
+  const location = [c.city, c.state].filter(Boolean).join(', ');
+  const logo     = c.logo_url
+    ? `<img src="${escHtml(c.logo_url)}" alt="${escHtml(c.name)}" class="college-logo" onerror="this.style.display='none'">`
+    : `<div class="college-logo-placeholder">${escHtml((c.short_name||c.name||'').substring(0,2).toUpperCase())}</div>`;
+  const urlKey   = c.url_key || c.slug || c.id;
+  const detailUrl = `${window.CK_BASE||''}/college-detail.php?slug=${encodeURIComponent(urlKey)}`;
+
   return `<div class="college-card">
+    <div class="college-card-header">
+      ${logo}
+      <div class="college-card-badges">${typeBadge}${naac}${nirf}</div>
+    </div>
     <div class="college-card-body">
       <div class="college-card-name">${escHtml(c.name)}</div>
-      <div class="college-card-location">${escHtml((c.city ? c.city + ', ' : '') + (c.state || ''))}</div>
-      ${typeBadge}
-      ${courses}
-      ${fees}
+      ${location ? `<div class="college-card-location">📍 ${escHtml(location)}</div>` : ''}
+      ${courses}${fees}${pkg}
     </div>
     <div class="college-card-footer">
-      <a href="${window.CK_BASE||''}/college-detail.php?id=${encodeURIComponent(c.id)}" class="btn-view">View Details</a>
-      <button class="btn-compare-add" data-id="${escHtml(String(c.id))}" data-name="${escHtml(c.name)}" onclick="addToCompare(this.dataset.id, this.dataset.name)">+ Compare</button>
+      <a href="${detailUrl}" class="btn-view">View Details</a>
+      <button class="btn-compare-add" data-id="${escHtml(String(c.id))}" data-name="${escHtml(c.name)}" onclick="addToCompare(this.dataset.id,this.dataset.name)">⚖ Compare</button>
     </div>
   </div>`;
+}
 }
 
 function renderPagination(total, page) {

@@ -44,10 +44,10 @@ try {
           <?php endif; ?>
           <div class="filter-group">
             <label>College Type</label>
-            <label class="check-item"><input type="checkbox" name="type" value="Private"> Private</label>
-            <label class="check-item"><input type="checkbox" name="type" value="Government"> Government</label>
-            <label class="check-item"><input type="checkbox" name="type" value="Deemed"> Deemed</label>
-            <label class="check-item"><input type="checkbox" name="type" value="University"> University</label>
+            <label class="check-item"><input type="checkbox" name="type" value="private"> Private</label>
+            <label class="check-item"><input type="checkbox" name="type" value="government"> Government</label>
+            <label class="check-item"><input type="checkbox" name="type" value="deemed"> Deemed</label>
+            <label class="check-item"><input type="checkbox" name="type" value="autonomous"> Autonomous</label>
           </div>
           <div class="filter-group">
             <label>Fees Range (₹)</label>
