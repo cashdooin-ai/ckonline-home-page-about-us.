@@ -2,6 +2,13 @@
 // INTEGRATION: Admin portal reads this DB. Partner portal writes to colleges/courses tables.
 // Shared DB: collegekampus -- see database/schema.sql
 
+// ─── Site base URL (change this when deploying to /dashboard subfolder) ───────
+// For Hostinger: 'https://online.collegekampus.com/dashboard'
+// For local dev:  'http://localhost/dashboard'
+define('SITE_BASE', rtrim(getenv('SITE_BASE') ?: 'https://online.collegekampus.com/dashboard', '/'));
+define('SITE_NAME', 'CollegeKampus Online');
+define('SITE_DOMAIN', 'online.collegekampus.com');
+
 define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
 define('DB_NAME', getenv('DB_NAME') ?: 'collegekampus');
 define('DB_USER', getenv('DB_USER') ?: 'root');
