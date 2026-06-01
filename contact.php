@@ -2,6 +2,8 @@
 $pageTitle = 'Contact Us';
 $pageDesc  = 'Get in touch with CollegeKampus Online. We are here to help with all your education queries.';
 require_once __DIR__ . '/config/db.php';
+if (!isset($extraHead)) $extraHead = '';
+$extraHead .= '<script>window.CK_BASE = ' . json_encode(rtrim(SITE_BASE, '/')) . ';</script>';
 
 $success = false;
 $error   = '';

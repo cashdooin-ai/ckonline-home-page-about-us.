@@ -2,6 +2,8 @@
 $pageTitle = 'Apply Now';
 $pageDesc  = 'Apply online to your chosen college in 3 easy steps.';
 require_once __DIR__ . '/config/db.php';
+if (!isset($extraHead)) $extraHead = '';
+$extraHead .= '<script>window.CK_BASE = ' . json_encode(rtrim(SITE_BASE, '/')) . ';</script>';
 
 $college_id = intval($_GET['college_id'] ?? 0);
 $course_id  = intval($_GET['course_id'] ?? 0);

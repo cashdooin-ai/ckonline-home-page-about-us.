@@ -2,6 +2,8 @@
 $pageTitle = 'Free Expert Counselling';
 $pageDesc  = 'Get free expert counselling to choose the best online college and course for you.';
 require_once __DIR__ . '/config/db.php';
+if (!isset($extraHead)) $extraHead = '';
+$extraHead .= '<script>window.CK_BASE = ' . json_encode(rtrim(SITE_BASE, '/')) . ';</script>';
 
 $success = false;
 $error   = '';

@@ -2,6 +2,8 @@
 $pageTitle = 'Browse Courses';
 $pageDesc  = 'Explore online and distance courses across engineering, management, medical, law, arts and more.';
 require_once __DIR__ . '/config/db.php';
+if (!isset($extraHead)) $extraHead = '';
+$extraHead .= '<script>window.CK_BASE = ' . json_encode(rtrim(SITE_BASE, '/')) . ';</script>';
 
 $categories = [
     ['key'=>'Engineering','icon'=>'&#9881;','bg'=>'#3b82f6'],

@@ -2,6 +2,8 @@
 $pageTitle = 'Compare Colleges';
 $pageDesc  = 'Compare up to 3 online colleges side-by-side on fees, courses, accreditation and more.';
 require_once __DIR__ . '/config/db.php';
+if (!isset($extraHead)) $extraHead = '';
+$extraHead .= '<script>window.CK_BASE = ' . json_encode(rtrim(SITE_BASE, '/')) . ';</script>';
 
 $idsParam = trim($_GET['ids'] ?? '');
 $ids = array_slice(array_filter(array_map('intval', explode(',', $idsParam))), 0, 3);

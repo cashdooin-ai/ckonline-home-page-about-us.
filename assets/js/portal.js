@@ -44,7 +44,7 @@ function clearCompare() {
 
 function goToCompare() {
   const ids = compareList.map(c => c.id).join(',');
-  window.location.href = '/compare.php?ids=' + ids;
+  window.location.href = (window.CK_BASE||'') + '/compare.php?ids=' + ids;
 }
 
 function renderCompareBar() {
@@ -111,7 +111,8 @@ function loadColleges(filters, page) {
   params.set('page', page);
   params.set('limit', 12);
 
-  fetch('/api/colleges.php?' + params.toString())
+  const apiBase = window.CK_BASE || '';
+  fetch(apiBase + '/api/colleges.php?' + params.toString())
     .then(r => r.json())
     .then(data => {
       if (!data.colleges || data.colleges.length === 0) {
@@ -144,7 +145,7 @@ function renderCollegeCard(c) {
       ${fees}
     </div>
     <div class="college-card-footer">
-      <a href="/college-detail.php?id=${encodeURIComponent(c.id)}" class="btn-view">View Details</a>
+      <a href="${window.CK_BASE||''}/college-detail.php?id=${encodeURIComponent(c.id)}" class="btn-view">View Details</a>
       <button class="btn-compare-add" data-id="${escHtml(String(c.id))}" data-name="${escHtml(c.name)}" onclick="addToCompare(this.dataset.id, this.dataset.name)">+ Compare</button>
     </div>
   </div>`;
@@ -274,7 +275,7 @@ function initStepForm() {
     e.preventDefault();
     const btn = form.querySelector('.btn-submit-final');
     if (btn) btn.disabled = true;
-    fetch('/api/leads.php', { method: 'POST', body: new FormData(form) })
+    fetch((window.CK_BASE||'') + '/api/leads.php', { method: 'POST', body: new FormData(form) })
       .then(r => r.json())
       .then(data => {
         if (data.success) {
@@ -283,7 +284,7 @@ function initStepForm() {
               <div class="success-icon">&#x2705;</div>
               <h2>Application Submitted!</h2>
               <p>Thank you! Our counsellor will contact you within 24 hours.<br>Application ID: <strong>${data.application_id || 'CK' + Date.now()}</strong></p>
-              <a href="/colleges.php" class="btn-view" style="display:inline-block;margin-top:20px;padding:12px 24px;">Browse More Colleges</a>
+              <a href="${window.CK_BASE||''}/colleges.php" class="btn-view" style="display:inline-block;margin-top:20px;padding:12px 24px;">Browse More Colleges</a>
             </div>`;
         } else {
           alert(data.message || 'Submission failed. Please try again.');
