@@ -4,88 +4,88 @@ header('Access-Control-Allow-Origin: *');
 
 require_once __DIR__ . '/../config/db.php';
 
-$search    = trim($_GET['search']   ?? '');
-$state     = trim($_GET['state']    ?? '');
-$type      = trim($_GET['type']     ?? '');   // college_type
-$category  = trim($_GET['category'] ?? '');
-$min_fees  = intval($_GET['min_fees'] ?? 0);
-$max_fees  = intval($_GET['max_fees'] ?? 0);
-$featured   = intval($_GET['featured']  ?? 0);
-$online_only = intval($_GET['online']   ?? 1);  // default: show only online colleges
-$page       = max(1, intval($_GET['page']  ?? 1));
-$limit     = min(24, max(1, intval($_GET['limit'] ?? 12)));
-$offset    = ($page - 1) * $limit;
+$search      = trim($_GET['search']    ?? '');
+$state       = trim($_GET['state']     ?? '');
+$type        = trim($_GET['type']      ?? '');
+$stream      = trim($_GET['stream']    ?? '');
+$min_fees    = intval($_GET['min_fees'] ?? 0);
+$max_fees    = intval($_GET['max_fees'] ?? 0);
+$featured    = intval($_GET['featured']  ?? 0);
+$online_only = intval($_GET['online']    ?? 1);
+$page        = max(1, intval($_GET['page']  ?? 1));
+$limit       = min(24, max(1, intval($_GET['limit'] ?? 12)));
+$offset      = ($page - 1) * $limit;
 
 try {
     $db = getDB();
 
-    // ── Detect available columns once ─────────────────────────────────
+    // Detect available columns
     $colRows = $db->query("SHOW COLUMNS FROM colleges")->fetchAll(PDO::FETCH_COLUMN);
-    $has = array_flip($colRows);   // O(1) lookup
+    $has = array_flip($colRows);
 
-    // ── SELECT clause using real column names ─────────────────────────
+    // SELECT clause
     $sel = "c.id, c.name";
-    if (isset($has['slug']))             $sel .= ", c.slug";
-    if (isset($has['short_name']))       $sel .= ", c.short_name";
-    if (isset($has['city']))             $sel .= ", c.city";
-    if (isset($has['state']))            $sel .= ", c.state";
-    if (isset($has['district']))         $sel .= ", c.district";
-    if (isset($has['college_type']))     $sel .= ", c.college_type AS type";
+    foreach (['slug','short_name','city','state','district','established_year',
+              'accreditation','naac_grade','nirf_rank','rating','total_reviews',
+              'logo_url','cover_image_url','placement_rate','avg_package',
+              'is_featured','is_partner','is_online','online_mode','ugc_approved',
+              'min_fees','max_fees'] as $col) {
+        if (isset($has[$col])) $sel .= ", c.$col";
+    }
+    if (isset($has['college_type'])) $sel .= ", c.college_type AS type";
     if (isset($has['institution_type'])) $sel .= ", c.institution_type";
-    if (isset($has['min_fees']))         $sel .= ", c.min_fees";
-    if (isset($has['max_fees']))         $sel .= ", c.max_fees";
-    if (isset($has['established_year'])) $sel .= ", c.established_year";
-    if (isset($has['accreditation']))    $sel .= ", c.accreditation";
-    if (isset($has['naac_grade']))       $sel .= ", c.naac_grade";
-    if (isset($has['nirf_rank']))        $sel .= ", c.nirf_rank";
-    if (isset($has['rating']))           $sel .= ", c.rating";
-    if (isset($has['total_reviews']))    $sel .= ", c.total_reviews";
-    if (isset($has['logo_url']))         $sel .= ", c.logo_url";
-    if (isset($has['cover_image_url']))  $sel .= ", c.cover_image_url";
-    if (isset($has['placement_rate']))   $sel .= ", c.placement_rate";
-    if (isset($has['avg_package']))      $sel .= ", c.avg_package";
-    if (isset($has['is_featured']))      $sel .= ", c.is_featured";
-    if (isset($has['is_partner']))       $sel .= ", c.is_partner";
-    if (isset($has['is_online']))        $sel .= ", c.is_online";
-    if (isset($has['online_mode']))      $sel .= ", c.online_mode";
-    if (isset($has['ugc_approved']))     $sel .= ", c.ugc_approved";
 
-    // ── Top streams subquery: college_streams joins to a streams table via stream_id ──
+    // Streams subquery — completely isolated
     $coursesSub = '';
     try {
-        // college_streams has: college_id, stream_id → joins to streams/course_streams table
         $db->query("SELECT 1 FROM college_streams LIMIT 1");
-
-        // Try 'streams' table first, then fallbacks
-        $streamsTable = null;
-        foreach (['streams', 'course_streams', 'stream_categories', 'ck_streams'] as $t) {
+        foreach (['streams','course_streams','stream_categories','ck_streams'] as $t) {
             try {
                 $cols = $db->query("SHOW COLUMNS FROM `$t`")->fetchAll(PDO::FETCH_COLUMN);
-                if (in_array('name', $cols) || in_array('stream_name', $cols) || in_array('title', $cols)) {
-                    $streamsTable = $t;
-                    $nameField = in_array('name', $cols) ? 'name' : (in_array('stream_name', $cols) ? 'stream_name' : 'title');
+                $nameField = null;
+                foreach (['name','stream_name','title'] as $f) {
+                    if (in_array($f, $cols)) { $nameField = $f; break; }
+                }
+                if ($nameField) {
+                    $coursesSub = ", (SELECT GROUP_CONCAT(DISTINCT st.`$nameField` ORDER BY st.`$nameField` SEPARATOR ', ')
+                                      FROM college_streams cs
+                                      JOIN `$t` st ON st.id = cs.stream_id
+                                      WHERE cs.college_id = c.id) AS top_courses";
                     break;
                 }
             } catch (Throwable $e) { continue; }
         }
-
-        if ($streamsTable) {
-            $coursesSub = ", (SELECT GROUP_CONCAT(DISTINCT st.`$nameField` ORDER BY st.`$nameField` SEPARATOR ', ')
-                              FROM college_streams cs
-                              JOIN `$streamsTable` st ON st.id = cs.stream_id
-                              WHERE cs.college_id = c.id) AS top_courses";
-        }
     } catch (Throwable $e) {}
 
-    // ── WHERE clause ──────────────────────────────────────────────────
+    // Stream filter via college_streams JOIN
+    $streamJoin = '';
+    if ($stream !== '') {
+        try {
+            $db->query("SELECT 1 FROM college_streams LIMIT 1");
+            foreach (['streams','course_streams','stream_categories','ck_streams'] as $t) {
+                try {
+                    $cols = $db->query("SHOW COLUMNS FROM `$t`")->fetchAll(PDO::FETCH_COLUMN);
+                    $nameField = null;
+                    foreach (['name','stream_name','title'] as $f) {
+                        if (in_array($f, $cols)) { $nameField = $f; break; }
+                    }
+                    if ($nameField) {
+                        $streamJoin = "JOIN college_streams _cs ON _cs.college_id = c.id
+                                       JOIN `$t` _st ON _st.id = _cs.stream_id AND _st.`$nameField` = " . $db->quote($stream);
+                        break;
+                    }
+                } catch (Throwable $e) { continue; }
+            }
+        } catch (Throwable $e) {}
+    }
+
+    // WHERE clause
     $where  = [];
     $params = [];
 
-    // Only filter is_active / status if the column exists
-    if (isset($has['is_active']))  { $where[] = "c.is_active = 1"; }
-    if (isset($has['status']))     { $where[] = "c.status = 'active'"; }
+    if (isset($has['is_active']))  $where[] = "c.is_active = 1";
+    if (isset($has['status']))     $where[] = "c.status = 'active'";
 
-    // Default: only show online colleges on this portal
     if ($online_only && isset($has['is_online'])) {
         $where[] = "c.is_online = 1";
     }
@@ -99,8 +99,8 @@ try {
         if (isset($has['city']))       $w[] = "c.city LIKE ?";
         if (isset($has['state']))      $w[] = "c.state LIKE ?";
         if (isset($has['short_name'])) $w[] = "c.short_name LIKE ?";
-        $where[]  = '(' . implode(' OR ', $w) . ')';
-        $like     = '%' . $search . '%';
+        $where[] = '(' . implode(' OR ', $w) . ')';
+        $like = '%' . $search . '%';
         foreach ($w as $_) $params[] = $like;
     }
 
@@ -129,26 +129,24 @@ try {
 
     $whereStr = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
-    // ── COUNT ─────────────────────────────────────────────────────────
-    $countSql  = "SELECT COUNT(*) FROM colleges c $whereStr";
+    // COUNT
+    $countSql  = "SELECT COUNT(DISTINCT c.id) FROM colleges c $streamJoin $whereStr";
     $countStmt = $db->prepare($countSql);
     $countStmt->execute($params);
     $total = (int) $countStmt->fetchColumn();
 
-    // ── DATA ──────────────────────────────────────────────────────────
+    // DATA
     $orderBy = isset($has['nirf_rank'])
         ? "ORDER BY CASE WHEN c.nirf_rank IS NULL OR c.nirf_rank = 0 THEN 1 ELSE 0 END, c.nirf_rank ASC, c.name ASC"
         : "ORDER BY c.name ASC";
 
-    $sql        = "SELECT $sel $coursesSub FROM colleges c $whereStr $orderBy LIMIT ? OFFSET ?";
+    $sql        = "SELECT DISTINCT $sel $coursesSub FROM colleges c $streamJoin $whereStr $orderBy LIMIT ? OFFSET ?";
     $dataParams = array_merge($params, [$limit, $offset]);
     $dataStmt   = $db->prepare($sql);
     $dataStmt->execute($dataParams);
-    $colleges   = $dataStmt->fetchAll();
+    $colleges   = $dataStmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // ── Format for output ─────────────────────────────────────────────
     foreach ($colleges as &$col) {
-        // Fees display
         $min = $col['min_fees'] ?? null;
         $max = $col['max_fees'] ?? null;
         if ($min && $max)   $col['fees_display'] = '₹' . number_format($min) . ' – ₹' . number_format($max);
@@ -156,12 +154,10 @@ try {
         elseif ($max)       $col['fees_display'] = 'Upto ₹' . number_format($max);
         else                $col['fees_display'] = null;
 
-        // Package display
         if (!empty($col['avg_package'])) {
             $col['avg_package_display'] = '₹' . number_format($col['avg_package'] / 100000, 1) . 'L';
         }
 
-        // Use slug for URLs, fallback to id
         $col['url_key'] = !empty($col['slug']) ? $col['slug'] : $col['id'];
     }
     unset($col);
@@ -176,6 +172,15 @@ try {
     ]);
 
 } catch (Throwable $e) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    // Never return 500 — always valid JSON
+    http_response_code(200);
+    echo json_encode([
+        'success'     => false,
+        'colleges'    => [],
+        'total_count' => 0,
+        'page'        => 1,
+        'limit'       => $limit ?? 12,
+        'pages'       => 0,
+        'error'       => $e->getMessage(),
+    ]);
 }
