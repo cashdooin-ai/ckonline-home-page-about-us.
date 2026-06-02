@@ -4,14 +4,17 @@ header('Access-Control-Allow-Origin: *');
 
 require_once __DIR__ . '/../config/db.php';
 
-$search      = trim($_GET['search']    ?? '');
-$state       = trim($_GET['state']     ?? '');
-$type        = trim($_GET['type']      ?? '');
-$stream      = trim($_GET['stream']    ?? '');
-$min_fees    = intval($_GET['min_fees'] ?? 0);
-$max_fees    = intval($_GET['max_fees'] ?? 0);
-$featured    = intval($_GET['featured']  ?? 0);
-$online_only = intval($_GET['online']    ?? 0);
+$search        = trim($_GET['search']        ?? '');
+$state         = trim($_GET['state']         ?? '');
+$type          = trim($_GET['type']          ?? '');
+$stream        = trim($_GET['stream']        ?? '');
+$course        = trim($_GET['course']        ?? '');
+$accreditation = trim($_GET['accreditation'] ?? '');
+$sort          = trim($_GET['sort']          ?? '');
+$min_fees      = intval($_GET['min_fees']    ?? 0);
+$max_fees      = intval($_GET['max_fees']    ?? 0);
+$featured      = intval($_GET['featured']    ?? 0);
+$online_only   = intval($_GET['online']      ?? 0);
 $page        = max(1, intval($_GET['page']  ?? 1));
 $limit       = min(24, max(1, intval($_GET['limit'] ?? 12)));
 $offset      = ($page - 1) * $limit;
@@ -127,6 +130,11 @@ try {
         $params[] = $max_fees;
     }
 
+    if ($accreditation !== '' && isset($has['accreditation'])) {
+        $where[]  = "c.accreditation LIKE ?";
+        $params[] = $accreditation . '%';
+    }
+
     $whereStr = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
     // COUNT
@@ -136,9 +144,15 @@ try {
     $total = (int) $countStmt->fetchColumn();
 
     // DATA
-    $orderBy = isset($has['nirf_rank'])
-        ? "ORDER BY CASE WHEN c.nirf_rank IS NULL OR c.nirf_rank = 0 THEN 1 ELSE 0 END, c.nirf_rank ASC, c.name ASC"
-        : "ORDER BY c.name ASC";
+    if ($sort === 'nirf' && isset($has['nirf_rank'])) {
+        $orderBy = "ORDER BY CASE WHEN c.nirf_rank IS NULL OR c.nirf_rank = 0 THEN 1 ELSE 0 END, c.nirf_rank ASC, c.name ASC";
+    } elseif ($sort === 'rating' && isset($has['rating'])) {
+        $orderBy = "ORDER BY CASE WHEN c.rating IS NULL THEN 1 ELSE 0 END, c.rating DESC, c.name ASC";
+    } elseif (isset($has['nirf_rank'])) {
+        $orderBy = "ORDER BY CASE WHEN c.nirf_rank IS NULL OR c.nirf_rank = 0 THEN 1 ELSE 0 END, c.nirf_rank ASC, c.name ASC";
+    } else {
+        $orderBy = "ORDER BY c.name ASC";
+    }
 
     $sql        = "SELECT DISTINCT $sel $coursesSub FROM colleges c $streamJoin $whereStr $orderBy LIMIT ? OFFSET ?";
     $dataParams = array_merge($params, [$limit, $offset]);
