@@ -92,6 +92,8 @@ $base = SITE_BASE;
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="<?= $base ?>/assets/css/portal.css">
 
+    <!-- CK_BASE always injected so JS fetch paths resolve from /dashboard/ -->
+    <script>window.CK_BASE = '<?= rtrim(SITE_BASE, '/') ?>';</script>
     <?php if (isset($extraHead)) echo $extraHead; ?>
 </head>
 <body>

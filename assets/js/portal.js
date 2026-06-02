@@ -165,7 +165,6 @@ function renderCollegeCard(c) {
     </div>
   </div>`;
 }
-}
 
 function renderPagination(total, page) {
   const wrap = document.getElementById('paginationWrap');

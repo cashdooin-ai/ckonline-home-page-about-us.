@@ -64,7 +64,7 @@ $base = SITE_BASE;
         </div>
         <hr class="border-secondary">
         <div class="row align-items-center py-3">
-            <div class="col-md-8 text-center text-md-start">
+            <div class="col-md-7 text-center text-md-start">
                 <small class="text-white-50">
                     &copy; <?= date('Y') ?> CollegeKampus Online. All rights reserved. &nbsp;|&nbsp;
                     <a href="<?= $base ?>/privacy-policy.php" class="text-white-50">Privacy Policy</a> &nbsp;|&nbsp;
@@ -72,8 +72,18 @@ $base = SITE_BASE;
                     <a href="<?= $base ?>/sitemap.xml"        class="text-white-50">Sitemap</a>
                 </small>
             </div>
-            <div class="col-md-4 text-center text-md-end mt-2 mt-md-0">
+            <div class="col-md-3 text-center mt-2 mt-md-0">
                 <small class="text-white-50">UGC Approved &nbsp;|&nbsp; AICTE Listed &nbsp;|&nbsp; NAAC Accredited</small>
+            </div>
+            <div class="col-md-2 text-center text-md-end mt-2 mt-md-0">
+                <small>
+                    <a href="https://collegekampus.com/admin" target="_blank" class="text-white-50 me-2" title="Admin Portal">
+                        <i class="bi bi-shield-lock"></i> Admin
+                    </a>
+                    <a href="https://collegekampus.com/partner" target="_blank" class="text-white-50" title="Partner Portal">
+                        <i class="bi bi-building"></i> Partner
+                    </a>
+                </small>
             </div>
         </div>
     </div>

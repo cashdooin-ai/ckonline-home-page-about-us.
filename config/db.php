@@ -10,9 +10,9 @@ define('SITE_NAME', 'CollegeKampus Online');
 define('SITE_DOMAIN', 'online.collegekampus.com');
 
 define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
-define('DB_NAME', getenv('DB_NAME') ?: 'collegekampus');
-define('DB_USER', getenv('DB_USER') ?: 'root');
-define('DB_PASS', getenv('DB_PASS') ?: '');
+define('DB_NAME', getenv('DB_NAME') ?: 'u939138857_ckampus_dash26');
+define('DB_USER', getenv('DB_USER') ?: 'u939138857_ckampus_dash26');
+define('DB_PASS', getenv('DB_PASS') ?: '');  // Set real password on server
 define('DB_CHARSET', 'utf8mb4');
 
 function getPDO(): PDO {
