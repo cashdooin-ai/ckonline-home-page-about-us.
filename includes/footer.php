@@ -132,5 +132,7 @@ $base = SITE_BASE;
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?= $base ?>/assets/js/portal.js"></script>
 <?php if (isset($extraScript)) echo $extraScript; ?>
+<?php include __DIR__ . '/../includes/exit-popup.php'; ?>
+<?php include __DIR__ . '/../includes/floating-cta.php'; ?>
 </body>
 </html>
