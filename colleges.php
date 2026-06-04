@@ -67,7 +67,7 @@ include __DIR__ . '/includes/header.php';
     <h1>&#127979; Online &amp; Distance Colleges in India</h1>
     <p>Discover, compare and apply to top universities offering online degrees</p>
     <div class="hero-stats">
-      <div class="hero-stat"><strong>40,000+</strong> Colleges</div>
+      <div class="hero-stat"><strong>500+</strong> Online Universities</div>
       <div class="hero-stat"><strong>500+</strong> Online Programs</div>
       <div class="hero-stat"><strong>UGC</strong> Approved Only</div>
       <div class="hero-stat"><strong>Free</strong> Counselling</div>

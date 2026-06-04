@@ -180,3 +180,35 @@ INSERT INTO college_courses (college_id, course_id, annual_fees, seats, eligibil
 (9, 14,       0,  15, 'M.Sc equivalent, BITS HD',             '2025-03-31'),
 (10, 4,  160000,  60, 'Graduation 45%, TISS-NET/CAT',         '2025-01-31'),
 (10,17,   85000,  30, 'B.Sc/B.Tech Life Sciences',            '2025-03-15');
+
+
+-- ── Site Settings (CMS key-value store) ──────────────────────────────────────
+CREATE TABLE IF NOT EXISTS site_settings (
+  `key` VARCHAR(100) NOT NULL PRIMARY KEY,
+  `value` LONGTEXT,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ── Seed default values ───────────────────────────────────────────────────────
+INSERT IGNORE INTO site_settings (`key`, `value`) VALUES
+  ('hero_badge',         'India\'s #1 Online Degree Discovery Platform'),
+  ('hero_headline',      'Find the Best <span>Online Degree</span><br>Universities in India'),
+  ('hero_subheadline',   'Compare 500+ UGC-approved online universities. Check fees, placements, NAAC ratings — all in one place. Apply in minutes.'),
+  ('stat_colleges',      '500+'),
+  ('stat_colleges_label','Online Universities'),
+  ('stat_students',      '1.25 Lakh+'),
+  ('stat_ugc',           '100%'),
+  ('cta_primary',        'Browse Universities'),
+  ('cta_secondary',      'Talk to a Counsellor'),
+  ('stats_bar_colleges', '500+'),
+  ('footer_tagline',     'India\'s trusted online college discovery platform. Compare 500+ UGC-approved universities and apply in minutes.'),
+  ('contact_phone',      '1800-123-4567'),
+  ('contact_email',      'info@collegekampus.in'),
+  ('contact_hours',      'Mon-Sat 9am-7pm'),
+  ('social_facebook',    'https://www.facebook.com/collegekampus'),
+  ('social_instagram',   'https://www.instagram.com/collegekampus'),
+  ('social_twitter',     'https://twitter.com/collegekampus'),
+  ('social_linkedin',    'https://www.linkedin.com/company/collegekampus'),
+  ('social_youtube',     'https://www.youtube.com/collegekampus'),
+  ('carousel_slides',    '[{"title":"Find Your Perfect Online Degree","subtitle":"Explore 500+ UGC-approved universities in India","img":"https://placehold.co/800x400/1a4fba/ffffff?text=Find+Your+Perfect+Online+Degree","btn_text":"Explore Now","btn_link":"colleges.php"},{"title":"Compare 500+ Universities","subtitle":"Side-by-side comparison in just 2 minutes","img":"https://placehold.co/800x400/16a34a/ffffff?text=Compare+500+Universities","btn_text":"Compare Now","btn_link":"compare.php"},{"title":"Free Expert Counselling","subtitle":"Talk to certified counsellors - no commission, no bias","img":"https://placehold.co/800x400/ea580c/ffffff?text=Free+Expert+Counselling","btn_text":"Book Free Session","btn_link":"counselling.php"}]'),
+  ('nav_links',          '[{"label":"Explore Programs","url":"/colleges.php","children":[]},{"label":"Top Universities","url":"/colleges.php","children":[]},{"label":"Tools","url":"#","children":[]},{"label":"About Us","url":"/#about-us","children":[]}]');

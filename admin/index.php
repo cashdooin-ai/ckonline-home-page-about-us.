@@ -82,6 +82,7 @@ textarea.content-area{font-family:monospace;font-size:.82rem;min-height:280px;}
         <li class="nav-item"><a class="nav-link <?= $tab==='programs'?'active':'' ?>" href="?tab=programs"><i class="bi bi-mortarboard"></i> Program Pages</a></li>
         <li class="nav-item"><a class="nav-link <?= $tab==='leads'?'active':'' ?>" href="?tab=leads"><i class="bi bi-people"></i> Leads</a></li>
         <li class="nav-item"><a class="nav-link <?= $tab==='generate'?'active':'' ?>" href="generate.php"><i class="bi bi-robot"></i> AI Generate</a></li>
+        <li class="nav-item"><a class="nav-link" href="site-settings.php"><i class="bi bi-gear"></i> Site Settings</a></li>
         <li class="nav-item mt-3"><a class="nav-link" href="/dashboard/"><i class="bi bi-house"></i> Front-end</a></li>
     </ul>
 </nav>

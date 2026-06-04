@@ -111,7 +111,7 @@ $base = SITE_BASE;
 .btn-ck-primary:hover{background:#1d4ed8;color:#fff;}
 .btn-ck-search{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:#f1f5f9;border:none;color:#374151;font-size:1rem;cursor:pointer;transition:background .2s;text-decoration:none;flex-shrink:0;}
 .btn-ck-search:hover{background:#e2e8f0;}
-@media(max-width:991px){
+@media(max-width:1199px){
   .ck-navbar .container{height:auto;min-height:56px;flex-wrap:wrap;}
   .ck-navbar .navbar-collapse{padding:8px 0 12px;border-top:1px solid #f1f5f9;width:100%;}
   .ck-navbar .navbar-nav .nav-item>.nav-link{height:auto;padding:10px 8px;border-bottom:none;border-left:3px solid transparent;}
@@ -150,7 +150,7 @@ $base = SITE_BASE;
   <div class="container d-flex align-items-center">
 
     <!-- Logo -->
-    <a class="navbar-brand d-flex align-items-center gap-2" href="<?= $base ?>/index.html" aria-label="CollegeKampus Online Home">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="<?= $base ?>/index.php" aria-label="CollegeKampus Online Home">
       <div class="ck-logo-icon">CK</div>
       <div class="lh-1">
         <span class="ck-brand-main">CollegeKampus</span>
@@ -263,7 +263,7 @@ $base = SITE_BASE;
 
         <!-- About Us -->
         <li class="nav-item">
-          <a class="nav-link" href="<?= $base ?>/index.html#about">About Us</a>
+          <a class="nav-link" href="<?= $base ?>/index.php#about-us">About Us</a>
         </li>
 
       </ul>
@@ -277,7 +277,7 @@ $base = SITE_BASE;
           <span class="badge bg-white text-success ms-1" id="navCompareCount"><?= count($_SESSION['compare_list']) ?></span>
         </a>
         <?php endif; ?>
-        <a href="<?= $base ?>/colleges.php" class="btn-ck-green d-none d-lg-inline-flex">
+        <a href="<?= $base ?>/colleges.php" class="btn-ck-green d-none d-xl-inline-flex">
           <i class="bi bi-lightning-fill"></i> Compare in 2 mins
         </a>
         <a href="<?= $base ?>/counselling.php" class="btn-ck-primary d-none d-md-inline-flex">
@@ -297,7 +297,7 @@ $base = SITE_BASE;
   var nav = document.getElementById('navMain');
   if(toggle && nav){
     nav.style.display = '';
-    nav.classList.add('d-lg-flex');
+    nav.classList.add('d-xl-flex');
     toggle.addEventListener('click', function(){
       if(nav.style.display === 'none' || nav.style.display === ''){
         nav.style.display = 'block';
@@ -307,7 +307,7 @@ $base = SITE_BASE;
     });
     // On large screens always show
     function checkWidth(){
-      if(window.innerWidth >= 992){ nav.style.display = ''; } 
+      if(window.innerWidth >= 1200){ nav.style.display = ''; } 
     }
     window.addEventListener('resize', checkWidth);
     checkWidth();
@@ -315,7 +315,7 @@ $base = SITE_BASE;
   // Mobile sub-menu toggle
   document.querySelectorAll('.ck-navbar .nav-item>.nav-link .caret').forEach(function(caret){
     caret.closest('.nav-link').addEventListener('click', function(e){
-      if(window.innerWidth < 992){
+      if(window.innerWidth < 1200){
         var dd = this.parentElement.querySelector('.ck-dropdown');
         if(dd){ e.preventDefault(); this.parentElement.classList.toggle('mobile-open'); }
       }
