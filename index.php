@@ -29,7 +29,8 @@ try {
     // Table may not exist yet — silently use defaults
 }
 
-function cms(string $key) use ($cms, $cms_defaults): string {
+function cms(string $key) {
+    global $cms, $cms_defaults;
     return $cms[$key] ?? $cms_defaults[$key] ?? '';
 }
 
