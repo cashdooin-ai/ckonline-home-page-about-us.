@@ -221,40 +221,60 @@ $base = SITE_BASE;
         <!-- Tools -->
         <li class="nav-item">
           <a class="nav-link" href="#">Tools <span class="caret">&#9660;</span></a>
-          <div class="ck-dropdown ck-mega" style="width:500px;">
+          <div class="ck-dropdown ck-mega" style="width:540px;">
             <div class="ck-mega-inner" style="grid-template-columns:1fr 1fr;">
               <div style="padding:18px;border-right:1px solid #f1f5f9;">
-                <div class="ck-mega-content-label">Pre-Admission</div>
+                <div class="ck-mega-content-label">Pre-Admission Tools</div>
+                <a href="<?= $base ?>/suggest.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
+                  <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#127919; Suggest My University</span>
+                  <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Get personalised college matches</span>
+                </a>
+                <a href="<?= $base ?>/tools/roi-calculator.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
+                  <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#128202; ROI Calculator</span>
+                  <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Is your degree worth it?</span>
+                </a>
                 <a href="<?= $base ?>/compare.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
                   <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#9878; Compare Colleges</span>
                   <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Compare up to 3 universities</span>
-                </a>
-                <a href="<?= $base ?>/colleges.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
-                  <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#127919; College Predictor</span>
-                  <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Find colleges by score</span>
                 </a>
                 <a href="<?= $base ?>/counselling.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
                   <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#127891; Free Counselling</span>
                   <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Talk to expert mentors</span>
                 </a>
-                <a href="<?= $base ?>/counselling.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;padding:10px;">
-                  <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#128179; EMI Calculator</span>
-                  <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Plan your education budget</span>
+                <a href="<?= $base ?>/coupons.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
+                  <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#128184; Coupons &amp; Offers</span>
+                  <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Save on your degree</span>
+                </a>
+                <a href="<?= $base ?>/colleges.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;padding:10px;">
+                  <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#128269; College Predictor</span>
+                  <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Find colleges by score</span>
                 </a>
               </div>
               <div style="padding:18px;">
-                <div class="ck-mega-content-label">Post-Admission</div>
+                <div class="ck-mega-content-label">Post-Admission Tools</div>
+                <a href="https://jobs.collegekampus.com" target="_blank" rel="noopener" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
+                  <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#128188; Jobs Portal <i class="bi bi-box-arrow-up-right" style="font-size:.65rem;color:#9ca3af;"></i></span>
+                  <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Browse 10,000+ job listings</span>
+                </a>
+                <a href="https://internship.collegekampus.com" target="_blank" rel="noopener" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
+                  <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#127919; Internship Portal <i class="bi bi-box-arrow-up-right" style="font-size:.65rem;color:#9ca3af;"></i></span>
+                  <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Find internships near you</span>
+                </a>
                 <a href="<?= $base ?>/apply.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
                   <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#128221; Apply Online</span>
                   <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Start your application</span>
                 </a>
-                <a href="<?= $base ?>/colleges.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
-                  <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#11088; Student Reviews</span>
-                  <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Read real experiences</span>
+                <a href="<?= $base ?>/ck-assured.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
+                  <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#9989; CK Assured</span>
+                  <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">100% placement guarantee</span>
                 </a>
-                <a href="<?= $base ?>/counselling.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;padding:10px;">
-                  <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#128222; Contact Expert</span>
+                <a href="<?= $base ?>/contact.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
+                  <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#128222; Ask an Expert</span>
                   <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Get personalised advice</span>
+                </a>
+                <a href="<?= $base ?>/blog.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;padding:10px;">
+                  <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#128240; Blog &amp; Articles</span>
+                  <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Tips, guides &amp; news</span>
                 </a>
               </div>
             </div>
