@@ -80,7 +80,7 @@ $base = SITE_BASE;
 .ck-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,#2563eb,#1d4ed8);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:.95rem;flex-shrink:0;}
 .ck-brand-main{font-size:1rem;font-weight:800;color:#0f172a;line-height:1;}
 .ck-brand-sub{font-size:.65rem;font-weight:600;color:#2563eb;text-transform:uppercase;letter-spacing:.08em;}
-.ck-navbar .navbar-nav .nav-item>.nav-link{font-size:.875rem;font-weight:600;color:#0f172a;padding:0 12px;height:64px;display:flex;align-items:center;gap:4px;border-bottom:3px solid transparent;transition:color .2s,border-color .2s;white-space:nowrap;}
+.ck-navbar .navbar-nav .nav-item>.nav-link{font-size:.82rem;font-weight:600;color:#0f172a;padding:0 8px;height:64px;display:flex;align-items:center;gap:3px;border-bottom:3px solid transparent;transition:color .2s,border-color .2s;white-space:nowrap;}
 .ck-navbar .navbar-nav .nav-item>.nav-link:hover,.ck-navbar .navbar-nav .nav-item>.nav-link.active{color:#2563eb;border-bottom-color:#2563eb;}
 .ck-navbar .navbar-nav .nav-item>.nav-link .caret{font-size:.6rem;opacity:.6;transition:transform .2s;}
 .ck-navbar .nav-item:hover>.nav-link .caret{transform:rotate(180deg);}
@@ -105,9 +105,9 @@ $base = SITE_BASE;
 .ck-simple-dropdown a:hover{background:#eff6ff;color:#2563eb;}
 .ck-simple-dropdown .dd-divider{margin:6px 16px;border-top:1px solid #f1f5f9;}
 .ck-ai-badge{display:inline-flex;align-items:center;gap:5px;background:#f0fdf4;border:1px solid #bbf7d0;color:#16a34a;font-size:.72rem;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;}
-.btn-ck-green{background:#22c55e;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-size:.8rem;font-weight:700;text-decoration:none;white-space:nowrap;transition:background .2s;display:inline-flex;align-items:center;gap:5px;}
+.btn-ck-green{background:#22c55e;color:#fff;border:none;padding:7px 12px;border-radius:8px;font-size:.78rem;font-weight:700;text-decoration:none;white-space:nowrap;transition:background .2s;display:inline-flex;align-items:center;gap:4px;}
 .btn-ck-green:hover{background:#16a34a;color:#fff;}
-.btn-ck-primary{background:#2563eb;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-size:.8rem;font-weight:700;text-decoration:none;white-space:nowrap;transition:background .2s;display:inline-flex;align-items:center;gap:5px;}
+.btn-ck-primary{background:#2563eb;color:#fff;border:none;padding:7px 12px;border-radius:8px;font-size:.78rem;font-weight:700;text-decoration:none;white-space:nowrap;transition:background .2s;display:inline-flex;align-items:center;gap:4px;}
 .btn-ck-primary:hover{background:#1d4ed8;color:#fff;}
 .btn-ck-search{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:#f1f5f9;border:none;color:#374151;font-size:1rem;cursor:pointer;transition:background .2s;text-decoration:none;flex-shrink:0;}
 .btn-ck-search:hover{background:#e2e8f0;}
@@ -158,12 +158,12 @@ $base = SITE_BASE;
       </div>
     </a>
 
-    <button class="btn border-0 ms-auto d-lg-none" id="mobileToggle" aria-label="Toggle navigation">
+    <button class="btn border-0 ms-auto d-xl-none" id="mobileToggle" aria-label="Toggle navigation">
       <i class="bi bi-list fs-4 text-dark"></i>
     </button>
 
     <div class="navbar-collapse" id="navMain" style="display:none;">
-      <ul class="navbar-nav d-flex flex-column flex-lg-row align-items-lg-center flex-lg-grow-1" style="list-style:none;padding:0;margin:0;">
+      <ul class="navbar-nav d-flex flex-column flex-xl-row align-items-xl-center flex-xl-grow-1" style="list-style:none;padding:0;margin:0;">
 
         <!-- Explore Programs -->
         <li class="nav-item">
@@ -269,7 +269,7 @@ $base = SITE_BASE;
       </ul>
 
       <!-- Right CTAs -->
-      <div class="d-flex align-items-center gap-2 ck-right-actions ms-lg-auto">
+      <div class="d-flex align-items-center gap-2 ck-right-actions ms-xl-auto">
         <span class="ck-ai-badge d-none d-xl-inline-flex"><i class="bi bi-stars me-1"></i>AI-Powered</span>
         <?php if (!empty($_SESSION['compare_list'])): ?>
         <a href="<?= $base ?>/compare.php" class="btn-ck-green" id="navCompareBtn">
@@ -280,7 +280,7 @@ $base = SITE_BASE;
         <a href="<?= $base ?>/colleges.php" class="btn-ck-green d-none d-xl-inline-flex">
           <i class="bi bi-lightning-fill"></i> Compare in 2 mins
         </a>
-        <a href="<?= $base ?>/counselling.php" class="btn-ck-primary d-none d-md-inline-flex">
+        <a href="<?= $base ?>/counselling.php" class="btn-ck-primary d-none d-xl-inline-flex">
           <i class="bi bi-person-circle"></i> Sign In
         </a>
         <a href="<?= $base ?>/colleges.php" class="btn-ck-search" aria-label="Search">
