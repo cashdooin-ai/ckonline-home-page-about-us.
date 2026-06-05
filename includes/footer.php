@@ -130,6 +130,35 @@ $base = SITE_BASE;
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<?php
+// Inject CMS marketing config for JS consumption
+$_ckCms = [];
+try {
+    $_db2 = getDB();
+    $_ckCms = $_db2->query("SELECT `key`,`value` FROM site_settings")->fetchAll(PDO::FETCH_KEY_PAIR);
+} catch (Throwable $_) {}
+$_cb = [
+    'enabled'    => ($_ckCms['cashback_enabled'] ?? '') === '1',
+    'badge_text' => $_ckCms['cashback_badge_text'] ?? 'Get ₹5,000 Cashback',
+    'cta'        => $_ckCms['cashback_cta'] ?? 'Claim Cashback & Apply',
+    'amount'     => $_ckCms['cashback_amount'] ?? '5,000',
+    'terms'      => $_ckCms['cashback_terms'] ?? '',
+];
+$_banners = json_decode($_ckCms['promo_banners'] ?? '[]', true) ?: [];
+$_popup = [
+    'enabled'  => ($_ckCms['popup_enabled'] ?? '') === '1',
+    'title'    => $_ckCms['popup_title'] ?? '',
+    'subtitle' => $_ckCms['popup_subtitle'] ?? '',
+    'cta_text' => $_ckCms['popup_cta_text'] ?? 'Apply Now',
+    'cta_link' => $_ckCms['popup_cta_link'] ?? 'apply.php',
+    'delay'    => (int)($_ckCms['popup_delay'] ?? 8),
+];
+?>
+<script>
+window.CK_CASHBACK = <?= json_encode($_cb, JSON_UNESCAPED_SLASHES) ?>;
+window.CK_POPUP    = <?= json_encode($_popup, JSON_UNESCAPED_SLASHES) ?>;
+window.CK_BANNERS  = <?= json_encode(array_values(array_filter($_banners, fn($b)=>!empty($b['active']) && !empty($b['text']))), JSON_UNESCAPED_SLASHES) ?>;
+</script>
 <script src="<?= $base ?>/assets/js/portal.js"></script>
 <?php if (isset($extraScript)) echo $extraScript; ?>
 <?php include __DIR__ . '/../includes/exit-popup.php'; ?>

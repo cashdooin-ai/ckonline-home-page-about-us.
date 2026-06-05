@@ -10,11 +10,17 @@ $type          = trim($_GET['type']          ?? '');
 $stream        = trim($_GET['stream']        ?? '');
 $course        = trim($_GET['course']        ?? '');
 $accreditation = trim($_GET['accreditation'] ?? '');
+$naac          = trim($_GET['naac']          ?? '');
 $sort          = trim($_GET['sort']          ?? '');
 $min_fees      = intval($_GET['min_fees']    ?? 0);
 $max_fees      = intval($_GET['max_fees']    ?? 0);
 $featured      = intval($_GET['featured']    ?? 0);
-$online_only   = intval($_GET['online']      ?? 0);
+// delivery_mode: 'online'|'hybrid'|'regular'|'' (default = online+hybrid for this portal)
+$delivery_mode = trim($_GET['delivery_mode'] ?? trim($_GET['online_mode'] ?? ''));
+// legacy ?online=1 support
+if (!$delivery_mode && intval($_GET['online'] ?? 0)) $delivery_mode = 'online';
+// show_all=1 overrides the online-only default (used by admin/reports only)
+$show_all = intval($_GET['show_all'] ?? 0);
 $page        = max(1, intval($_GET['page']  ?? 1));
 $limit       = min(24, max(1, intval($_GET['limit'] ?? 12)));
 $offset      = ($page - 1) * $limit;
@@ -89,8 +95,23 @@ try {
     if (isset($has['is_active']))  $where[] = "c.is_active = 1";
     if (isset($has['status']))     $where[] = "c.status = 'active'";
 
-    if ($online_only && isset($has['is_online'])) {
-        $where[] = "c.is_online = 1";
+    // This portal is online-only. Default: show online+hybrid. Tabs override via delivery_mode.
+    if (!$show_all) {
+        if ($delivery_mode === 'online') {
+            if (isset($has['is_online']))    $where[] = "c.is_online = 1";
+            elseif (isset($has['online_mode'])) $where[] = "c.online_mode = 'online'";
+        } elseif ($delivery_mode === 'hybrid') {
+            if (isset($has['online_mode']))  $where[] = "c.online_mode = 'hybrid'";
+            elseif (isset($has['is_online'])) $where[] = "c.is_online = 1";
+        } elseif ($delivery_mode === 'regular') {
+            if (isset($has['is_online']))    $where[] = "c.is_online = 0";
+        } else {
+            // Default: online OR hybrid only (never show regular by default)
+            $onlineConds = [];
+            if (isset($has['is_online']))    $onlineConds[] = "c.is_online = 1";
+            if (isset($has['online_mode']))  $onlineConds[] = "c.online_mode IN ('online','hybrid')";
+            if ($onlineConds) $where[] = '(' . implode(' OR ', $onlineConds) . ')';
+        }
     }
 
     if ($featured && isset($has['is_featured'])) {
@@ -133,6 +154,49 @@ try {
     if ($accreditation !== '' && isset($has['accreditation'])) {
         $where[]  = "c.accreditation LIKE ?";
         $params[] = $accreditation . '%';
+    }
+
+    // NAAC grade filter (from sidebar)
+    if ($naac !== '') {
+        $naacCol = isset($has['naac_grade']) ? 'naac_grade' : (isset($has['accreditation']) ? 'accreditation' : null);
+        if ($naacCol) { $where[] = "c.$naacCol = ?"; $params[] = $naac; }
+    }
+
+    // Course / program filter — search name and streams
+    if ($course !== '') {
+        $courseConds = [];
+        $courseLike  = '%' . $course . '%';
+        // Try college_courses table first
+        try {
+            $ccCols = $db->query("SHOW COLUMNS FROM college_courses")->fetchAll(PDO::FETCH_COLUMN);
+            $ccFlip = array_flip($ccCols);
+            $courseNameCol = isset($ccFlip['course_name']) ? 'course_name' : (isset($ccFlip['name']) ? 'name' : null);
+            if ($courseNameCol) {
+                $courseConds[] = "EXISTS (SELECT 1 FROM college_courses cc WHERE cc.college_id = c.id AND cc.$courseNameCol LIKE ?)";
+                $params[] = $courseLike;
+            }
+        } catch (Throwable $_) {}
+        // Also match on streams
+        try {
+            $db->query("SELECT 1 FROM college_streams LIMIT 1");
+            foreach (['streams','course_streams','ck_streams'] as $st) {
+                try {
+                    $stCols = $db->query("SHOW COLUMNS FROM `$st`")->fetchAll(PDO::FETCH_COLUMN);
+                    $stFlip = array_flip($stCols);
+                    $snf = isset($stFlip['name']) ? 'name' : (isset($stFlip['stream_name']) ? 'stream_name' : null);
+                    if ($snf) {
+                        $courseConds[] = "EXISTS (SELECT 1 FROM college_streams _ccs JOIN `$st` _ss ON _ss.id=_ccs.stream_id WHERE _ccs.college_id=c.id AND _ss.$snf LIKE ?)";
+                        $params[] = $courseLike;
+                        break;
+                    }
+                } catch (Throwable $_) {}
+            }
+        } catch (Throwable $_) {}
+        // Fallback: match college name
+        if (empty($courseConds)) {
+            $courseConds[] = "c.name LIKE ?"; $params[] = $courseLike;
+        }
+        if ($courseConds) $where[] = '(' . implode(' OR ', $courseConds) . ')';
     }
 
     $whereStr = $where ? 'WHERE ' . implode(' AND ', $where) : '';

@@ -149,6 +149,10 @@ function renderCollegeCard(c) {
   const urlKey   = c.url_key || c.slug || c.id;
   const detailUrl = `${window.CK_BASE||''}/college-detail.php?slug=${encodeURIComponent(urlKey)}`;
 
+  // Cashback badge from CMS (injected as window.CK_CASHBACK by header)
+  const cb = window.CK_CASHBACK;
+  const cashbackBadge = (cb && cb.enabled) ? `<div class="ck-cashback-badge"><i class="bi bi-cash-coin"></i> ${escHtml(cb.badge_text)}</div>` : '';
+
   return `<div class="college-card">
     <div class="college-card-header">
       ${logo}
@@ -158,9 +162,10 @@ function renderCollegeCard(c) {
       <div class="college-card-name">${escHtml(c.name)}</div>
       ${location ? `<div class="college-card-location">📍 ${escHtml(location)}</div>` : ''}
       ${courses}${fees}${pkg}
+      ${cashbackBadge}
     </div>
     <div class="college-card-footer">
-      <a href="${detailUrl}" class="btn-view">View Details</a>
+      <a href="${detailUrl}" class="btn-view">${cb && cb.enabled ? escHtml(cb.cta) : 'View Details'}</a>
       <button class="btn-compare-add" data-id="${escHtml(String(c.id))}" data-name="${escHtml(c.name)}" onclick="addToCompare(this.dataset.id,this.dataset.name)">⚖ Compare</button>
     </div>
   </div>`;

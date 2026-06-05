@@ -277,3 +277,7 @@
 
 .badge-ugc   { background: #dcfce7; color: #15803d; font-weight: 700; }
 .badge-mode  { background: #e0f2fe; color: #0369a1; }
+
+/* Cashback badge on college cards */
+.ck-cashback-badge{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(90deg,#22c55e,#16a34a);color:#fff;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700;margin-top:8px;box-shadow:0 2px 6px rgba(22,163,74,.25);}
+
