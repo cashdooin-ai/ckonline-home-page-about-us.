@@ -1,7 +1,5 @@
 <?php
-// TODO: Add authentication before deploying to production.
-// Protect this page with session-based login or HTTP basic auth.
-
+require_once __DIR__ . '/auth.php';
 require_once dirname(__DIR__) . '/config/db.php';
 
 $pdo   = getDB();

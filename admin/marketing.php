@@ -1,5 +1,5 @@
 <?php
-// TODO: Add authentication check before production
+require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/../config/db.php';
 
 $msg = '';
