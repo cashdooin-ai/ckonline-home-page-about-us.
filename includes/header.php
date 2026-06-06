@@ -74,7 +74,7 @@ $base = SITE_BASE;
 .ck-topbar{background:#0f172a;color:rgba(255,255,255,.75);font-size:.78rem;padding:5px 0;}
 .ck-topbar a{color:rgba(255,255,255,.7);text-decoration:none;}
 .ck-topbar a:hover{color:#fff;}
-.ck-navbar{background:#fff;box-shadow:0 2px 16px rgba(0,0,0,.08);padding:0;border-bottom:1px solid #e2e8f0;z-index:1050;}
+.ck-navbar{background:#fff;box-shadow:0 2px 16px rgba(0,0,0,.08);padding:0;border-bottom:1px solid #e2e8f0;z-index:1100;position:relative;}
 .ck-navbar .container{height:64px;align-items:center;}
 .ck-navbar .navbar-brand{padding:0;margin-right:1rem;}
 .ck-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,#2563eb,#1d4ed8);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:.95rem;flex-shrink:0;}
