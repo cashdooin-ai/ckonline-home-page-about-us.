@@ -12,6 +12,11 @@
 # server (no --delete flag), and config/db.php (holds the real production DB
 # password on the server, blank in git) is excluded from every sync so a
 # deploy can never overwrite it.
+#
+# Retry nudge: the 5 required secrets were just added to this repo - this
+# comment-only edit re-triggers the push trigger below (the GitHub App
+# integration used by this session can't call the rerun/dispatch APIs
+# directly, 403 Resource not accessible by integration).
 
 on:
   push:
