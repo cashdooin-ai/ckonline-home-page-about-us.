@@ -17,6 +17,12 @@
 # comment-only edit re-triggers the push trigger below (the GitHub App
 # integration used by this session can't call the rerun/dispatch APIs
 # directly, 403 Resource not accessible by integration).
+#
+# Recurred: first attempt failed at the rsync step ("Load key ... error in
+# libcrypto") - SSH_PRIVATE_KEY held the public key's content, not the
+# private key. Replaced with a freshly generated ed25519 keypair (public
+# half registered on Hostinger as an additional key, private half now in
+# SSH_PRIVATE_KEY) - this is the retry nudge for that fix.
 
 on:
   push:
