@@ -3,6 +3,7 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/streams-schema.php';
 
 $search        = trim($_GET['search']        ?? '');
 $state         = trim($_GET['state']         ?? '');
@@ -27,6 +28,7 @@ $offset      = ($page - 1) * $limit;
 
 try {
     $db = getDB();
+    streamsEnsureSchema($db);
 
     // Detect available columns
     $colRows = $db->query("SHOW COLUMNS FROM colleges")->fetchAll(PDO::FETCH_COLUMN);
@@ -162,21 +164,22 @@ try {
         if ($naacCol) { $where[] = "c.$naacCol = ?"; $params[] = $naac; }
     }
 
-    // Course / program filter — search name and streams
+    // Course / program filter — search real course names (college_courses ->
+    // courses, since college_courses is only a junction table with no name
+    // column of its own — matching a name column directly on it, as this
+    // used to do, could never find anything) and streams (college_streams ->
+    // streams, self-migrated by streamsEnsureSchema() above).
     if ($course !== '') {
         $courseConds = [];
         $courseLike  = '%' . $course . '%';
-        // Try college_courses table first
+
         try {
-            $ccCols = $db->query("SHOW COLUMNS FROM college_courses")->fetchAll(PDO::FETCH_COLUMN);
-            $ccFlip = array_flip($ccCols);
-            $courseNameCol = isset($ccFlip['course_name']) ? 'course_name' : (isset($ccFlip['name']) ? 'name' : null);
-            if ($courseNameCol) {
-                $courseConds[] = "EXISTS (SELECT 1 FROM college_courses cc WHERE cc.college_id = c.id AND cc.$courseNameCol LIKE ?)";
-                $params[] = $courseLike;
-            }
+            $db->query("SELECT 1 FROM courses LIMIT 1");
+            $courseConds[] = "EXISTS (SELECT 1 FROM college_courses cc JOIN courses co ON co.id = cc.course_id WHERE cc.college_id = c.id AND (co.name LIKE ? OR co.category LIKE ?))";
+            $params[] = $courseLike;
+            $params[] = $courseLike;
         } catch (Throwable $_) {}
-        // Also match on streams
+
         try {
             $db->query("SELECT 1 FROM college_streams LIMIT 1");
             foreach (['streams','course_streams','ck_streams'] as $st) {
@@ -192,10 +195,13 @@ try {
                 } catch (Throwable $_) {}
             }
         } catch (Throwable $_) {}
-        // Fallback: match college name
-        if (empty($courseConds)) {
-            $courseConds[] = "c.name LIKE ?"; $params[] = $courseLike;
-        }
+
+        // No fallback to matching the college's own NAME against the course
+        // query - that produced misleading "0 results" for real searches
+        // like "MBA" (no college is literally named "MBA") and could also
+        // surface unrelated colleges whose name happens to contain the
+        // query term. If a college genuinely has no linked course/stream
+        // data, it correctly does not show up for a course filter.
         if ($courseConds) $where[] = '(' . implode(' OR ', $courseConds) . ')';
     }
 
