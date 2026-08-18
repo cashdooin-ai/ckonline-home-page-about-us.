@@ -157,9 +157,27 @@ function collegesEnsureSeed(PDO $db): array
         $colList      = implode(',', array_map(fn($c) => "`$c`", $cols));
         $stmt = $db->prepare("INSERT INTO colleges ($colList) VALUES ($placeholders)");
 
+        // Some of these 50 (e.g. IGNOU) are well-known enough that the
+        // ~49,800-row bulk-imported college directory already had its own
+        // regular-college row under the same slug. For those, don't insert
+        // a duplicate - just flip on the online-specific flags on the
+        // existing row, leaving its other (likely more authoritative,
+        // bulk-imported) data untouched.
+        $updStmt = null;
+        if (isset($has['is_online'], $has['online_mode'], $has['ugc_approved'])) {
+            $updStmt = $db->prepare("UPDATE colleges SET is_online = ?, online_mode = ?, ugc_approved = ? WHERE id = ?");
+        }
+
         foreach ($colleges as $row) {
             $slug = $row[3];
-            if (isset($slugToId[$slug])) continue; // already exists
+            if (isset($slugToId[$slug])) {
+                if ($updStmt) {
+                    try {
+                        $updStmt->execute([$row[16], $row[17], $row[18], $slugToId[$slug]]);
+                    } catch (Throwable $e) {}
+                }
+                continue;
+            }
 
             $vals = [];
             foreach ($idx as $i) $vals[] = $row[$i];
