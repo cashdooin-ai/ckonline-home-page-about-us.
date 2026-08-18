@@ -5,6 +5,7 @@ $pageKeywords = 'online colleges India, distance education colleges, UGC approve
 
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/streams-schema.php';
+require_once __DIR__ . '/includes/colleges-seed.php';
 
 // Fetch states for dropdown
 $states = [];
@@ -20,6 +21,7 @@ $onlineCollegeCount = 0;
 $onlineProgramCount = 0;
 try {
     $db = $db ?? getDB();
+    collegesEnsureSeed($db);
     streamsEnsureSchema($db);
     $onlineCollegeCount = (int) $db->query("SELECT COUNT(*) FROM colleges WHERE is_online = 1")->fetchColumn();
     $onlineProgramCount = (int) $db->query("

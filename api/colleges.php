@@ -4,6 +4,7 @@ header('Access-Control-Allow-Origin: *');
 
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/streams-schema.php';
+require_once __DIR__ . '/../includes/colleges-seed.php';
 
 $search        = trim($_GET['search']        ?? '');
 $state         = trim($_GET['state']         ?? '');
@@ -28,6 +29,7 @@ $offset      = ($page - 1) * $limit;
 
 try {
     $db = getDB();
+    collegesEnsureSeed($db);
     streamsEnsureSchema($db);
 
     // Detect available columns
