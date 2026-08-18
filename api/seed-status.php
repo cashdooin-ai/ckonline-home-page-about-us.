@@ -54,6 +54,22 @@ try {
     $out['replicated_default_where'] = $whereStr;
     $out['replicated_default_count'] = (int) $db->query("SELECT COUNT(*) FROM colleges c $whereStr")->fetchColumn();
 
+    // Check specific IDs reported as "not found" by compare.php, and the
+    // table's current AUTO_INCREMENT counter (suspect: an earlier probe in
+    // this file explicitly inserted id=999999 to test write access, which
+    // in InnoDB permanently bumps the auto-increment counter to 1000000+
+    // for every future plain INSERT on this shared table - regardless of
+    // that probe row being deleted afterward).
+    $checkIds = [49673, 1000026, 1000017];
+    $ph2 = implode(',', array_fill(0, count($checkIds), '?'));
+    $chk = $db->prepare("SELECT id, name, slug, is_online FROM colleges WHERE id IN ($ph2)");
+    $chk->execute($checkIds);
+    $out['check_specific_ids'] = $chk->fetchAll(PDO::FETCH_ASSOC);
+
+    $out['max_id'] = (int) $db->query("SELECT MAX(id) FROM colleges")->fetchColumn();
+    $aiRow = $db->query("SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'colleges'")->fetch(PDO::FETCH_ASSOC);
+    $out['auto_increment_current'] = $aiRow['AUTO_INCREMENT'] ?? null;
+
     echo json_encode(['success' => true] + $out, JSON_PRETTY_PRINT);
 } catch (Throwable $e) {
     echo json_encode(['success' => false, 'fatal' => $e->getMessage()] + $out, JSON_PRETTY_PRINT);
