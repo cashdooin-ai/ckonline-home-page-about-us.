@@ -54,6 +54,11 @@ try {
     }
 
     $out['count_10001_10050_after'] = (int) $db->query("SELECT COUNT(*) FROM colleges WHERE id BETWEEN 10001 AND 10050")->fetchColumn();
+    $out['count_is_online_1'] = (int) $db->query("SELECT COUNT(*) FROM colleges WHERE is_online = 1")->fetchColumn();
+    $out['count_is_online_1_in_range'] = (int) $db->query("SELECT COUNT(*) FROM colleges WHERE is_online = 1 AND id BETWEEN 10001 AND 10050")->fetchColumn();
+    $out['count_is_active_1_in_range'] = (int) $db->query("SELECT COUNT(*) FROM colleges WHERE is_active = 1 AND id BETWEEN 10001 AND 10050")->fetchColumn();
+    $out['sample_row_10001'] = $db->query("SELECT id,name,is_online,online_mode,delivery_mode,is_active,college_type,slug FROM colleges WHERE id = 10001")->fetch(PDO::FETCH_ASSOC);
+    $out['count_where_online_or_hybrid'] = (int) $db->query("SELECT COUNT(*) FROM colleges WHERE (is_online = 1 OR online_mode IN ('online','hybrid')) AND id BETWEEN 10001 AND 10050")->fetchColumn();
 
     // Also probe the streams tables the same way
     try {
@@ -64,6 +69,23 @@ try {
         }
     } catch (Throwable $e) {
         $out['streams_probe_error'] = $e->getMessage();
+    }
+
+    // Replicate api/colleges.php's default (no-filter) WHERE clause exactly
+    try {
+        $has2 = array_flip($out['columns']);
+        $where = [];
+        if (isset($has2['is_active']))  $where[] = "c.is_active = 1";
+        if (isset($has2['status']))     $where[] = "c.status = 'active'";
+        $onlineConds = [];
+        if (isset($has2['is_online']))    $onlineConds[] = "c.is_online = 1";
+        if (isset($has2['online_mode']))  $onlineConds[] = "c.online_mode IN ('online','hybrid')";
+        if ($onlineConds) $where[] = '(' . implode(' OR ', $onlineConds) . ')';
+        $whereStr = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+        $out['replicated_default_where'] = $whereStr;
+        $out['replicated_default_count'] = (int) $db->query("SELECT COUNT(*) FROM colleges c $whereStr")->fetchColumn();
+    } catch (Throwable $e) {
+        $out['replicated_default_error2'] = $e->getMessage();
     }
 
     echo json_encode(['success' => true] + $out, JSON_PRETTY_PRINT);
