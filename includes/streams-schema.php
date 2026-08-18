@@ -12,7 +12,16 @@
  * results. Same self-migrating CREATE TABLE IF NOT EXISTS idiom used
  * throughout the shared CollegeKampus codebase, so this fixes itself on
  * first request rather than depending on a manual SQL step ever having run.
+ *
+ * college_streams links by real college ID, resolved via
+ * collegesEnsureSeed()'s slug map - an earlier version of this file linked
+ * against the hardcoded IDs 10001-10050 from database/seed_online_colleges.sql,
+ * which turned out to already be occupied by unrelated bulk-imported
+ * colleges (see includes/colleges-seed.php). This also cleans up those
+ * stale mislinked rows on first run.
  */
+
+require_once __DIR__ . '/colleges-seed.php';
 
 function streamsEnsureSchema(PDO $db): void
 {
@@ -57,21 +66,30 @@ function streamsEnsureSchema(PDO $db): void
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
         }
 
-        streamsSeed($db);
+        // One-time cleanup: an earlier version of this seeder linked streams
+        // against the fake IDs 10001-10050 before discovering those were
+        // already occupied by unrelated regular colleges - delete whatever
+        // it wrongly attached to them.
+        try {
+            $db->exec("DELETE FROM college_streams WHERE college_id BETWEEN 10001 AND 10050");
+        } catch (Throwable $e) {}
+
+        $slugToId = collegesEnsureSeed($db);
+        streamsSeed($db, $slugToId);
     } catch (Throwable $e) {
         error_log('streamsEnsureSchema failed: ' . $e->getMessage());
     }
 }
 
 /**
- * Seeds the 32 real programme/stream names and links them to the 50
- * seeded online/distance colleges (IDs 10001-10050, see
- * database/seed_online_colleges.sql). Mirrors database/seed_streams_final.sql
+ * Seeds the 32 real programme/stream names and links them to the 50 real
+ * online/distance colleges, resolved by slug via $slugToId (from
+ * collegesEnsureSeed()). Mirrors database/seed_streams_final.sql's data
  * exactly, just executed via PHP instead of a manual phpMyAdmin run so it
  * can't be skipped. Idempotent: INSERT IGNORE + only runs the college link
- * pass while college_streams is empty.
+ * pass while those specific colleges don't already have their links.
  */
-function streamsSeed(PDO $db): void
+function streamsSeed(PDO $db, array $slugToId): void
 {
     static $checked = false;
     if ($checked) return;
@@ -100,72 +118,79 @@ function streamsSeed(PDO $db): void
         $ins->execute($s);
     }
 
+    if (!$slugToId) return;
+
+    // slug => [stream names], from database/seed_streams_final.sql
+    // (originally keyed by the fake IDs 10001-10050 - see collegesEnsureSeed())
+    $collegeStreams = [
+            'ignou' => ['BA', 'MA', 'B.Com', 'M.Com', 'MBA', 'MCA', 'BCA', 'B.Sc', 'M.Sc', 'BTS (Tourism)'],
+            'braou' => ['BA', 'B.Com', 'MBA', 'M.Com', 'M.Sc'],
+            'ycmou' => ['BA', 'B.Com', 'MBA', 'MCA', 'M.Com'],
+            'ksou' => ['BA', 'B.Com', 'MBA', 'M.Com'],
+            'tnou' => ['BA', 'B.Com', 'MBA', 'MCA'],
+            'nsou' => ['BA', 'B.Com', 'MBA', 'M.Sc'],
+            'vmou' => ['BA', 'B.Com', 'MBA', 'M.Com'],
+            'nalanda-open-university' => ['BA', 'B.Com', 'MBA', 'M.Com'],
+            'mp-bhoj-open-university' => ['BA', 'B.Com', 'MBA', 'M.Com'],
+            'hpou' => ['BA', 'B.Com', 'MBA', 'M.Com'],
+            'annamalai-university-dde' => ['BA', 'B.Com', 'MBA', 'MCA', 'M.Com', 'M.Sc'],
+            'mku-ide' => ['BA', 'B.Com', 'MBA', 'MCA', 'M.Com'],
+            'alagappa-university-dde' => ['BA', 'B.Com', 'MBA', 'MCA'],
+            'mumbai-university-idol' => ['BA', 'B.Com', 'MBA', 'MCA', 'M.Com', 'LLB'],
+            'osmania-dde' => ['BA', 'B.Com', 'MBA', 'MCA', 'M.Com'],
+            'punjabi-university-distance' => ['BA', 'B.Com', 'MBA', 'M.Com'],
+            'kurukshetra-university-distance' => ['BA', 'B.Com', 'MBA', 'M.Com'],
+            'uniraj-distance' => ['BA', 'B.Com', 'MBA', 'M.Com'],
+            'andhra-university-duck' => ['BA', 'B.Com', 'MBA', 'MCA', 'M.Com'],
+            'bangalore-university-distance' => ['BA', 'B.Com', 'MBA', 'MCA'],
+            'nmims-online' => ['MBA', 'BBA', 'B.Com', 'M.Com', 'MCA', 'BCA', 'B.Sc (IT)'],
+            'amity-university-online' => ['MBA', 'BBA', 'MCA', 'BCA', 'M.Com', 'B.Com', 'MA (Psychology)', 'M.Sc (Data Science)'],
+            'manipal-university-online' => ['MBA', 'MCA', 'BBA', 'BCA', 'B.Com', 'M.Com', 'M.Sc (Data Science)', 'MA'],
+            'lpu-online' => ['MBA', 'BBA', 'MCA', 'BCA', 'B.Com', 'M.Com', 'B.Sc (CS)', 'M.Sc (CS)', 'BA', 'MA'],
+            'chandigarh-university-online' => ['MBA', 'BBA', 'MCA', 'BCA', 'B.Com', 'M.Com', 'M.Sc (Data Science)', 'LLB'],
+            'jain-university-online' => ['MBA', 'BBA', 'MCA', 'BCA', 'B.Com', 'M.Sc (Data Science)'],
+            'scdl' => ['PGDBA', 'PGDHRM', 'PGDIT', 'PGDIM', 'PG Diploma (Marketing)'],
+            'bits-pilani-wilp' => ['M.Tech', 'MBA', 'M.Sc (CS)', 'M.Sc (Biological Sciences)'],
+            'upes-online' => ['MBA', 'BBA', 'MCA', 'LLB', 'M.Sc (Data Science)'],
+            'dy-patil-online' => ['MBA', 'MCA', 'BBA', 'BCA'],
+            'srm-university-online' => ['MBA', 'MCA', 'BBA', 'BCA', 'B.Com', 'M.Sc (Data Science)'],
+            'vit-online' => ['MBA', 'MCA', 'M.Tech', 'B.Tech'],
+            'sharda-university-online' => ['MBA', 'MCA', 'BBA', 'BCA', 'B.Com'],
+            'gla-university-online' => ['MBA', 'MCA', 'BBA', 'BCA', 'B.Com'],
+            'graphic-era-university-online' => ['MBA', 'MCA', 'BBA', 'BCA'],
+            'amrita-university-online' => ['MBA', 'MCA', 'M.Sc (Data Science)', 'M.Sc (AI)'],
+            'alliance-university-online' => ['MBA', 'MCA', 'BBA', 'BCA'],
+            'vignans-university-online' => ['MBA', 'MCA', 'BBA', 'BCA'],
+            'parul-university-online' => ['MBA', 'MCA', 'BBA', 'BCA', 'B.Com'],
+            'mit-wpu-online' => ['MBA', 'MCA', 'BCA', 'B.Sc (CS)'],
+            'symbiosis-online' => ['MBA', 'BBA', 'M.Sc (Data Science)', 'PGDM'],
+            'hindustan-online' => ['MBA', 'MCA', 'BBA', 'BCA'],
+            'shoolini-university-online' => ['MBA', 'BBA', 'M.Sc (Pharmaceutical Chemistry)'],
+            'centurion-university-online' => ['MBA', 'MCA', 'BBA', 'BCA'],
+            'rv-university-online' => ['MBA', 'BBA', 'M.Des', 'B.Des'],
+            'presidency-university-online' => ['MBA', 'MCA', 'BBA', 'BCA', 'B.Com'],
+            'saveetha-university-online' => ['MBA', 'MHA', 'BBA'],
+            'sikkim-manipal-online' => ['MBA', 'MCA', 'BBA', 'BCA', 'B.Com', 'M.Com'],
+            'svsu-distance' => ['BA', 'B.Com', 'MBA', 'MCA'],
+            'igdtuw-online' => ['B.Tech', 'M.Tech', 'MBA', 'MCA', 'BCA', 'B.Sc (CS)'],
+    ];
+
+    $realIds = array_values(array_intersect_key($slugToId, $collegeStreams));
+    if (!$realIds) return;
+
     try {
-        // 200 is a safety margin below the full 248 expected links (50
-        // colleges), not an exact match - a bare ">0" check here would wrongly
-        // treat a small pre-existing partial seed (e.g. from an earlier,
-        // incomplete manual run of seed_streams_final.sql) as "already done"
-        // and skip backfilling the rest forever. INSERT IGNORE below is safe
-        // to re-run - it can't create duplicates (uq_college_stream).
-        $linked = (int) $db->query("SELECT COUNT(*) FROM college_streams WHERE college_id BETWEEN 10001 AND 10050")->fetchColumn();
+        // 200 is a safety margin below the full 248 expected links, not an
+        // exact match - a bare ">0" check would wrongly treat a small
+        // pre-existing partial seed as "already done" and skip backfilling
+        // the rest forever. INSERT IGNORE below is safe to re-run.
+        $ph   = implode(',', array_fill(0, count($realIds), '?'));
+        $stmt = $db->prepare("SELECT COUNT(*) FROM college_streams WHERE college_id IN ($ph)");
+        $stmt->execute($realIds);
+        $linked = (int) $stmt->fetchColumn();
         if ($linked >= 200) return;
     } catch (Throwable $e) {
         return;
     }
-
-    // college_id => [stream names], from database/seed_streams_final.sql
-    $collegeStreams = [
-            10001 => ['BA', 'MA', 'B.Com', 'M.Com', 'MBA', 'MCA', 'BCA', 'B.Sc', 'M.Sc', 'BTS (Tourism)'],
-            10002 => ['BA', 'B.Com', 'MBA', 'M.Com', 'M.Sc'],
-            10003 => ['BA', 'B.Com', 'MBA', 'MCA', 'M.Com'],
-            10004 => ['BA', 'B.Com', 'MBA', 'M.Com'],
-            10005 => ['BA', 'B.Com', 'MBA', 'MCA'],
-            10006 => ['BA', 'B.Com', 'MBA', 'M.Sc'],
-            10007 => ['BA', 'B.Com', 'MBA', 'M.Com'],
-            10008 => ['BA', 'B.Com', 'MBA', 'M.Com'],
-            10009 => ['BA', 'B.Com', 'MBA', 'M.Com'],
-            10010 => ['BA', 'B.Com', 'MBA', 'M.Com'],
-            10011 => ['BA', 'B.Com', 'MBA', 'MCA', 'M.Com', 'M.Sc'],
-            10012 => ['BA', 'B.Com', 'MBA', 'MCA', 'M.Com'],
-            10013 => ['BA', 'B.Com', 'MBA', 'MCA'],
-            10014 => ['BA', 'B.Com', 'MBA', 'MCA', 'M.Com', 'LLB'],
-            10015 => ['BA', 'B.Com', 'MBA', 'MCA', 'M.Com'],
-            10016 => ['BA', 'B.Com', 'MBA', 'M.Com'],
-            10017 => ['BA', 'B.Com', 'MBA', 'M.Com'],
-            10018 => ['BA', 'B.Com', 'MBA', 'M.Com'],
-            10019 => ['BA', 'B.Com', 'MBA', 'MCA', 'M.Com'],
-            10020 => ['BA', 'B.Com', 'MBA', 'MCA'],
-            10021 => ['MBA', 'BBA', 'B.Com', 'M.Com', 'MCA', 'BCA', 'B.Sc (IT)'],
-            10022 => ['MBA', 'BBA', 'MCA', 'BCA', 'M.Com', 'B.Com', 'MA (Psychology)', 'M.Sc (Data Science)'],
-            10023 => ['MBA', 'MCA', 'BBA', 'BCA', 'B.Com', 'M.Com', 'M.Sc (Data Science)', 'MA'],
-            10024 => ['MBA', 'BBA', 'MCA', 'BCA', 'B.Com', 'M.Com', 'B.Sc (CS)', 'M.Sc (CS)', 'BA', 'MA'],
-            10025 => ['MBA', 'BBA', 'MCA', 'BCA', 'B.Com', 'M.Com', 'M.Sc (Data Science)', 'LLB'],
-            10026 => ['MBA', 'BBA', 'MCA', 'BCA', 'B.Com', 'M.Sc (Data Science)'],
-            10027 => ['PGDBA', 'PGDHRM', 'PGDIT', 'PGDIM', 'PG Diploma (Marketing)'],
-            10028 => ['M.Tech', 'MBA', 'M.Sc (CS)', 'M.Sc (Biological Sciences)'],
-            10029 => ['MBA', 'BBA', 'MCA', 'LLB', 'M.Sc (Data Science)'],
-            10030 => ['MBA', 'MCA', 'BBA', 'BCA'],
-            10031 => ['MBA', 'MCA', 'BBA', 'BCA', 'B.Com', 'M.Sc (Data Science)'],
-            10032 => ['MBA', 'MCA', 'M.Tech', 'B.Tech'],
-            10033 => ['MBA', 'MCA', 'BBA', 'BCA', 'B.Com'],
-            10034 => ['MBA', 'MCA', 'BBA', 'BCA', 'B.Com'],
-            10035 => ['MBA', 'MCA', 'BBA', 'BCA'],
-            10036 => ['MBA', 'MCA', 'M.Sc (Data Science)', 'M.Sc (AI)'],
-            10037 => ['MBA', 'MCA', 'BBA', 'BCA'],
-            10038 => ['MBA', 'MCA', 'BBA', 'BCA'],
-            10039 => ['MBA', 'MCA', 'BBA', 'BCA', 'B.Com'],
-            10040 => ['MBA', 'MCA', 'BCA', 'B.Sc (CS)'],
-            10041 => ['MBA', 'BBA', 'M.Sc (Data Science)', 'PGDM'],
-            10042 => ['MBA', 'MCA', 'BBA', 'BCA'],
-            10043 => ['MBA', 'BBA', 'M.Sc (Pharmaceutical Chemistry)'],
-            10044 => ['MBA', 'MCA', 'BBA', 'BCA'],
-            10045 => ['MBA', 'BBA', 'M.Des', 'B.Des'],
-            10046 => ['MBA', 'MCA', 'BBA', 'BCA', 'B.Com'],
-            10047 => ['MBA', 'MHA', 'BBA'],
-            10048 => ['MBA', 'MCA', 'BBA', 'BCA', 'B.Com', 'M.Com'],
-            10049 => ['BA', 'B.Com', 'MBA', 'MCA'],
-            10050 => ['B.Tech', 'M.Tech', 'MBA', 'MCA', 'BCA', 'B.Sc (CS)'],
-    ];
 
     $streamIds = [];
     foreach ($db->query("SELECT id, name FROM streams")->fetchAll(PDO::FETCH_ASSOC) as $row) {
@@ -173,7 +198,9 @@ function streamsSeed(PDO $db): void
     }
 
     $link = $db->prepare("INSERT IGNORE INTO college_streams (college_id, stream_id) VALUES (?, ?)");
-    foreach ($collegeStreams as $collegeId => $names) {
+    foreach ($collegeStreams as $slug => $names) {
+        if (!isset($slugToId[$slug])) continue;
+        $collegeId = $slugToId[$slug];
         foreach ($names as $name) {
             if (!isset($streamIds[$name])) continue;
             try {

@@ -1,13 +1,21 @@
 <?php
 /**
- * Self-migrating seed for the 50 real online/distance colleges (IDs
- * 10001-10050) that power this whole portal. database/seed_online_colleges.sql
- * was written to be run manually in phpMyAdmin - if that step was never
- * actually run on production, the `colleges` table has none of these rows
- * (and no is_online column data at all), so every listing query - filtered
- * or not - correctly finds 0 matches. This mirrors that SQL file's data
- * exactly, executed via PHP so it can't be skipped, same self-migrating
- * idiom as includes/streams-schema.php.
+ * Self-migrating seed for the 50 real online/distance colleges that power
+ * this whole portal. database/seed_online_colleges.sql was written to be
+ * run manually in phpMyAdmin, assuming IDs 10001-10050 were free - they
+ * were not. The real `colleges` table (shared with ckampus-dasboard) had
+ * already grown to ~49,800 bulk-imported rows by the time this ran, so
+ * 10001-10050 were already occupied by unrelated regular colleges. Every
+ * `INSERT IGNORE ... VALUES (10001, ...)` silently no-opped on the
+ * duplicate primary key - is_online stayed 0 on all ~49,800 rows, and the
+ * college_streams links this file's earlier version created under those
+ * IDs were attached to the WRONG (regular) colleges.
+ *
+ * Fixed by matching/inserting on `slug` (collision-safe - a real product
+ * page identifier, not an arbitrary reserved block) and never specifying
+ * `id` on insert; the real auto-assigned ID is looked up afterward. Also
+ * cleans up the mislinked college_streams rows from the old ID-based
+ * version, and re-links using the real resolved IDs.
  *
  * The INSERT column list is built dynamically from SHOW COLUMNS - this
  * repo's own database/schema.sql is a stale stub that doesn't match the
@@ -18,12 +26,17 @@
  * fatal regardless of exactly which schema is live.
  */
 
-function collegesEnsureSeed(PDO $db): void
+/**
+ * Returns [slug => realCollegeId] for all 50 seed colleges, inserting any
+ * that are missing. Safe to call every request - each row is looked up by
+ * slug first, only inserted if genuinely absent.
+ */
+function collegesEnsureSeed(PDO $db): array
 {
-    static $checked = false;
-    if ($checked) return;
-    $checked = true;
+    static $cached = null;
+    if ($cached !== null) return $cached;
 
+    $slugToId = [];
     try {
         $has = array_flip($db->query("SHOW COLUMNS FROM colleges")->fetchAll(PDO::FETCH_COLUMN));
 
@@ -40,11 +53,8 @@ function collegesEnsureSeed(PDO $db): void
             $has['ugc_approved'] = true;
         }
 
-        // Already seeded? (real total is 50, IDs 10001-10050)
-        $existing = (int) $db->query("SELECT COUNT(*) FROM colleges WHERE id BETWEEN 10001 AND 10050")->fetchColumn();
-        if ($existing >= 45) return;
-
-        // id, name, short_name, slug, description, college_type, institution_type,
+        // legacy_id (unused for insert, kept only as a stable array key),
+        // name, short_name, slug, description, college_type, institution_type,
         // established_year, accreditation, naac_grade, city, state, website,
         // min_fees, max_fees, is_featured, is_online, online_mode, ugc_approved,
         // avg_package, ownership, gender_accepted, rating
@@ -105,9 +115,11 @@ function collegesEnsureSeed(PDO $db): void
         // that doesn't actually exist on this database (e.g. this repo's
         // own database/schema.sql calls it `type`, not `college_type` -
         // handle both spellings; other optional columns like `website` or
-        // `avg_package` just get skipped if genuinely absent).
+        // `avg_package` just get skipped if genuinely absent). `id` is
+        // deliberately never mapped/inserted - the real ID is auto-assigned
+        // and resolved afterward by slug.
         $fieldMap = [
-            'id' => 'id', 'name' => 'name', 'short_name' => 'short_name', 'slug' => 'slug',
+            'id' => null, 'name' => 'name', 'short_name' => 'short_name', 'slug' => 'slug',
             'description' => 'description',
             'college_type' => isset($has['college_type']) ? 'college_type' : (isset($has['type']) ? 'type' : null),
             'institution_type' => 'institution_type',
@@ -129,29 +141,53 @@ function collegesEnsureSeed(PDO $db): void
             $cols[] = $col;
             $idx[]  = $i;
         }
-        if (!$cols) return;
+        if (!$cols) return [];
+
+        // Resolve existing rows by slug first - a single batch lookup, so
+        // once seeding is complete this whole function costs one SELECT.
+        $slugs = array_column($colleges, 3);
+        $ph    = implode(',', array_fill(0, count($slugs), '?'));
+        $sel   = $db->prepare("SELECT id, slug FROM colleges WHERE slug IN ($ph)");
+        $sel->execute($slugs);
+        foreach ($sel->fetchAll(PDO::FETCH_ASSOC) as $r) {
+            $slugToId[$r['slug']] = (int) $r['id'];
+        }
 
         $placeholders = implode(',', array_fill(0, count($cols), '?'));
         $colList      = implode(',', array_map(fn($c) => "`$c`", $cols));
-        $stmt = $db->prepare("INSERT IGNORE INTO colleges ($colList) VALUES ($placeholders)");
+        $stmt = $db->prepare("INSERT INTO colleges ($colList) VALUES ($placeholders)");
 
         foreach ($colleges as $row) {
+            $slug = $row[3];
+            if (isset($slugToId[$slug])) continue; // already exists
+
             $vals = [];
             foreach ($idx as $i) $vals[] = $row[$i];
             try {
                 $stmt->execute($vals);
+                $slugToId[$slug] = (int) $db->lastInsertId();
             } catch (Throwable $e) {
                 continue; // one bad row shouldn't abort the other 49
             }
         }
 
-        // Feature the top 10, same list as database/seed_online_colleges.sql
+        // Feature the top 10, same colleges as database/seed_online_colleges.sql
+        // (translated from that file's old fake IDs to real slugs).
         if (isset($has['is_featured'])) {
-            try {
-                $db->exec("UPDATE colleges SET is_featured = 1 WHERE id IN (10001,10021,10022,10023,10024,10025,10027,10028,10031,10032) AND is_online = 1");
-            } catch (Throwable $e) {}
+            $featuredSlugs = ['ignou','nmims-online','amity-university-online','manipal-university-online',
+                'lpu-online','chandigarh-university-online','scdl','bits-pilani-wilp',
+                'srm-university-online','vit-online'];
+            $featuredIds = array_values(array_filter(array_map(fn($s) => $slugToId[$s] ?? null, $featuredSlugs)));
+            if ($featuredIds) {
+                try {
+                    $inClause = implode(',', array_map('intval', $featuredIds));
+                    $db->exec("UPDATE colleges SET is_featured = 1 WHERE id IN ($inClause) AND is_online = 1");
+                } catch (Throwable $e) {}
+            }
         }
     } catch (Throwable $e) {
         error_log('collegesEnsureSeed failed: ' . $e->getMessage());
     }
+
+    return $cached = $slugToId;
 }
