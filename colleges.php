@@ -4,6 +4,7 @@ $pageDesc     = 'Search and filter from 40,000+ online and distance learning col
 $pageKeywords = 'online colleges India, distance education colleges, UGC approved online colleges, online MBA colleges, online BCA colleges 2025';
 
 require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/includes/streams-schema.php';
 
 // Fetch states for dropdown
 $states = [];
@@ -11,6 +12,22 @@ try {
     $db = getDB();
     $stmt = $db->query("SELECT DISTINCT state FROM colleges WHERE state IS NOT NULL AND state != '' ORDER BY state");
     $states = array_column($stmt->fetchAll(), 'state');
+} catch (Throwable $e) {}
+
+// Real counts for the hero stats (was hardcoded "500+" for both, which
+// didn't match the actual seeded online-college dataset).
+$onlineCollegeCount = 0;
+$onlineProgramCount = 0;
+try {
+    $db = $db ?? getDB();
+    streamsEnsureSchema($db);
+    $onlineCollegeCount = (int) $db->query("SELECT COUNT(*) FROM colleges WHERE is_online = 1")->fetchColumn();
+    $onlineProgramCount = (int) $db->query("
+        SELECT COUNT(DISTINCT cs.stream_id)
+        FROM college_streams cs
+        JOIN colleges c ON c.id = cs.college_id
+        WHERE c.is_online = 1
+    ")->fetchColumn();
 } catch (Throwable $e) {}
 
 // Pre-read URL params to pre-fill filters
@@ -67,8 +84,8 @@ include __DIR__ . '/includes/header.php';
     <h1>&#127979; Online &amp; Distance Colleges in India</h1>
     <p>Discover, compare and apply to top universities offering online degrees</p>
     <div class="hero-stats">
-      <div class="hero-stat"><strong>500+</strong> Online Universities</div>
-      <div class="hero-stat"><strong>500+</strong> Online Programs</div>
+      <div class="hero-stat"><strong><?= $onlineCollegeCount > 0 ? $onlineCollegeCount . '+' : '50+' ?></strong> Online Universities</div>
+      <div class="hero-stat"><strong><?= $onlineProgramCount > 0 ? $onlineProgramCount . '+' : '25+' ?></strong> Online Programs</div>
       <div class="hero-stat"><strong>UGC</strong> Approved Only</div>
       <div class="hero-stat"><strong>Free</strong> Counselling</div>
     </div>
