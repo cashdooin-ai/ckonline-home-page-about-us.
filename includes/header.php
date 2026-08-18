@@ -85,7 +85,12 @@ $base = SITE_BASE;
 .ck-navbar .navbar-nav .nav-item>.nav-link .caret{font-size:.6rem;opacity:.6;transition:transform .2s;}
 .ck-navbar .nav-item:hover>.nav-link .caret{transform:rotate(180deg);}
 .ck-navbar .nav-item{position:relative;}
-.ck-dropdown{position:absolute;top:calc(100% + 2px);left:0;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.12);opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity .2s,transform .2s,visibility .2s;z-index:1200;min-width:220px;}
+.ck-dropdown{position:absolute;top:calc(100% + 2px);left:0;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.12);opacity:0;visibility:hidden;transform:translateY(10px);transition:transform .15s,visibility .15s;z-index:1200;min-width:220px;}
+/* opacity is intentionally NOT transitioned (snaps 0->1 instantly): a
+   timed opacity fade meant this fully-opaque #fff panel spent ~200ms
+   partially see-through, letting the page behind it (e.g. a college
+   detail hero) show through - easy to screenshot mid-fade and read as
+   the menu having a broken/mixed background instead of solid white. */
 .ck-navbar .nav-item:hover>.ck-dropdown{opacity:1;visibility:visible;transform:translateY(0);}
 .ck-mega{width:620px;padding:0;overflow:hidden;}
 .ck-mega-inner{display:grid;grid-template-columns:200px 1fr;}
