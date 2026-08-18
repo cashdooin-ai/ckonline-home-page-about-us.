@@ -122,8 +122,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nl_email'])) {
     $nlEmail = trim($_POST['nl_email'] ?? '');
     if (filter_var($nlEmail, FILTER_VALIDATE_EMAIL)) {
         try {
+            require_once __DIR__ . '/includes/leads-schema.php';
             $pdo = getDB();
-            $pdo->prepare("INSERT INTO leads (name,email,source,created_at) VALUES (?,?,?,NOW()) ON DUPLICATE KEY UPDATE name=VALUES(name),source=VALUES(source)")
+            onlineLeadsEnsureSchema($pdo);
+            $pdo->prepare("INSERT INTO online_leads (name,email,source,created_at) VALUES (?,?,?,NOW()) ON DUPLICATE KEY UPDATE name=VALUES(name),source=VALUES(source)")
                 ->execute([$nlName, $nlEmail, 'newsletter']);
             $nlMsg = 'success';
         } catch(Exception $e) { $nlMsg = 'error'; }

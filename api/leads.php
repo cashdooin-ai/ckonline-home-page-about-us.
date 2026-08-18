@@ -2,6 +2,7 @@
 header('Content-Type: application/json');
 
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/leads-schema.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -46,10 +47,11 @@ if ($errors) {
 
 try {
     $db = getDB();
+    onlineLeadsEnsureSchema($db);
 
-    // Insert into leads table (flexible column detection)
+    // Insert into online_leads table (flexible column detection)
     $leadCols = [];
-    $stmt = $db->query("SHOW COLUMNS FROM leads");
+    $stmt = $db->query("SHOW COLUMNS FROM online_leads");
     foreach ($stmt->fetchAll() as $row) $leadCols[] = $row['Field'];
 
     $insertCols = ['name', 'email', 'phone'];
@@ -66,7 +68,7 @@ try {
 
     $ph = implode(',', array_fill(0, count($insertCols), '?'));
     $colStr = implode(',', $insertCols);
-    $stmt = $db->prepare("INSERT INTO leads ($colStr) VALUES ($ph)");
+    $stmt = $db->prepare("INSERT INTO online_leads ($colStr) VALUES ($ph)");
     $stmt->execute($insertVals);
     $leadId = $db->lastInsertId();
 

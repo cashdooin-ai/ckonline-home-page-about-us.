@@ -2,6 +2,7 @@
 $pageTitle = 'CK Assured — 100% Placement Guarantee | CollegeKampus';
 $pageDesc  = 'CK Assured combines the best online degree with guaranteed placement support. If you are not placed in 6 months, we pay your first month\'s salary.';
 require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/includes/leads-schema.php';
 
 $success = false;
 $error   = '';
@@ -19,8 +20,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
             $db = getDB();
+            onlineLeadsEnsureSchema($db);
             $leadCols = [];
-            $stmt = $db->query("SHOW COLUMNS FROM leads");
+            $stmt = $db->query("SHOW COLUMNS FROM online_leads");
             foreach ($stmt->fetchAll() as $r) $leadCols[] = $r['Field'];
             $ic = ['name','email','phone'];
             $iv = [$name,$email,$phone];
@@ -29,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (in_array('course_interest', $leadCols) && $prog) { $ic[] = 'course_interest'; $iv[] = $prog; }
             if (in_array('created_at', $leadCols))       { $ic[] = 'created_at';     $iv[] = date('Y-m-d H:i:s'); }
             $ph = implode(',', array_fill(0, count($ic), '?'));
-            $db->prepare("INSERT INTO leads (" . implode(',', $ic) . ") VALUES ($ph)")->execute($iv);
+            $db->prepare("INSERT INTO online_leads (" . implode(',', $ic) . ") VALUES ($ph)")->execute($iv);
             $success = true;
         } catch (Throwable $e) {
             $error = 'Sorry, something went wrong. Please try again.';

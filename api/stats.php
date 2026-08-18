@@ -7,9 +7,11 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/leads-schema.php';
 
 try {
     $db = getDB();
+    onlineLeadsEnsureSchema($db);
 
     $stats = [];
 
@@ -24,8 +26,8 @@ try {
 
     // Total leads
     try {
-        $stats['total_leads'] = (int) $db->query("SELECT COUNT(*) FROM leads")->fetchColumn();
-        $stats['leads_today'] = (int) $db->query("SELECT COUNT(*) FROM leads WHERE DATE(created_at) = CURDATE()")->fetchColumn();
+        $stats['total_leads'] = (int) $db->query("SELECT COUNT(*) FROM online_leads")->fetchColumn();
+        $stats['leads_today'] = (int) $db->query("SELECT COUNT(*) FROM online_leads WHERE DATE(created_at) = CURDATE()")->fetchColumn();
     } catch (Throwable $e) {}
 
     // Total streams
@@ -37,7 +39,7 @@ try {
     try {
         $top = $db->query("
             SELECT c.name, c.id, COUNT(l.id) AS lead_count
-            FROM leads l
+            FROM online_leads l
             JOIN colleges c ON c.id = l.college_id
             GROUP BY l.college_id
             ORDER BY lead_count DESC

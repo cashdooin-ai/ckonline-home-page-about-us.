@@ -89,8 +89,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lead_name'])) {
     $lEmail = trim($_POST['lead_email'] ?? '');
     if ($lName && $lPhone) {
         try {
+            require_once __DIR__ . '/includes/leads-schema.php';
             $pdo = getDB();
-            $pdo->prepare("INSERT INTO leads (name,phone,email,source,page_url,created_at) VALUES (?,?,?,?,?,NOW())")
+            onlineLeadsEnsureSchema($pdo);
+            $pdo->prepare("INSERT INTO online_leads (name,phone,email,source,page_url,created_at) VALUES (?,?,?,?,?,NOW())")
                 ->execute([$lName, $lPhone, $lEmail, 'blog-post', $pageCanonical ?? '']);
             $leadMsg = 'success';
         } catch(Exception $e) { $leadMsg = 'error'; }

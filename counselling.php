@@ -2,6 +2,7 @@
 $pageTitle = 'Free Expert Counselling for Online Colleges | CollegeKampus';
 $pageDesc  = 'Get free expert counselling to choose the best online college and course for you. 1.25L+ students helped, 600+ expert mentors.';
 require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/includes/leads-schema.php';
 
 $success = false;
 $error   = '';
@@ -23,8 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
             $db = getDB();
+            onlineLeadsEnsureSchema($db);
             $leadCols = [];
-            $stmt = $db->query("SHOW COLUMNS FROM leads");
+            $stmt = $db->query("SHOW COLUMNS FROM online_leads");
             foreach ($stmt->fetchAll() as $r) $leadCols[] = $r['Field'];
 
             $insertCols = ['name', 'email', 'phone'];
@@ -40,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (in_array('created_at', $leadCols))                        { $insertCols[] = 'created_at';      $insertVals[] = date('Y-m-d H:i:s'); }
 
             $ph = implode(',', array_fill(0, count($insertCols), '?'));
-            $stmt = $db->prepare("INSERT INTO leads (" . implode(',', $insertCols) . ") VALUES ($ph)");
+            $stmt = $db->prepare("INSERT INTO online_leads (" . implode(',', $insertCols) . ") VALUES ($ph)");
             $stmt->execute($insertVals);
             $success = true;
         } catch (Throwable $e) {

@@ -1,8 +1,10 @@
 <?php
 require_once __DIR__ . '/auth.php';
 require_once dirname(__DIR__) . '/config/db.php';
+require_once dirname(__DIR__) . '/includes/leads-schema.php';
 
 $pdo   = getDB();
+onlineLeadsEnsureSchema($pdo);
 $flash = $_SESSION['flash'] ?? '';
 unset($_SESSION['flash']);
 
@@ -15,7 +17,7 @@ try {
     $stats['posts_draft']     = $r['d'] ?? 0;
 
     $stats['program_pages'] = $pdo->query("SELECT COUNT(*) FROM program_pages")->fetchColumn();
-    $stats['leads_7d']      = $pdo->query("SELECT COUNT(*) FROM leads WHERE created_at >= NOW() - INTERVAL 7 DAY")->fetchColumn();
+    $stats['leads_7d']      = $pdo->query("SELECT COUNT(*) FROM online_leads WHERE created_at >= NOW() - INTERVAL 7 DAY")->fetchColumn();
 } catch(Exception $e) {}
 
 // ── Fetch posts for table ─────────────────────────────────────────────────────
@@ -283,7 +285,7 @@ textarea.content-area{font-family:monospace;font-size:.82rem;min-height:280px;}
         <?php
         $leads = [];
         try {
-            $leads = $pdo->query("SELECT id,name,phone,email,source,page_url,created_at FROM leads WHERE created_at >= NOW() - INTERVAL 30 DAY ORDER BY created_at DESC LIMIT 100")->fetchAll();
+            $leads = $pdo->query("SELECT id,name,phone,email,source,page_url,created_at FROM online_leads WHERE created_at >= NOW() - INTERVAL 30 DAY ORDER BY created_at DESC LIMIT 100")->fetchAll();
         } catch(Exception $e) {}
         ?>
         <?php if (empty($leads)): ?>
