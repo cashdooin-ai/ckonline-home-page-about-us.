@@ -1,6 +1,6 @@
 <?php
 $pageTitle    = 'Browse Online Colleges in India 2025 | Distance & Online Education';
-$pageDesc     = 'Search and filter from 40,000+ online and distance learning colleges across India. Compare fees, courses, accreditation and apply free.';
+$pageDesc     = 'Search and filter from 50+ UGC-approved online and distance learning universities across India. Compare fees, courses, accreditation and apply free.';
 $pageKeywords = 'online colleges India, distance education colleges, UGC approved online colleges, online MBA colleges, online BCA colleges 2025';
 
 require_once __DIR__ . '/config/db.php';

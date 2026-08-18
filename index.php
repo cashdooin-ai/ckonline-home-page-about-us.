@@ -5,15 +5,15 @@ $cms = [];
 $cms_defaults = [
     'hero_badge'          => "India's #1 Online Degree Discovery Platform",
     'hero_headline'       => 'Find the Best <span>Online Degree</span><br>Universities in India',
-    'hero_subheadline'    => 'Compare 500+ UGC-approved online universities. Check fees, placements, NAAC ratings — all in one place. Apply in minutes.',
-    'stat_colleges'       => '500+',
+    'hero_subheadline'    => 'Compare 50+ UGC-approved online universities. Check fees, placements, NAAC ratings — all in one place. Apply in minutes.',
+    'stat_colleges'       => '50+',
     'stat_colleges_label' => 'Online Universities',
     'stat_students'       => '1.25 Lakh+',
     'stat_ugc'            => '100%',
     'cta_primary'         => 'Browse Universities',
     'cta_secondary'       => 'Talk to a Counsellor',
-    'stats_bar_colleges'  => '500+',
-    'carousel_slides'     => '[{"title":"Find Your Perfect Online Degree","subtitle":"Explore 500+ UGC-approved universities in India","img":"https://placehold.co/800x400/1a4fba/ffffff?text=Find+Your+Perfect+Online+Degree","btn_text":"Explore Now","btn_link":"colleges.php"},{"title":"Compare 500+ Universities","subtitle":"Side-by-side comparison in just 2 minutes","img":"https://placehold.co/800x400/16a34a/ffffff?text=Compare+500+Universities","btn_text":"Compare Now","btn_link":"compare.php"},{"title":"Free Expert Counselling","subtitle":"Talk to certified counsellors — no commission, no bias","img":"https://placehold.co/800x400/ea580c/ffffff?text=Free+Expert+Counselling","btn_text":"Book Free Session","btn_link":"counselling.php"}]',
+    'stats_bar_colleges'  => '50+',
+    'carousel_slides'     => '[{"title":"Find Your Perfect Online Degree","subtitle":"Explore 50+ UGC-approved universities in India","img":"https://placehold.co/800x400/1a4fba/ffffff?text=Find+Your+Perfect+Online+Degree","btn_text":"Explore Now","btn_link":"colleges.php"},{"title":"Compare 50+ Universities","subtitle":"Side-by-side comparison in just 2 minutes","img":"https://placehold.co/800x400/16a34a/ffffff?text=Compare+50+Universities","btn_text":"Compare Now","btn_link":"compare.php"},{"title":"Free Expert Counselling","subtitle":"Talk to certified counsellors — no commission, no bias","img":"https://placehold.co/800x400/ea580c/ffffff?text=Free+Expert+Counselling","btn_text":"Book Free Session","btn_link":"counselling.php"}]',
 ];
 
 try {
@@ -28,6 +28,20 @@ try {
 } catch (Throwable $e) {
     // Table may not exist yet — silently use defaults
 }
+
+// Real online-college count, used as the *default* for stat_colleges/
+// stats_bar_colleges below - was hardcoded "500+" regardless of actual
+// data (only 50 real online colleges exist). Still fully admin-overridable
+// via site_settings, same as every other cms() field.
+try {
+    require_once __DIR__ . '/includes/colleges-seed.php';
+    collegesEnsureSeed($__pdo);
+    $__realCollegeCount = (int) $__pdo->query("SELECT COUNT(*) FROM colleges WHERE is_online = 1")->fetchColumn();
+    if ($__realCollegeCount > 0) {
+        $cms_defaults['stat_colleges']      = $__realCollegeCount . '+';
+        $cms_defaults['stats_bar_colleges'] = $__realCollegeCount . '+';
+    }
+} catch (Throwable $e) {}
 
 function cms(string $key) {
     global $cms, $cms_defaults;
@@ -52,7 +66,7 @@ if (empty($carouselSlides)) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CollegeKampus Online — Find Your Dream Online Degree in India</title>
-  <meta name="description" content="Compare 500+ online universities in India. Explore MBA, BCA, B.Com, BBA and more online degree programs. Check fees, placements and apply in minutes.">
+  <meta name="description" content="Compare 50+ online universities in India. Explore MBA, BCA, B.Com, BBA and more online degree programs. Check fees, placements and apply in minutes.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -805,7 +819,7 @@ if (empty($carouselSlides)) {
             <span class="ck-brand-sub d-block">Online</span>
           </div>
         </div>
-        <p class="small" style="color:rgba(255,255,255,.55)">India's trusted online college discovery platform. Compare 500+ UGC-approved universities and apply in minutes.</p>
+        <p class="small" style="color:rgba(255,255,255,.55)">India's trusted online college discovery platform. Compare 50+ UGC-approved universities and apply in minutes.</p>
         <div class="d-flex gap-2 mt-3">
           <a href="#" class="ck-social"><i class="bi bi-facebook"></i></a>
           <a href="#" class="ck-social"><i class="bi bi-instagram"></i></a>

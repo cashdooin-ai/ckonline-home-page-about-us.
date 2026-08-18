@@ -1,6 +1,6 @@
 <?php
 $pageTitle = 'Online Courses & Programs in India 2025 | CollegeKampus';
-$pageDesc  = 'Explore 500+ online degree programs - MBA, BBA, BCA, MCA, B.Com, MA and more from UGC approved universities in India.';
+$pageDesc  = 'Explore 50+ online degree programs - MBA, BBA, BCA, MCA, B.Com, MA and more from UGC approved universities in India.';
 $pageKeywords = 'online MBA India, online BBA, online BCA, online MCA, distance education courses, UGC approved online degrees 2025';
 
 require_once __DIR__ . '/config/db.php';
@@ -104,7 +104,7 @@ include __DIR__ . '/includes/header.php';
 <div class="courses-hero">
   <div class="container">
     <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);padding:5px 14px;border-radius:20px;font-size:.8rem;font-weight:600;margin-bottom:16px;">
-      &#127891; 500+ Online Programs
+      &#127891; 25+ Online Programs
     </div>
     <h1>Explore Online Degree Programs</h1>
     <p>Find the right program from top UGC-approved universities. Compare specializations, fees, and career outcomes.</p>
