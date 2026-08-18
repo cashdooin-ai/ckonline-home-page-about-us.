@@ -7,7 +7,6 @@ $idsParam = trim($_GET['ids'] ?? '');
 $ids = array_slice(array_filter(array_map('intval', explode(',', $idsParam))), 0, 3);
 
 $colleges = [];
-$__debugInfo = null; // TEMPORARY - remove once the empty-compare-page bug is found
 if ($ids) {
     try {
         $db = getDB();
@@ -23,23 +22,22 @@ if ($ids) {
         foreach ($wantCols as $col) {
             if (in_array($col, $allCols)) $select .= ", c.$col";
         }
+        // Checking college_courses alone isn't enough - this DB (shared with
+        // ckampus-dasboard) has college_courses but no `courses` table at
+        // all, so the JOIN below would throw "Table 'courses' doesn't
+        // exist" the moment the main query ran, taking the whole compare
+        // page down with it. Test the actual join, not just one side of it.
         $coursesSub = '';
         try {
-            $db->query("SELECT 1 FROM college_courses LIMIT 1");
+            $db->query("SELECT 1 FROM college_courses cc JOIN courses cr ON cr.id = cc.course_id LIMIT 1");
             $coursesSub = ", (SELECT GROUP_CONCAT(cr.name ORDER BY cr.name SEPARATOR ', ') FROM college_courses cc JOIN courses cr ON cr.id = cc.course_id WHERE cc.college_id = c.id LIMIT 8) AS all_courses";
         } catch (Throwable $e) {}
 
         $ph = implode(',', array_fill(0, count($ids), '?'));
-        $sql = "SELECT $select $coursesSub FROM colleges c WHERE c.id IN ($ph)";
-        $stmt = $db->prepare($sql);
+        $stmt = $db->prepare("SELECT $select $coursesSub FROM colleges c WHERE c.id IN ($ph)");
         $stmt->execute($ids);
         $colleges = $stmt->fetchAll();
-        $__debugInfo = ['idsParam' => $idsParam, 'ids' => $ids, 'sql' => $sql, 'rowCount' => count($colleges)];
-    } catch (Throwable $e) {
-        $__debugInfo = ['idsParam' => $idsParam, 'ids' => $ids, 'error' => $e->getMessage()];
-    }
-} else {
-    $__debugInfo = ['idsParam' => $idsParam, 'ids' => $ids, 'note' => 'ids array was empty/falsy before query ran'];
+    } catch (Throwable $e) {}
 }
 
 include __DIR__ . '/includes/header.php';
@@ -80,9 +78,6 @@ include __DIR__ . '/includes/header.php';
 <div class="page-wrapper" style="margin-top:0;">
   <div class="container">
     <?php if (empty($colleges)): ?>
-    <?php if (!empty($idsParam)): // TEMPORARY debug - only shows when ?ids= was actually passed ?>
-    <pre style="background:#111;color:#0f0;padding:16px;border-radius:8px;font-size:.75rem;overflow:auto;max-width:900px;margin:0 auto 20px;"><?= htmlspecialchars(json_encode($__debugInfo, JSON_PRETTY_PRINT)) ?></pre>
-    <?php endif; ?>
     <div class="compare-search-box">
       <h3>&#128269; Select colleges to compare</h3>
       <p style="color:#64748b;font-size:.875rem;margin-bottom:20px;">Search for up to 3 colleges and click "Compare Now"</p>

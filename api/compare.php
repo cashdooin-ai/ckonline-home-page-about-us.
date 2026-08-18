@@ -35,7 +35,10 @@ try {
 
     $courseSubquery = '';
     try {
-        $db->query("SELECT 1 FROM college_courses LIMIT 1");
+        // Testing college_courses alone isn't enough - this DB has that
+        // table but no `courses` table at all, so the JOIN below would
+        // throw the moment the main query ran. Test the actual join.
+        $db->query("SELECT 1 FROM college_courses cc JOIN courses cr ON cr.id = cc.course_id LIMIT 1");
         $courseSubquery = ", (SELECT GROUP_CONCAT(cr.name SEPARATOR ', ') FROM college_courses cc JOIN courses cr ON cr.id = cc.course_id WHERE cc.college_id = c.id) AS all_courses";
     } catch (Exception $e) {}
 
