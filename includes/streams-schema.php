@@ -89,8 +89,14 @@ function streamsSeed(PDO $db): void
     }
 
     try {
+        // 200 is a safety margin below the full 248 expected links (50
+        // colleges), not an exact match - a bare ">0" check here would wrongly
+        // treat a small pre-existing partial seed (e.g. from an earlier,
+        // incomplete manual run of seed_streams_final.sql) as "already done"
+        // and skip backfilling the rest forever. INSERT IGNORE below is safe
+        // to re-run - it can't create duplicates (uq_college_stream).
         $linked = (int) $db->query("SELECT COUNT(*) FROM college_streams WHERE college_id BETWEEN 10001 AND 10050")->fetchColumn();
-        if ($linked > 0) return;
+        if ($linked >= 200) return;
     } catch (Throwable $e) {
         return;
     }

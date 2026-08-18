@@ -316,21 +316,22 @@ $base = SITE_BASE;
   var toggle = document.getElementById('mobileToggle');
   var nav = document.getElementById('navMain');
   if(toggle && nav){
-    nav.style.display = '';
     nav.classList.add('d-xl-flex');
-    toggle.addEventListener('click', function(){
-      if(nav.style.display === 'none' || nav.style.display === ''){
-        nav.style.display = 'block';
-      } else {
-        nav.style.display = 'none';
-      }
-    });
-    // On large screens always show
+    // Collapsed by default below the 1200px breakpoint, always shown at/above
+    // it - previously this unconditionally cleared the inline display:none on
+    // load (before this width check ever ran) and never re-hid it below
+    // 1200px, so the full nav (all links + right-action buttons) stayed
+    // permanently expanded inline at every screen width instead of collapsing
+    // behind the hamburger toggle, overflowing the navbar's fixed height.
     function checkWidth(){
-      if(window.innerWidth >= 1200){ nav.style.display = ''; } 
+      nav.style.display = (window.innerWidth >= 1200) ? '' : 'none';
     }
-    window.addEventListener('resize', checkWidth);
     checkWidth();
+    window.addEventListener('resize', checkWidth);
+    toggle.addEventListener('click', function(){
+      if(window.innerWidth >= 1200) return;
+      nav.style.display = (nav.style.display === 'none') ? 'block' : 'none';
+    });
   }
   // Mobile sub-menu toggle
   document.querySelectorAll('.ck-navbar .nav-item>.nav-link .caret').forEach(function(caret){
