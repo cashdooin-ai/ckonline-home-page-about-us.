@@ -50,11 +50,18 @@ function goToCompare() {
 function renderCompareBar() {
   const bar = document.getElementById('compareBar');
   if (!bar) return;
+  // The floating WhatsApp/Call buttons sit at a higher z-index (1100) than
+  // this bar (900) so they render on top of it and swallow clicks meant for
+  // "Compare Now" whenever both are visible in the bottom-right corner -
+  // shift them up out of the way while the compare bar is showing.
+  const fab = document.getElementById('ckFloatingCTA');
   if (compareList.length === 0) {
     bar.classList.remove('visible');
+    if (fab) fab.classList.remove('compare-bar-open');
     return;
   }
   bar.classList.add('visible');
+  if (fab) fab.classList.add('compare-bar-open');
   const chips = document.getElementById('compareChips');
   if (chips) {
     chips.innerHTML = compareList.map(c =>

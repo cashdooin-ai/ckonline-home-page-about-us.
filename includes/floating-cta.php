@@ -1,6 +1,10 @@
 <?php /* Floating WhatsApp + Call buttons — fixed bottom-right */ ?>
 <style>
-#ckFloatingCTA{position:fixed;bottom:28px;right:20px;z-index:1100;display:flex;flex-direction:column;align-items:center;gap:12px;}
+#ckFloatingCTA{position:fixed;bottom:28px;right:20px;z-index:1100;display:flex;flex-direction:column;align-items:center;gap:12px;transition:bottom .2s;}
+/* Shifted up while the compare bar (colleges.php) is showing at the bottom
+   of the screen, so these buttons (z-index 1100) stop sitting on top of
+   and swallowing clicks meant for the compare bar's own buttons (z-index 900). */
+#ckFloatingCTA.compare-bar-open{bottom:92px;}
 .ck-float-btn{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:#fff;text-decoration:none;box-shadow:0 4px 18px rgba(0,0,0,.22);transition:transform .2s,box-shadow .2s;position:relative;}
 .ck-float-btn:hover{transform:scale(1.1);box-shadow:0 6px 24px rgba(0,0,0,.3);color:#fff;}
 .ck-float-btn-wa{background:#25d366;}
@@ -27,6 +31,7 @@
 
 @media(max-width:576px){
   #ckFloatingCTA{bottom:18px;right:12px;gap:10px;}
+  #ckFloatingCTA.compare-bar-open{bottom:80px;}
   .ck-float-btn{width:46px;height:46px;font-size:1.2rem;}
 }
 </style>
