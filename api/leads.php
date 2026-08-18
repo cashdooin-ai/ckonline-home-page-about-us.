@@ -9,9 +9,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$name    = trim($_POST['name'] ?? $_POST['full_name'] ?? '');
-$email   = trim($_POST['email'] ?? '');
-$phone   = trim($_POST['phone'] ?? '');
+$name    = trim($_POST['name'] ?? $_POST['full_name'] ?? $_POST['student_name'] ?? '');
+$email   = trim($_POST['email'] ?? $_POST['student_email'] ?? '');
+$phone   = trim($_POST['phone'] ?? $_POST['student_phone'] ?? '');
 $source  = trim($_POST['source'] ?? 'website');
 $message = trim($_POST['message'] ?? '');
 $course  = trim($_POST['course_interest'] ?? $_POST['interested_course'] ?? '');
@@ -24,7 +24,19 @@ $course_id  = intval($_POST['course_id'] ?? 0);
 $errors = [];
 if ($name === '')  $errors[] = 'Name is required';
 if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Valid email is required';
-if ($phone === '' || !preg_match('/^[6-9]\d{9}$/', preg_replace('/\D/', '', $phone))) $errors[] = 'Valid 10-digit phone is required';
+// Several forms (exit-popup, lead-form, coupons, online-mba) prepend +91
+// client-side before sending, so the digits-only value is 12 chars
+// (91XXXXXXXXXX), not 10 - strip a leading 91 of that length before
+// validating, so those forms' phone numbers aren't rejected outright.
+$phoneDigits = preg_replace('/\D/', '', $phone);
+if (strlen($phoneDigits) === 12 && str_starts_with($phoneDigits, '91')) {
+    $phoneDigits = substr($phoneDigits, 2);
+}
+if ($phone === '' || !preg_match('/^[6-9]\d{9}$/', $phoneDigits)) {
+    $errors[] = 'Valid 10-digit phone is required';
+} else {
+    $phone = $phoneDigits; // store the normalized bare 10-digit form regardless of which form/prefix it came in with
+}
 
 if ($errors) {
     http_response_code(422);
