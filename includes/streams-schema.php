@@ -20,35 +20,47 @@ function streamsEnsureSchema(PDO $db): void
     if ($checked) return;
     $checked = true;
 
+    // Everything below is best-effort self-healing, not a hard dependency of
+    // the page/API that calls this. A previous version let any failure here
+    // (schema mismatch, a bad row mid-seed, a transient DB error) propagate
+    // straight out of this function - which, since callers invoke it before
+    // running their real query, silently killed the entire request (e.g.
+    // api/colleges.php's catch-all turned any such error into "0 colleges
+    // found" for every course-filtered search). Wrapping the whole body means
+    // a problem here can degrade the stream filter, never take the page down.
     try {
-        $db->query("SELECT 1 FROM streams LIMIT 1");
-    } catch (Throwable $e) {
-        $db->exec("CREATE TABLE IF NOT EXISTS streams (
-            id             INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-            name           VARCHAR(100) NOT NULL,
-            slug           VARCHAR(120) NOT NULL,
-            icon           VARCHAR(10) DEFAULT NULL,
-            display_order  INT DEFAULT 0,
-            is_active      TINYINT(1) NOT NULL DEFAULT 1,
-            UNIQUE KEY uq_streams_name (name),
-            UNIQUE KEY uq_streams_slug (slug)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
-    }
+        try {
+            $db->query("SELECT 1 FROM streams LIMIT 1");
+        } catch (Throwable $e) {
+            $db->exec("CREATE TABLE IF NOT EXISTS streams (
+                id             INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                name           VARCHAR(100) NOT NULL,
+                slug           VARCHAR(120) NOT NULL,
+                icon           VARCHAR(10) DEFAULT NULL,
+                display_order  INT DEFAULT 0,
+                is_active      TINYINT(1) NOT NULL DEFAULT 1,
+                UNIQUE KEY uq_streams_name (name),
+                UNIQUE KEY uq_streams_slug (slug)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+        }
 
-    try {
-        $db->query("SELECT 1 FROM college_streams LIMIT 1");
-    } catch (Throwable $e) {
-        $db->exec("CREATE TABLE IF NOT EXISTS college_streams (
-            id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-            college_id  INT UNSIGNED NOT NULL,
-            stream_id   INT UNSIGNED NOT NULL,
-            UNIQUE KEY uq_college_stream (college_id, stream_id),
-            INDEX idx_college (college_id),
-            INDEX idx_stream (stream_id)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
-    }
+        try {
+            $db->query("SELECT 1 FROM college_streams LIMIT 1");
+        } catch (Throwable $e) {
+            $db->exec("CREATE TABLE IF NOT EXISTS college_streams (
+                id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                college_id  INT UNSIGNED NOT NULL,
+                stream_id   INT UNSIGNED NOT NULL,
+                UNIQUE KEY uq_college_stream (college_id, stream_id),
+                INDEX idx_college (college_id),
+                INDEX idx_stream (stream_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+        }
 
-    streamsSeed($db);
+        streamsSeed($db);
+    } catch (Throwable $e) {
+        error_log('streamsEnsureSchema failed: ' . $e->getMessage());
+    }
 }
 
 /**
@@ -164,7 +176,13 @@ function streamsSeed(PDO $db): void
     foreach ($collegeStreams as $collegeId => $names) {
         foreach ($names as $name) {
             if (!isset($streamIds[$name])) continue;
-            $link->execute([$collegeId, $streamIds[$name]]);
+            try {
+                $link->execute([$collegeId, $streamIds[$name]]);
+            } catch (Throwable $e) {
+                // Don't let one bad row (e.g. a stray FK issue) abort the
+                // rest of the 248-link backfill.
+                continue;
+            }
         }
     }
 }
