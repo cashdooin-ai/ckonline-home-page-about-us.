@@ -64,6 +64,22 @@ try {
         $stmt2 = $db->prepare("SELECT $crSelect FROM college_courses cc JOIN courses cr ON cr.id = cc.course_id WHERE cc.college_id = ? ORDER BY cr.name");
         $stmt2->execute([$id]);
         $courses = $stmt2->fetchAll();
+
+        // Fallback: the online-colleges dataset (database/seed_online_colleges.sql)
+        // stores each college's programmes as plain stream names in
+        // college_streams instead of college_courses/courses, so every one of
+        // these colleges had zero rows above - an empty "Courses & Fees" tab
+        // and an empty Course Interest dropdown on the lead form, even though
+        // the college genuinely does offer named programmes. Surface those
+        // names (with no fee/duration data to show, since college_streams
+        // never had any) rather than showing nothing at all.
+        if (empty($courses)) {
+            try {
+                $ss = $db->prepare("SELECT stream_name AS name FROM college_streams WHERE college_id = ? ORDER BY stream_name");
+                $ss->execute([$id]);
+                $courses = $ss->fetchAll();
+            } catch (Throwable $e) {}
+        }
     } catch (Throwable $e) {}
 
     // Related colleges: prefer the same institution_type (university vs. a
@@ -450,6 +466,7 @@ $modeVal = $college['delivery_mode'] ?? $college['online_mode'] ?? '';
               <input type="hidden" name="college_id" value="<?= $id ?>">
               <input type="hidden" name="college_name" value="<?= htmlspecialchars($college['name']) ?>">
               <input type="hidden" name="source" value="college-detail">
+              <input type="hidden" name="page_url" value="<?= htmlspecialchars((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https://' : 'http://') . ($_SERVER['HTTP_HOST'] ?? '') . ($_SERVER['REQUEST_URI'] ?? '')) ?>">
               <div class="apply-field">
                 <label>Full Name *</label>
                 <input type="text" name="name" placeholder="Your full name" required>

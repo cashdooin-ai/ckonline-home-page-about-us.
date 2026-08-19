@@ -20,6 +20,11 @@ $state   = trim($_POST['state'] ?? $_POST['preferred_state'] ?? '');
 $qualification = trim($_POST['current_qualification'] ?? '');
 $college_id = intval($_POST['college_id'] ?? 0);
 $course_id  = intval($_POST['course_id'] ?? 0);
+// lead-form.php's widget sends this as "referrer_url"; other forms may send
+// "page_url" directly - either way, this is what shows as the source page
+// in admin's Leads list (the online_leads.page_url column already exists
+// for this, but nothing was ever writing to it).
+$page_url = trim($_POST['page_url'] ?? $_POST['referrer_url'] ?? '');
 
 // Validate
 $errors = [];
@@ -64,6 +69,7 @@ try {
     if (in_array('qualification', $leadCols) && $qualification !== '') { $insertCols[] = 'qualification'; $insertVals[] = $qualification; }
     if (in_array('college_id', $leadCols) && $college_id > 0) { $insertCols[] = 'college_id'; $insertVals[] = $college_id; }
     if (in_array('course_id', $leadCols) && $course_id > 0) { $insertCols[] = 'course_id'; $insertVals[] = $course_id; }
+    if (in_array('page_url', $leadCols) && $page_url !== '') { $insertCols[] = 'page_url'; $insertVals[] = substr($page_url, 0, 500); }
     if (in_array('created_at', $leadCols)) { $insertCols[] = 'created_at'; $insertVals[] = date('Y-m-d H:i:s'); }
 
     $ph = implode(',', array_fill(0, count($insertCols), '?'));
