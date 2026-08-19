@@ -80,56 +80,94 @@ include __DIR__ . '/includes/header.php';
     <?php if (empty($colleges)): ?>
     <div class="compare-search-box">
       <h3>&#128269; Select colleges to compare</h3>
-      <p style="color:#64748b;font-size:.875rem;margin-bottom:20px;">Search for up to 3 colleges and click "Compare Now"</p>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
-        <input id="compareSearch1" type="text" placeholder="Search College 1..." style="flex:1;min-width:180px;padding:10px 14px;border:1px solid #e2e8f0;border-radius:8px;font-size:.875rem;" oninput="searchCompareColleges(1,this.value)">
-        <input id="compareSearch2" type="text" placeholder="Search College 2..." style="flex:1;min-width:180px;padding:10px 14px;border:1px solid #e2e8f0;border-radius:8px;font-size:.875rem;" oninput="searchCompareColleges(2,this.value)">
-        <input id="compareSearch3" type="text" placeholder="Search College 3..." style="flex:1;min-width:180px;padding:10px 14px;border:1px solid #e2e8f0;border-radius:8px;font-size:.875rem;" oninput="searchCompareColleges(3,this.value)">
-      </div>
-      <div id="searchResults1" style="margin-bottom:8px;"></div>
-      <div id="searchResults2" style="margin-bottom:8px;"></div>
-      <div id="searchResults3" style="margin-bottom:16px;"></div>
-      <div id="selectedList" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;"></div>
+      <p style="color:#64748b;font-size:.875rem;margin-bottom:20px;">Search for up to 3 colleges and click a result to select it, then click "Compare Now"</p>
+      <div id="compareSlots" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px;"></div>
+      <div id="compareResultsWrap" style="position:relative;margin-bottom:16px;"></div>
       <button onclick="goCompare()" class="btn-ck-primary" style="padding:10px 24px;font-size:.9rem;">&#9878; Compare Now</button>
+      <div id="compareError" style="display:none;color:#dc2626;font-size:.82rem;margin-top:10px;font-weight:600;"></div>
       <p style="margin-top:20px;font-size:.82rem;color:#9ca3af;">Or <a href="<?= $base ?>/colleges.php" style="color:#2563eb;">browse colleges</a> and click "Add to Compare"</p>
     </div>
 
     <script>
-    var selectedIds = {};
-    function searchCompareColleges(slot, q) {
-      var res = document.getElementById('searchResults'+slot);
-      if(!q || q.length < 2){ res.innerHTML=''; return; }
-      fetch((window.CK_BASE||'')+'/api/colleges.php?search='+encodeURIComponent(q)+'&limit=5')
-        .then(function(r){return r.json();})
-        .then(function(d){
-          if(!d.colleges||!d.colleges.length){ res.innerHTML='<div style="color:#9ca3af;font-size:.82rem;padding:6px;">No results</div>'; return; }
-          res.innerHTML = '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;">'+d.colleges.map(function(c){
-            return '<div style="padding:10px 14px;font-size:.85rem;cursor:pointer;transition:background .15s;border-bottom:1px solid #f1f5f9;" onmouseover="this.style.background=\'#eff6ff\'" onmouseout="this.style.background=\'#fff\'" onclick="selectCollege('+c.id+',\''+c.name.replace(/'/g,"\\'")+"',"+slot+')">'+
-              '<strong>'+c.name+'</strong>'+(c.city?'<span style="color:#9ca3af;margin-left:6px;font-size:.78rem;">'+c.city+'</span>':'')+
-            '</div>';
-          }).join('')+'</div>';
-        }).catch(function(){});
-    }
-    function selectCollege(id, name, slot) {
-      if(Object.keys(selectedIds).length>=3 && !selectedIds['s'+slot]){
-        alert('You can compare up to 3 colleges.'); return;
-      }
-      selectedIds['s'+slot] = {id:id, name:name};
-      document.getElementById('searchResults'+slot).innerHTML='';
-      document.getElementById('compareSearch'+slot).value=name;
-      renderSelected();
-    }
-    function renderSelected() {
-      var el = document.getElementById('selectedList');
-      el.innerHTML = Object.values(selectedIds).map(function(c){
-        return '<span style="background:#eff6ff;border:1px solid #dbeafe;color:#1e40af;padding:6px 12px;border-radius:6px;font-size:.82rem;font-weight:600;">'+c.name+'</span>';
+    // selected[slot] = {id, name, city} | null, for slot 0/1/2. A slot in
+    // "selected" state renders as a confirmed chip (with a remove button)
+    // instead of a search box, so there is never a search-results list left
+    // visibly on screen next to something that looks - but isn't - selected.
+    var selected = [null, null, null];
+    var searchTimers = [null, null, null];
+
+    function renderSlots() {
+      var wrap = document.getElementById('compareSlots');
+      wrap.innerHTML = selected.map(function(c, i) {
+        if (c) {
+          return '<div style="flex:1;min-width:180px;padding:10px 14px;border:1.5px solid #16a34a;background:#f0fdf4;border-radius:8px;font-size:.85rem;display:flex;align-items:center;justify-content:space-between;gap:8px;">'
+            + '<span><i class="bi bi-check-circle-fill" style="color:#16a34a;margin-right:6px;"></i><strong>' + c.name + '</strong>' + (c.city ? '<span style="color:#9ca3af;margin-left:6px;font-size:.78rem;">' + c.city + '</span>' : '') + '</span>'
+            + '<button type="button" onclick="clearSlot(' + i + ')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:1rem;line-height:1;" aria-label="Remove">&times;</button>'
+            + '</div>';
+        }
+        return '<input id="compareSearch' + i + '" type="text" placeholder="Search College ' + (i + 1) + '..." autocomplete="off"'
+          + ' style="flex:1;min-width:180px;padding:10px 14px;border:1px solid #e2e8f0;border-radius:8px;font-size:.875rem;"'
+          + ' oninput="onCompareInput(' + i + ',this.value)" onfocus="onCompareInput(' + i + ',this.value)">';
       }).join('');
     }
-    function goCompare() {
-      var ids = Object.values(selectedIds).map(function(c){return c.id;});
-      if(ids.length<2){alert('Please select at least 2 colleges to compare.'); return;}
-      window.location = (window.CK_BASE||'')+'/compare.php?ids='+ids.join(',');
+
+    function onCompareInput(slot, q) {
+      clearTimeout(searchTimers[slot]);
+      if (!q || q.length < 2) { document.getElementById('compareResultsWrap').innerHTML = ''; return; }
+      searchTimers[slot] = setTimeout(function () { searchCompareColleges(slot, q); }, 200);
     }
+
+    function searchCompareColleges(slot, q) {
+      fetch((window.CK_BASE || '') + '/api/colleges.php?search=' + encodeURIComponent(q) + '&limit=6')
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          var input = document.getElementById('compareSearch' + slot);
+          if (!input) return; // slot got selected/cleared while this request was in flight
+          var wrap = document.getElementById('compareResultsWrap');
+          var results = (d.colleges || []).filter(function (c) {
+            return !selected.some(function (s) { return s && s.id === c.id; });
+          });
+          if (!results.length) {
+            wrap.innerHTML = '<div style="position:absolute;top:0;left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;font-size:.82rem;color:#9ca3af;z-index:5;">No results</div>';
+            return;
+          }
+          wrap.innerHTML = '<div style="position:absolute;top:0;left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.08);z-index:5;">'
+            + results.map(function (c) {
+              return '<button type="button" style="display:block;width:100%;text-align:left;background:#fff;border:none;border-bottom:1px solid #f1f5f9;padding:10px 14px;font-size:.85rem;cursor:pointer;"'
+                + ' onmouseover="this.style.background=\'#eff6ff\'" onmouseout="this.style.background=\'#fff\'"'
+                + ' onclick="selectCollege(' + slot + ',' + c.id + ',\'' + String(c.name).replace(/'/g, "\\'") + '\',\'' + String(c.city || '').replace(/'/g, "\\'") + '\')">'
+                + '<strong>' + c.name + '</strong>' + (c.city ? '<span style="color:#9ca3af;margin-left:6px;font-size:.78rem;">' + c.city + '</span>' : '')
+                + '</button>';
+            }).join('')
+            + '</div>';
+        }).catch(function () {});
+    }
+
+    function selectCollege(slot, id, name, city) {
+      selected[slot] = { id: id, name: name, city: city };
+      document.getElementById('compareResultsWrap').innerHTML = '';
+      document.getElementById('compareError').style.display = 'none';
+      renderSlots();
+    }
+
+    function clearSlot(slot) {
+      selected[slot] = null;
+      document.getElementById('compareResultsWrap').innerHTML = '';
+      renderSlots();
+    }
+
+    function goCompare() {
+      var ids = selected.filter(Boolean).map(function (c) { return c.id; });
+      var errEl = document.getElementById('compareError');
+      if (ids.length < 2) {
+        errEl.textContent = 'Select at least 2 colleges above (click a search result to add it) before comparing.';
+        errEl.style.display = 'block';
+        return;
+      }
+      window.location = (window.CK_BASE || '') + '/compare.php?ids=' + ids.join(',');
+    }
+
+    renderSlots();
     </script>
 
     <?php else: ?>
