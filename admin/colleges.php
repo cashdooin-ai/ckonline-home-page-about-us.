@@ -7,20 +7,42 @@ $db = getDB();
 $flash = $_SESSION['flash'] ?? '';
 unset($_SESSION['flash']);
 
-$search = trim($_GET['search'] ?? '');
-$editId = (int)($_GET['id'] ?? 0);
-$isNew  = isset($_GET['new']);
+// Detect which columns actually exist on `colleges` rather than assuming
+// the base schema.sql shape - the live online-colleges dataset added
+// college_type/institution_type/online_mode/etc. via
+// database/seed_online_colleges.sql, and college-detail.php already reads
+// this way for the same reason. The previous version of this page hardcoded
+// a `type` column that doesn't exist on the live table (it's `college_type`
+// there), so every query below failed and was silently swallowed by a
+// try/catch, always showing "No colleges found" with no hint why.
+$allCols = [];
+try {
+    $allCols = $db->query("SHOW COLUMNS FROM colleges")->fetchAll(PDO::FETCH_COLUMN);
+} catch (Throwable $e) {}
+$has = array_flip($allCols);
+
+$search   = trim($_GET['search'] ?? '');
+$editId   = (int)($_GET['id'] ?? 0);
+$isNew    = isset($_GET['new']);
+$loadError = '';
+
+$listSelect = 'id, name';
+foreach (['city', 'state', 'college_type', 'institution_type', 'min_fees', 'max_fees'] as $col) {
+    if (isset($has[$col])) $listSelect .= ", $col";
+}
 
 $colleges = [];
 try {
     if ($search !== '') {
-        $stmt = $db->prepare("SELECT id, name, city, state, type, min_fees, max_fees FROM colleges WHERE name LIKE ? ORDER BY name ASC LIMIT 100");
+        $stmt = $db->prepare("SELECT $listSelect FROM colleges WHERE name LIKE ? ORDER BY name ASC LIMIT 100");
         $stmt->execute(['%' . $search . '%']);
     } else {
-        $stmt = $db->query("SELECT id, name, city, state, type, min_fees, max_fees FROM colleges ORDER BY name ASC LIMIT 100");
+        $stmt = $db->query("SELECT $listSelect FROM colleges ORDER BY name ASC LIMIT 100");
     }
     $colleges = $stmt->fetchAll();
-} catch (Throwable $e) {}
+} catch (Throwable $e) {
+    $loadError = $e->getMessage();
+}
 
 $editCollege = null;
 $editCourses = [];
@@ -35,6 +57,28 @@ if ($editId) {
             $editCourses = $cs->fetchAll();
         }
     } catch (Throwable $e) {}
+}
+
+// Field definitions for the edit form: only rendered/saved if the column
+// actually exists on this install. type = text|number|select|checkbox.
+$typeCol = isset($has['college_type']) ? 'college_type' : (isset($has['type']) ? 'type' : null);
+$fieldDefs = [
+    'short_name'       => ['label' => 'Short Name', 'type' => 'text', 'col' => 6],
+    'institution_type' => ['label' => 'Institution Type', 'type' => 'select', 'options' => ['university', 'college'], 'col' => 6],
+    'online_mode'      => ['label' => 'Delivery Mode', 'type' => 'select', 'options' => ['online', 'distance', 'hybrid'], 'col' => 6],
+    'city'             => ['label' => 'City', 'type' => 'text', 'col' => 6],
+    'state'            => ['label' => 'State', 'type' => 'text', 'col' => 6],
+    'established_year' => ['label' => 'Established Year', 'type' => 'number', 'col' => 6],
+    'accreditation'    => ['label' => 'Accreditation', 'type' => 'text', 'col' => 6],
+    'naac_grade'       => ['label' => 'NAAC Grade', 'type' => 'text', 'col' => 4],
+    'rating'           => ['label' => 'Rating (0-5)', 'type' => 'number', 'step' => '0.1', 'col' => 4],
+    'ugc_approved'     => ['label' => 'UGC-DEB Approved', 'type' => 'checkbox', 'col' => 4],
+    'min_fees'         => ['label' => 'Min Fees (INR)', 'type' => 'number', 'col' => 6],
+    'max_fees'         => ['label' => 'Max Fees (INR)', 'type' => 'number', 'col' => 6],
+    'website'          => ['label' => 'Website', 'type' => 'text', 'col' => 12],
+];
+if ($typeCol !== null) {
+    $fieldDefs = [$typeCol => ['label' => 'Type', 'type' => 'select', 'options' => ['government', 'private', 'deemed', 'autonomous'], 'col' => 6]] + $fieldDefs;
 }
 ?>
 <html lang="en">
@@ -87,8 +131,10 @@ body{background:#f1f5f9;font-family:'Inter',sans-serif;}
                 <form method="GET" class="mb-3">
                     <input type="text" name="search" class="form-control form-control-sm" placeholder="Search by name…" value="<?= htmlspecialchars($search) ?>">
                 </form>
-                <?php if (empty($colleges)): ?>
-                <p class="text-muted text-center py-4">No colleges found.</p>
+                <?php if ($loadError): ?>
+                <div class="alert alert-danger py-2" style="font-size:.8rem;">Could not load colleges: <?= htmlspecialchars($loadError) ?></div>
+                <?php elseif (empty($colleges)): ?>
+                <p class="text-muted text-center py-4"><?= $search !== '' ? 'No colleges match that search.' : 'No colleges yet — click "Add College" to create the first one.' ?></p>
                 <?php else: ?>
                 <div class="table-responsive" style="max-height:600px;overflow-y:auto;">
                 <table class="table table-hover table-sm mb-0">
@@ -98,7 +144,7 @@ body{background:#f1f5f9;font-family:'Inter',sans-serif;}
                     <tr class="<?= (int)$c['id'] === $editId ? 'table-primary' : '' ?>">
                         <td><?= htmlspecialchars(mb_strimwidth($c['name'], 0, 34, '…')) ?></td>
                         <td><?= htmlspecialchars($c['city'] ?? '—') ?></td>
-                        <td><span class="badge bg-secondary" style="font-size:.68rem;"><?= htmlspecialchars($c['type'] ?? '') ?></span></td>
+                        <td><span class="badge bg-secondary" style="font-size:.68rem;"><?= htmlspecialchars($c['college_type'] ?? $c['type'] ?? '') ?></span></td>
                         <td><a href="?id=<?= $c['id'] ?>" class="btn btn-xs btn-outline-secondary btn-sm"><i class="bi bi-pencil"></i></a></td>
                     </tr>
                     <?php endforeach; ?>
@@ -121,30 +167,31 @@ body{background:#f1f5f9;font-family:'Inter',sans-serif;}
                             <label class="form-label fw-bold">Name *</label>
                             <input type="text" name="name" class="form-control" required value="<?= htmlspecialchars($editCollege['name'] ?? '') ?>">
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Type</label>
-                            <select name="type" class="form-select">
-                                <?php foreach (['private','government','deemed'] as $t): ?>
-                                <option value="<?= $t ?>" <?= ($editCollege['type'] ?? '') === $t ? 'selected' : '' ?>><?= ucfirst($t) ?></option>
+
+                        <?php foreach ($fieldDefs as $col => $def): if (!isset($has[$col])) continue; ?>
+                        <div class="col-md-<?= $def['col'] ?>">
+                            <?php if ($def['type'] === 'checkbox'): ?>
+                            <div class="form-check mt-4">
+                                <input type="checkbox" class="form-check-input" name="<?= $col ?>" id="f_<?= $col ?>" value="1" <?= !empty($editCollege[$col]) ? 'checked' : '' ?>>
+                                <label class="form-check-label fw-bold" for="f_<?= $col ?>"><?= htmlspecialchars($def['label']) ?></label>
+                            </div>
+                            <?php else: ?>
+                            <label class="form-label fw-bold"><?= htmlspecialchars($def['label']) ?></label>
+                            <?php if ($def['type'] === 'select'): ?>
+                            <select name="<?= $col ?>" class="form-select">
+                                <option value="">—</option>
+                                <?php foreach ($def['options'] as $opt): ?>
+                                <option value="<?= $opt ?>" <?= ($editCollege[$col] ?? '') === $opt ? 'selected' : '' ?>><?= ucfirst($opt) ?></option>
                                 <?php endforeach; ?>
                             </select>
+                            <?php else: ?>
+                            <input type="<?= $def['type'] ?>" name="<?= $col ?>" class="form-control" <?= isset($def['step']) ? 'step="' . $def['step'] . '"' : '' ?> value="<?= htmlspecialchars($editCollege[$col] ?? '') ?>">
+                            <?php endif; ?>
+                            <?php endif; ?>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">City</label>
-                            <input type="text" name="city" class="form-control" value="<?= htmlspecialchars($editCollege['city'] ?? '') ?>">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">State</label>
-                            <input type="text" name="state" class="form-control" value="<?= htmlspecialchars($editCollege['state'] ?? '') ?>">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Min Fees (INR)</label>
-                            <input type="number" name="min_fees" class="form-control" value="<?= $editCollege['min_fees'] ?? '' ?>">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Max Fees (INR)</label>
-                            <input type="number" name="max_fees" class="form-control" value="<?= $editCollege['max_fees'] ?? '' ?>">
-                        </div>
+                        <?php endforeach; ?>
+
+                        <?php if (isset($has['description'])): ?>
                         <div class="col-12">
                             <div class="d-flex justify-content-between align-items-center">
                                 <label class="form-label fw-bold mb-0">Description</label>
@@ -155,6 +202,8 @@ body{background:#f1f5f9;font-family:'Inter',sans-serif;}
                             <textarea name="description" id="collegeDescription" class="form-control" rows="4"><?= htmlspecialchars($editCollege['description'] ?? '') ?></textarea>
                             <small id="aiDescStatus" class="text-muted"></small>
                         </div>
+                        <?php endif; ?>
+
                         <div class="col-12">
                             <button type="submit" class="btn btn-primary fw-bold"><i class="bi bi-save"></i> Save College</button>
                             <a href="colleges.php" class="btn btn-outline-secondary">Cancel</a>
