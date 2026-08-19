@@ -110,6 +110,8 @@ $base = SITE_BASE;
 .ck-simple-dropdown a:hover{background:#eff6ff;color:#2563eb;}
 .ck-simple-dropdown .dd-divider{margin:6px 16px;border-top:1px solid #f1f5f9;}
 .ck-ai-badge{display:inline-flex;align-items:center;gap:5px;background:#f0fdf4;border:1px solid #bbf7d0;color:#16a34a;font-size:.72rem;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;}
+.ck-hiring-badge{display:inline-flex;align-items:center;gap:5px;background:#fffbeb;border:1px solid #fde68a;color:#92400e;font-size:.72rem;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;text-decoration:none;transition:background .2s;}
+.ck-hiring-badge:hover{background:#fef3c7;color:#78350f;}
 .btn-ck-green{background:#22c55e;color:#fff;border:none;padding:7px 12px;border-radius:8px;font-size:.78rem;font-weight:700;text-decoration:none;white-space:nowrap;transition:background .2s;display:inline-flex;align-items:center;gap:4px;}
 .btn-ck-green:hover{background:#16a34a;color:#fff;}
 .btn-ck-primary{background:#2563eb;color:#fff;border:none;padding:7px 12px;border-radius:8px;font-size:.78rem;font-weight:700;text-decoration:none;white-space:nowrap;transition:background .2s;display:inline-flex;align-items:center;gap:4px;}
@@ -290,11 +292,15 @@ $base = SITE_BASE;
         <li class="nav-item">
           <a class="nav-link" href="<?= $base ?>/index.php#about-us">About Us</a>
         </li>
+        <li class="nav-item d-xl-none">
+          <a class="nav-link" href="https://careers.collegekampus.com/join-us.php"><i class="bi bi-rocket-takeoff-fill me-1"></i>We're Hiring</a>
+        </li>
 
       </ul>
 
       <!-- Right CTAs -->
       <div class="d-flex align-items-center gap-2 ck-right-actions ms-xl-auto">
+        <a href="https://careers.collegekampus.com/join-us.php" class="ck-hiring-badge d-none d-xl-inline-flex"><i class="bi bi-rocket-takeoff-fill"></i>We're Hiring</a>
         <span class="ck-ai-badge d-none d-xl-inline-flex"><i class="bi bi-stars me-1"></i>AI-Powered</span>
         <?php if (!empty($_SESSION['compare_list'])): ?>
         <a href="<?= $base ?>/compare.php" class="btn-ck-green" id="navCompareBtn">
