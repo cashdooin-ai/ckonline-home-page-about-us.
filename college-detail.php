@@ -66,43 +66,55 @@ try {
         $courses = $stmt2->fetchAll();
     } catch (Throwable $e) {}
 
-    // Related colleges: must offer at least one course in a shared subject
-    // category (prevents e.g. a nursing college or an architecture school
-    // showing up as "similar" to a general/DDE university just because
-    // they happen to be in the same state), falling back to the original
-    // state-only match when this college has no course-category data to
-    // match against, or the category match returns too few results.
+    // Related colleges: prefer the same institution_type (university vs. a
+    // single-purpose college - e.g. a B.Ed college) and the same online/
+    // distance status first. This portal's online-colleges dataset
+    // (database/seed_online_colleges.sql) stores its "courses" as free-text
+    // rows in college_streams, not in the courses/college_courses tables -
+    // matching on courses.category (an earlier attempt at this fix) silently
+    // matched nothing for every one of these rows and fell straight back to
+    // an unfiltered same-state pick, which is why a general/DDE university
+    // could still end up next to single-purpose B.Ed colleges. Falls back to
+    // progressively looser matches only when a stricter tier returns too few
+    // results, so a college with no institution_type/online_mode data still
+    // gets a same-state result rather than an empty section.
     try {
-        $ownCategories = [];
-        try {
-            $catStmt = $db->prepare("SELECT DISTINCT cr.category FROM college_courses cc JOIN courses cr ON cr.id = cc.course_id WHERE cc.college_id = ?");
-            $catStmt->execute([$id]);
-            $ownCategories = array_column($catStmt->fetchAll(), 'category');
-        } catch (Throwable $e) {}
-
         $relSelect = 'c.id, c.name';
         foreach (['city','state','naac_grade','slug','logo_url','college_type','min_fees','short_name'] as $col) {
             if (in_array($col, $allCols)) $relSelect .= ", c.$col";
         }
 
+        $hasInstType   = in_array('institution_type', $allCols) && !empty($college['institution_type']);
+        $hasOnlineMode = in_array('online_mode', $allCols) && !empty($college['online_mode']);
+
         $related = [];
-        if (!empty($ownCategories)) {
+
+        // Tier 1: same state + same institution_type + also online/distance
+        if ($hasInstType || $hasOnlineMode) {
             $relWhere = ['c.id != ?'];
             $relParams = [$id];
             if (!empty($college['state'])) { $relWhere[] = 'c.state = ?'; $relParams[] = $college['state']; }
             if (in_array('is_active', $allCols)) $relWhere[] = 'c.is_active = 1';
-            $catIn = implode(',', array_fill(0, count($ownCategories), '?'));
-            $relWhere[] = "EXISTS (SELECT 1 FROM college_courses cc2 JOIN courses cr2 ON cr2.id = cc2.course_id WHERE cc2.college_id = c.id AND cr2.category IN ($catIn))";
-            $relParams = array_merge($relParams, $ownCategories);
+            if ($hasInstType)   { $relWhere[] = 'c.institution_type = ?'; $relParams[] = $college['institution_type']; }
+            if ($hasOnlineMode) { $relWhere[] = "c.online_mode IS NOT NULL AND c.online_mode != ''"; }
             $stmt3 = $db->prepare("SELECT $relSelect FROM colleges c WHERE " . implode(' AND ', $relWhere) . " ORDER BY RAND() LIMIT 4");
             $stmt3->execute($relParams);
             $related = $stmt3->fetchAll();
         }
 
+        // Tier 2: same institution_type only, drop the state restriction
+        if (count($related) < 2 && $hasInstType) {
+            $relWhere = ['c.id != ?', 'c.institution_type = ?'];
+            $relParams = [$id, $college['institution_type']];
+            if (in_array('is_active', $allCols)) $relWhere[] = 'c.is_active = 1';
+            $stmt3 = $db->prepare("SELECT $relSelect FROM colleges c WHERE " . implode(' AND ', $relWhere) . " ORDER BY RAND() LIMIT 4");
+            $stmt3->execute($relParams);
+            $related = $stmt3->fetchAll();
+        }
+
+        // Tier 3: original state-only fallback for colleges with no
+        // institution_type/online_mode data at all.
         if (count($related) < 2) {
-            // No course-category data to match against, or not enough
-            // matches - fall back to the original state-only match rather
-            // than show fewer than 2 "similar" colleges.
             $relWhere = ['c.id != ?'];
             $relParams = [$id];
             if (!empty($college['state'])) { $relWhere[] = 'c.state = ?'; $relParams[] = $college['state']; }
