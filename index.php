@@ -606,10 +606,9 @@ require_once __DIR__ . '/includes/header.php';
       </div>
       <div class="col-lg-5 offset-lg-1">
         <div class="p-4 rounded-3 text-center" style="background:linear-gradient(135deg,#eff6ff,#e0f2fe);border:1px solid #bfdbfe;">
-          <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#1a4fba,#2563eb);color:#fff;font-size:1.6rem;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">AK</div>
-          <div class="fw-bold" style="color:#0f172a;">Arjun Kumar</div>
-          <div class="text-muted small">Founder, CollegeKampus Online</div>
-          <p class="mt-3 text-muted small" style="line-height:1.7;">"I spent years watching students make bad college decisions because of bad advice. I built this to fix that."</p>
+          <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#1a4fba,#2563eb);color:#fff;font-size:1.8rem;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;"><i class="bi bi-quote"></i></div>
+          <div class="fw-bold" style="color:#0f172a;">A Note From the Founders</div>
+          <p class="mt-3 text-muted small" style="line-height:1.7;">"We spent years watching students make bad college decisions because of bad advice. We built this to fix that."</p>
         </div>
       </div>
     </div>
