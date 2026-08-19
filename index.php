@@ -77,7 +77,7 @@ $extraHead = <<<'EXTRAHEAD_CSS'
     .ck-topbar { background: #0f172a; color: rgba(255,255,255,.7); font-size:.8rem; padding:6px 0; }
     .ck-topbar a { color: rgba(255,255,255,.7); text-decoration:none; }
     .ck-topbar a:hover { color: #fff; }
-    .ck-info-banner { background: #1a4fba; color: #fff; font-size: .88rem; padding: 10px 0; }
+    .ck-info-banner { background: #1a4fba; color: #fff; font-size: .88rem; padding: 10px 0; position: sticky; top: calc(var(--ck-topbar-h, 0px) + var(--ck-navbar-h, 64px)); z-index: 1099; }
     .ck-info-banner a { color: #fbbf24; font-weight: 700; text-decoration: none; }
     .ck-info-banner a:hover { text-decoration: underline; }
     .ck-navbar { background: #fff; box-shadow: 0 1px 0 #e2e8f0; }

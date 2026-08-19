@@ -71,10 +71,10 @@ $base = SITE_BASE;
     <?php if (isset($extraHead)) echo $extraHead; ?>
 <style>
 /* ── Mega Menu Navbar ── */
-.ck-topbar{background:#0f172a;color:rgba(255,255,255,.75);font-size:.78rem;padding:5px 0;}
+.ck-topbar{background:#0f172a;color:rgba(255,255,255,.75);font-size:.78rem;padding:5px 0;position:sticky;top:0;z-index:1101;}
 .ck-topbar a{color:rgba(255,255,255,.7);text-decoration:none;}
 .ck-topbar a:hover{color:#fff;}
-.ck-navbar{background:#fff;box-shadow:0 2px 16px rgba(0,0,0,.08);padding:0;border-bottom:1px solid #e2e8f0;z-index:1100;position:relative;}
+.ck-navbar{background:#fff;box-shadow:0 2px 16px rgba(0,0,0,.08);padding:0;border-bottom:1px solid #e2e8f0;z-index:1100;position:sticky;top:var(--ck-topbar-h,0px);}
 .ck-navbar .container{height:64px;align-items:center;flex-wrap:nowrap;}
 .ck-navbar .navbar-brand{padding:0;margin-right:1rem;}
 .ck-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,#2563eb,#1d4ed8);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:.95rem;flex-shrink:0;}
@@ -151,7 +151,7 @@ $base = SITE_BASE;
 </div>
 
 <!-- Mega-menu Navbar -->
-<nav class="navbar ck-navbar sticky-top" id="mainNav" role="navigation" aria-label="Main navigation">
+<nav class="navbar ck-navbar" id="mainNav" role="navigation" aria-label="Main navigation">
   <div class="container d-flex align-items-center">
 
     <!-- Logo -->
@@ -336,6 +336,7 @@ $base = SITE_BASE;
     toggle.addEventListener('click', function(){
       if(window.innerWidth >= 1200) return;
       nav.style.display = (nav.style.display === 'none') ? 'block' : 'none';
+      ckUpdateStickyOffsets();
     });
   }
   // Mobile sub-menu toggle
@@ -343,10 +344,27 @@ $base = SITE_BASE;
     caret.closest('.nav-link').addEventListener('click', function(e){
       if(window.innerWidth < 1200){
         var dd = this.parentElement.querySelector('.ck-dropdown');
-        if(dd){ e.preventDefault(); this.parentElement.classList.toggle('mobile-open'); }
+        if(dd){ e.preventDefault(); this.parentElement.classList.toggle('mobile-open'); ckUpdateStickyOffsets(); }
       }
     });
   });
+
+  // Stack the sticky topbar + navbar (and, on pages that have one, an
+  // info banner right after <main>) so they all stay pinned together
+  // while scrolling instead of each fighting over top:0. Heights are
+  // measured rather than hard-coded since the topbar is hidden below the
+  // md breakpoint and the navbar's own height changes when it wraps.
+  function ckUpdateStickyOffsets(){
+    var topbar = document.querySelector('.ck-topbar');
+    var navbar = document.querySelector('.ck-navbar');
+    var topbarH = (topbar && getComputedStyle(topbar).display !== 'none') ? topbar.offsetHeight : 0;
+    var navbarH = navbar ? navbar.offsetHeight : 0;
+    document.documentElement.style.setProperty('--ck-topbar-h', topbarH + 'px');
+    document.documentElement.style.setProperty('--ck-navbar-h', navbarH + 'px');
+  }
+  ckUpdateStickyOffsets();
+  window.addEventListener('load', ckUpdateStickyOffsets);
+  window.addEventListener('resize', ckUpdateStickyOffsets);
 })();
 </script>
 
