@@ -60,19 +60,12 @@ if (empty($carouselSlides)) {
     $carouselSlides = is_array($__def) ? $__def : [];
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CollegeKampus Online — Find Your Dream Online Degree in India</title>
-  <meta name="description" content="Compare 50+ online universities in India. Explore MBA, BCA, B.Com, BBA and more online degree programs. Check fees, placements and apply in minutes.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<?php
+$pageTitle = 'CollegeKampus Online — Find Your Dream Online Degree in India';
+$pageDesc  = 'Compare 50+ online universities in India. Explore MBA, BCA, B.Com, BBA and more online degree programs. Check fees, placements and apply in minutes.';
+$extraHead = <<<'EXTRAHEAD_CSS'
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="assets/css/portal.css">
-  <style>
+<style>
     :root {
       --ck-blue: #1a4fba;
       --ck-blue2: #2563eb;
@@ -206,112 +199,10 @@ if (empty($carouselSlides)) {
     .skel { background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:8px; }
     @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
   </style>
-</head>
-<body>
+EXTRAHEAD_CSS;
+require_once __DIR__ . '/includes/header.php';
+?>
 
-<!-- Top Bar -->
-<div class="ck-topbar d-none d-md-block">
-  <div class="container d-flex justify-content-between align-items-center">
-    <span><i class="bi bi-envelope me-1"></i>info@collegekampus.in &nbsp;|&nbsp;
-          <i class="bi bi-telephone me-1"></i>1800-123-4567 (Toll Free)</span>
-    <span>
-      <a href="#" class="me-3"><i class="bi bi-facebook me-1"></i>Facebook</a>
-      <a href="#" class="me-3"><i class="bi bi-instagram me-1"></i>Instagram</a>
-      <a href="#"><i class="bi bi-youtube me-1"></i>YouTube</a>
-    </span>
-  </div>
-</div>
-
-<!-- Navbar -->
-<nav class="navbar navbar-expand-xl ck-navbar sticky-top">
-  <div class="container">
-    <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none" href="index.php">
-      <div class="ck-logo-icon">CK</div>
-      <div class="lh-1">
-        <span class="ck-brand-main">CollegeKampus</span>
-        <span class="ck-brand-sub d-block">Online</span>
-      </div>
-    </a>
-    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
-      <i class="bi bi-list fs-4"></i>
-    </button>
-    <div class="collapse navbar-collapse" id="navMain">
-      <ul class="navbar-nav mx-auto mb-2 mb-xl-0 gap-xl-0">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-            <i class="bi bi-mortarboard me-1"></i>Explore Programs
-          </a>
-          <div class="dropdown-menu p-2" style="min-width:520px">
-            <div class="row g-0">
-              <div class="col-6">
-                <div class="nav-dd-header">PG Programs</div>
-                <a class="dropdown-item" href="colleges.php?course=MBA"><i class="bi bi-briefcase me-2 text-primary"></i>Online MBA</a>
-                <a class="dropdown-item" href="colleges.php?course=MCA"><i class="bi bi-laptop me-2 text-success"></i>Online MCA</a>
-                <a class="dropdown-item" href="colleges.php?course=MSC"><i class="bi bi-flask me-2 text-danger"></i>Online M.Sc</a>
-                <a class="dropdown-item" href="colleges.php?course=MA"><i class="bi bi-book me-2"></i>Online MA</a>
-                <a class="dropdown-item" href="colleges.php?course=MCOM"><i class="bi bi-graph-up me-2 text-warning"></i>Online M.Com</a>
-              </div>
-              <div class="col-6 border-start">
-                <div class="nav-dd-header">UG Programs</div>
-                <a class="dropdown-item" href="colleges.php?course=BBA"><i class="bi bi-building me-2 text-primary"></i>Online BBA</a>
-                <a class="dropdown-item" href="colleges.php?course=BCA"><i class="bi bi-code-slash me-2 text-success"></i>Online BCA</a>
-                <a class="dropdown-item" href="colleges.php?course=BCOM"><i class="bi bi-currency-rupee me-2 text-warning"></i>Online B.Com</a>
-                <a class="dropdown-item" href="colleges.php?course=BA"><i class="bi bi-palette me-2 text-danger"></i>Online BA</a>
-                <a class="dropdown-item" href="colleges.php?course=BSC"><i class="bi bi-cpu me-2 text-info"></i>Online B.Sc</a>
-              </div>
-            </div>
-            <div class="px-2 pt-2 border-top mt-2">
-              <a href="courses.php" class="btn btn-sm w-100" style="background:#f0f6ff;color:#1a4fba;font-weight:700;border-radius:8px;">
-                View All Programs <i class="bi bi-arrow-right"></i>
-              </a>
-            </div>
-          </div>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-            <i class="bi bi-building me-1"></i>Top Universities
-          </a>
-          <div class="dropdown-menu p-2">
-            <div class="nav-dd-header">By Ranking</div>
-            <a class="dropdown-item" href="colleges.php?sort=nirf"><i class="bi bi-trophy me-2 text-warning"></i>NIRF Ranked</a>
-            <a class="dropdown-item" href="colleges.php?accreditation=NAAC%20A++"><i class="bi bi-patch-check me-2 text-success"></i>NAAC A++ Universities</a>
-            <a class="dropdown-item" href="colleges.php?type=government"><i class="bi bi-bank me-2 text-primary"></i>Government Universities</a>
-            <div class="nav-dd-header mt-2">By Program</div>
-            <a class="dropdown-item" href="colleges.php?course=MBA"><i class="bi bi-briefcase me-2 text-primary"></i>Best for MBA</a>
-            <a class="dropdown-item" href="colleges.php?course=BCA"><i class="bi bi-code me-2 text-success"></i>Best for BCA/MCA</a>
-            <a class="dropdown-item" href="colleges.php?course=BCOM"><i class="bi bi-calculator me-2 text-warning"></i>Best for B.Com/M.Com</a>
-            <div class="px-2 pt-2 border-top mt-2">
-              <a href="colleges.php" class="btn btn-sm w-100" style="background:#f0f6ff;color:#1a4fba;font-weight:700;border-radius:8px;">
-                All Universities <i class="bi bi-arrow-right"></i>
-              </a>
-            </div>
-          </div>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-            <i class="bi bi-tools me-1"></i>Tools
-          </a>
-          <div class="dropdown-menu p-2">
-            <a class="dropdown-item" href="compare.php"><i class="bi bi-bar-chart-steps me-2 text-primary"></i>Compare Colleges</a>
-            <a class="dropdown-item" href="counselling.php"><i class="bi bi-headset me-2 text-success"></i>Free Counselling</a>
-            <a class="dropdown-item" href="apply.php"><i class="bi bi-send me-2 text-warning"></i>Apply Online</a>
-            <a class="dropdown-item" href="contact.php"><i class="bi bi-question-circle me-2 text-danger"></i>Ask an Expert</a>
-          </div>
-        </li>
-        <li class="nav-item"><a class="nav-link" href="#about-us">About Us</a></li>
-      </ul>
-      <div class="d-flex align-items-center gap-2 mt-3 mt-xl-0">
-        <span class="ai-badge d-none d-xl-inline"><i class="bi bi-stars me-1"></i>AI-Powered</span>
-        <a href="compare.php" class="btn-compare-nav d-none d-xl-inline-flex align-items-center gap-1">
-          <i class="bi bi-bar-chart-steps"></i> Compare in 2 mins
-        </a>
-        <a href="colleges.php" class="btn-signin">
-          <i class="bi bi-search me-1"></i>Find College
-        </a>
-      </div>
-    </div>
-  </div>
-</nav>
 
 <!-- Info Banner -->
 <div class="ck-info-banner" id="infoBanner">
@@ -806,6 +697,9 @@ if (empty($carouselSlides)) {
     </div>
   </div>
 </section>
+
+
+</main>
 
 <!-- Footer -->
 <footer class="ck-footer">
