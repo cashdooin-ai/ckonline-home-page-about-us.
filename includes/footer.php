@@ -73,6 +73,8 @@ $base = SITE_BASE;
           <li><a href="<?= $base ?>/contact.php">Contact Us</a></li>
           <li><a href="<?= $base ?>/colleges.php?delivery_mode=online">Online Colleges</a></li>
           <li><a href="<?= $base ?>/colleges.php?delivery_mode=hybrid">Hybrid Colleges</a></li>
+          <li><a href="https://careers.collegekampus.com/join-us.php">Careers at CollegeKampus</a></li>
+          <li><a href="https://partner.collegekampus.com/register.php">Become a Partner</a></li>
         </ul>
       </div>
 
