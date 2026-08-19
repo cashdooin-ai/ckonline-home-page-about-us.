@@ -1,12 +1,13 @@
 <?php
 session_start();
+require_once __DIR__ . '/includes/credentials.php';
 
-// Change these credentials — store hashed password with: php -r "echo password_hash('yourpassword', PASSWORD_DEFAULT);"
-define('ADMIN_USER', 'admin');
-define('ADMIN_PASS_HASH', '$2y$12$4pRuyTKzYMc9iXxw0TriKuDwWXv8NWkDiv4lY9IKCEkCQm6GdwAc6'); // override via ADMIN_PASS_HASH env var on server
-
-$adminUser = getenv('ADMIN_USER') ?: ADMIN_USER;
-$adminHash = getenv('ADMIN_PASS_HASH') ?: ADMIN_PASS_HASH;
+// Credentials resolve DB (site_settings, set via change-password.php) ->
+// ADMIN_USER/ADMIN_PASS_HASH env vars -> hardcoded fallback. See
+// includes/credentials.php for the resolution order and the fallback hash.
+$creds     = ckGetAdminCredentials();
+$adminUser = $creds['username'];
+$adminHash = $creds['hash'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $u = trim($_POST['username'] ?? '');
@@ -50,6 +51,9 @@ body{background:#f1f5f9;display:flex;align-items:center;justify-content:center;m
   </div>
   <?php if (!empty($error)): ?>
     <div class="alert alert-danger py-2"><?= htmlspecialchars($error) ?></div>
+  <?php endif; ?>
+  <?php if (isset($_GET['changed'])): ?>
+    <div class="alert alert-success py-2">Password changed — sign in with your new password.</div>
   <?php endif; ?>
   <form method="post" autocomplete="off">
     <div class="mb-3">
