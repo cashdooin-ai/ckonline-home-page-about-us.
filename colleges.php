@@ -186,7 +186,7 @@ include __DIR__ . '/includes/header.php';
       </aside>
 
       <!-- Main -->
-      <main class="colleges-main">
+      <div class="colleges-main">
         <?php if ($urlCourse): ?>
         <div style="background:#eff6ff;border:1px solid #dbeafe;border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
           <span style="font-size:.9rem;color:#1d4ed8;font-weight:600;">&#128218; Showing colleges for: <strong><?= htmlspecialchars($urlCourse) ?></strong></span>
@@ -200,7 +200,7 @@ include __DIR__ . '/includes/header.php';
           <?php endfor; ?>
         </div>
         <div class="pagination-wrap" id="paginationWrap"></div>
-      </main>
+      </div>
 
     </div>
   </div>
