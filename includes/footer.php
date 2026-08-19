@@ -112,7 +112,7 @@ $base = SITE_BASE;
           &copy; <?= date('Y') ?> CollegeKampus Online. All rights reserved. &nbsp;|&nbsp;
           <a href="<?= $base ?>/privacy-policy.php" style="color:rgba(255,255,255,.45);text-decoration:none;">Privacy Policy</a> &nbsp;|&nbsp;
           <a href="<?= $base ?>/terms.php"          style="color:rgba(255,255,255,.45);text-decoration:none;">Terms of Use</a> &nbsp;|&nbsp;
-          <a href="<?= $base ?>/sitemap.xml"        style="color:rgba(255,255,255,.45);text-decoration:none;">Sitemap</a>
+          <a href="<?= $base ?>/sitemap.php"        style="color:rgba(255,255,255,.45);text-decoration:none;">Sitemap</a>
         </small>
       </div>
       <div class="col-md-4 text-center text-md-end mt-2 mt-md-0">

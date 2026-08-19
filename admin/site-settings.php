@@ -129,6 +129,7 @@ textarea.json-area{font-family:monospace;font-size:.78rem;min-height:200px;}
     <li class="nav-item"><a class="nav-link" href="index.php?tab=posts"><i class="bi bi-journal-text"></i> Blog Posts</a></li>
     <li class="nav-item"><a class="nav-link" href="index.php?tab=programs"><i class="bi bi-mortarboard"></i> Program Pages</a></li>
     <li class="nav-item"><a class="nav-link" href="index.php?tab=leads"><i class="bi bi-people"></i> Leads</a></li>
+    <li class="nav-item"><a class="nav-link" href="colleges.php"><i class="bi bi-bank"></i> Colleges</a></li>
     <li class="nav-item"><a class="nav-link" href="generate.php"><i class="bi bi-robot"></i> AI Generate</a></li>
     <li class="nav-item"><a class="nav-link active" href="site-settings.php"><i class="bi bi-gear"></i> Site Settings</a></li>
     <li class="nav-item mt-3"><a class="nav-link" href="/dashboard/"><i class="bi bi-house"></i> Front-end</a></li>

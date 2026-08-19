@@ -35,6 +35,7 @@ body{background:#f1f5f9;font-family:'Inter',sans-serif;}
     <div style="font-size:1.1rem;font-weight:800;">🤖 AI Content Generator</div>
     <div class="ms-auto d-flex gap-3">
         <a href="/dashboard/admin/index.php"><i class="bi bi-arrow-left"></i> Back to Admin</a>
+        <a href="/dashboard/admin/colleges.php"><i class="bi bi-bank"></i> Colleges</a>
         <a href="/dashboard/" target="_blank"><i class="bi bi-house"></i> Front-end</a>
     </div>
 </div>

@@ -66,19 +66,51 @@ try {
         $courses = $stmt2->fetchAll();
     } catch (Throwable $e) {}
 
-    // Related colleges
+    // Related colleges: must offer at least one course in a shared subject
+    // category (prevents e.g. a nursing college or an architecture school
+    // showing up as "similar" to a general/DDE university just because
+    // they happen to be in the same state), falling back to the original
+    // state-only match when this college has no course-category data to
+    // match against, or the category match returns too few results.
     try {
-        $relWhere = ['c.id != ?'];
-        $relParams = [$id];
-        if (!empty($college['state'])) { $relWhere[] = 'c.state = ?'; $relParams[] = $college['state']; }
-        if (in_array('is_active', $allCols)) $relWhere[] = 'c.is_active = 1';
+        $ownCategories = [];
+        try {
+            $catStmt = $db->prepare("SELECT DISTINCT cr.category FROM college_courses cc JOIN courses cr ON cr.id = cc.course_id WHERE cc.college_id = ?");
+            $catStmt->execute([$id]);
+            $ownCategories = array_column($catStmt->fetchAll(), 'category');
+        } catch (Throwable $e) {}
+
         $relSelect = 'c.id, c.name';
         foreach (['city','state','naac_grade','slug','logo_url','college_type','min_fees','short_name'] as $col) {
             if (in_array($col, $allCols)) $relSelect .= ", c.$col";
         }
-        $stmt3 = $db->prepare("SELECT $relSelect FROM colleges c WHERE " . implode(' AND ', $relWhere) . " ORDER BY RAND() LIMIT 4");
-        $stmt3->execute($relParams);
-        $related = $stmt3->fetchAll();
+
+        $related = [];
+        if (!empty($ownCategories)) {
+            $relWhere = ['c.id != ?'];
+            $relParams = [$id];
+            if (!empty($college['state'])) { $relWhere[] = 'c.state = ?'; $relParams[] = $college['state']; }
+            if (in_array('is_active', $allCols)) $relWhere[] = 'c.is_active = 1';
+            $catIn = implode(',', array_fill(0, count($ownCategories), '?'));
+            $relWhere[] = "EXISTS (SELECT 1 FROM college_courses cc2 JOIN courses cr2 ON cr2.id = cc2.course_id WHERE cc2.college_id = c.id AND cr2.category IN ($catIn))";
+            $relParams = array_merge($relParams, $ownCategories);
+            $stmt3 = $db->prepare("SELECT $relSelect FROM colleges c WHERE " . implode(' AND ', $relWhere) . " ORDER BY RAND() LIMIT 4");
+            $stmt3->execute($relParams);
+            $related = $stmt3->fetchAll();
+        }
+
+        if (count($related) < 2) {
+            // No course-category data to match against, or not enough
+            // matches - fall back to the original state-only match rather
+            // than show fewer than 2 "similar" colleges.
+            $relWhere = ['c.id != ?'];
+            $relParams = [$id];
+            if (!empty($college['state'])) { $relWhere[] = 'c.state = ?'; $relParams[] = $college['state']; }
+            if (in_array('is_active', $allCols)) $relWhere[] = 'c.is_active = 1';
+            $stmt3 = $db->prepare("SELECT $relSelect FROM colleges c WHERE " . implode(' AND ', $relWhere) . " ORDER BY RAND() LIMIT 4");
+            $stmt3->execute($relParams);
+            $related = $stmt3->fetchAll();
+        }
     } catch (Throwable $e) {}
 
 } catch (Throwable $e) {
