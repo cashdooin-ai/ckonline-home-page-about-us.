@@ -584,7 +584,15 @@ require_once __DIR__ . '/includes/header.php';
       <h2 class="sec-title mt-1">More from <span>CollegeKampus</span></h2>
     </div>
     <div class="row g-4">
-      <div class="col-md-6">
+      <div class="col-md-4">
+        <a href="https://careers.collegekampus.com/quiz.php" class="text-decoration-none d-block h-100" style="background:linear-gradient(135deg,#2563eb,#1e3a8a);border-radius:14px;padding:28px 26px;color:#fff;">
+          <div style="font-size:26px;margin-bottom:10px;"><i class="bi bi-compass-fill"></i></div>
+          <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:6px;">Not Sure What to Study?</h3>
+          <p style="font-size:.85rem;opacity:.9;line-height:1.5;margin-bottom:12px;">Take our free 2-minute career self-assessment and get matched to career paths.</p>
+          <span style="font-size:.8rem;font-weight:700;">Take the Quiz &rarr;</span>
+        </a>
+      </div>
+      <div class="col-md-4">
         <a href="https://partner.collegekampus.com/register.php" class="text-decoration-none d-block h-100" style="background:linear-gradient(135deg,#7c3aed,#4c1d95);border-radius:14px;padding:28px 26px;color:#fff;">
           <div style="font-size:26px;margin-bottom:10px;"><i class="bi bi-people-fill"></i></div>
           <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:6px;">Become a Partner</h3>
@@ -592,7 +600,7 @@ require_once __DIR__ . '/includes/header.php';
           <span style="font-size:.8rem;font-weight:700;">Register Now &rarr;</span>
         </a>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-4">
         <a href="https://careers.collegekampus.com/join-us.php" class="text-decoration-none d-block h-100" style="background:linear-gradient(135deg,#d97706,#78350f);border-radius:14px;padding:28px 26px;color:#fff;">
           <div style="font-size:26px;margin-bottom:10px;"><i class="bi bi-rocket-takeoff-fill"></i></div>
           <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:6px;">We're Hiring</h3>
