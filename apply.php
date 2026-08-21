@@ -21,7 +21,10 @@ if ($college_id) {
 if ($course_id) {
     try {
         $db = getDB();
-        $stmt = $db->prepare("SELECT id, name FROM courses WHERE id = ? LIMIT 1");
+        // college_courses is a flat table - no separate courses catalog to
+        // join (see api/college-courses-save.php for the full story). Its
+        // own id column is the real per-row PK this ?course_id= refers to.
+        $stmt = $db->prepare("SELECT id, course_name AS name FROM college_courses WHERE id = ? LIMIT 1");
         $stmt->execute([$course_id]);
         $course = $stmt->fetch();
     } catch (Throwable $e) {}

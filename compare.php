@@ -22,15 +22,13 @@ if ($ids) {
         foreach ($wantCols as $col) {
             if (in_array($col, $allCols)) $select .= ", c.$col";
         }
-        // Checking college_courses alone isn't enough - this DB (shared with
-        // ckampus-dasboard) has college_courses but no `courses` table at
-        // all, so the JOIN below would throw "Table 'courses' doesn't
-        // exist" the moment the main query ran, taking the whole compare
-        // page down with it. Test the actual join, not just one side of it.
+        // college_courses is a flat table - course_name is a plain column,
+        // no separate courses catalog to join (see
+        // api/college-courses-save.php for the full story).
         $coursesSub = '';
         try {
-            $db->query("SELECT 1 FROM college_courses cc JOIN courses cr ON cr.id = cc.course_id LIMIT 1");
-            $coursesSub = ", (SELECT GROUP_CONCAT(cr.name ORDER BY cr.name SEPARATOR ', ') FROM college_courses cc JOIN courses cr ON cr.id = cc.course_id WHERE cc.college_id = c.id LIMIT 8) AS all_courses";
+            $db->query("SELECT 1 FROM college_courses LIMIT 1");
+            $coursesSub = ", (SELECT GROUP_CONCAT(course_name ORDER BY course_name SEPARATOR ', ') FROM college_courses cc WHERE cc.college_id = c.id AND cc.is_active = 1 LIMIT 8) AS all_courses";
         } catch (Throwable $e) {}
 
         $ph = implode(',', array_fill(0, count($ids), '?'));

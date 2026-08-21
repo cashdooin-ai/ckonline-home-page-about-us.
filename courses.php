@@ -57,8 +57,10 @@ $programs = [
 $counts = [];
 try {
   $db = getDB();
-  // Try college_courses + courses table
-  $stmt = $db->query("SELECT cr.name, COUNT(DISTINCT cc.college_id) AS cnt FROM college_courses cc JOIN courses cr ON cr.id = cc.course_id GROUP BY cr.name");
+  // college_courses is a flat table - course_name is a plain column, no
+  // separate courses catalog to join (see api/college-courses-save.php for
+  // the full story).
+  $stmt = $db->query("SELECT course_name AS name, COUNT(DISTINCT college_id) AS cnt FROM college_courses WHERE is_active = 1 GROUP BY course_name");
   foreach($stmt->fetchAll() as $r){
     $counts[strtolower($r['name'])] = (int)$r['cnt'];
   }
