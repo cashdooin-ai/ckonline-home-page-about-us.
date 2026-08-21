@@ -23,6 +23,10 @@
 # private key. Replaced with a freshly generated ed25519 keypair (public
 # half registered on Hostinger as an additional key, private half now in
 # SSH_PRIVATE_KEY) - this is the retry nudge for that fix.
+#
+# Recurred again: run #41 failed at Setup SSH (ssh-keyscan exited non-zero,
+# same transient blip as before - rerun_failed_jobs isn't callable from this
+# integration either, 403, so a comment-only push is the retry nudge again).
 
 on:
   push:
