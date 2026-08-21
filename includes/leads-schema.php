@@ -42,6 +42,16 @@ function onlineLeadsEnsureSchema(PDO $db): void
                 INDEX idx_college (college_id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
         }
+
+        // Ad-campaign attribution, added after the fact - existing installs
+        // get these columns backfilled the same self-migrating way
+        // includes/colleges-seed.php adds new columns to `colleges`.
+        $cols = array_flip($db->query("SHOW COLUMNS FROM online_leads")->fetchAll(PDO::FETCH_COLUMN));
+        foreach (['utm_source', 'utm_medium', 'utm_campaign'] as $col) {
+            if (!isset($cols[$col])) {
+                $db->exec("ALTER TABLE online_leads ADD COLUMN `$col` VARCHAR(100) DEFAULT NULL");
+            }
+        }
     } catch (Throwable $e) {
         error_log('onlineLeadsEnsureSchema failed: ' . $e->getMessage());
     }

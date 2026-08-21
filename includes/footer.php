@@ -6,6 +6,26 @@ $base = SITE_BASE;
 
 <footer class="ck-footer mt-auto">
   <div class="container">
+    <?php if (!empty($landingMode)): ?>
+    <!-- Campaign-mode footer: a paid-traffic visitor doesn't need the full
+         Explore/Programs/Quick-Links link farm pulling them off the page -
+         just trust signals + a way to call, plus the always-required legal
+         row below. -->
+    <div class="row gy-3 py-4 align-items-center">
+      <div class="col-md-6 d-flex align-items-center gap-2 flex-wrap">
+        <div class="ck-logo-icon">CK</div>
+        <div class="lh-1">
+          <span class="ck-brand-main text-white">CollegeKampus</span>
+          <span class="ck-brand-sub d-block" style="color:#22c55e;">Online</span>
+        </div>
+        <span class="ms-md-3" style="color:rgba(255,255,255,.6);font-size:.8rem;">Official Admission Partner &middot; UGC Approved Only</span>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <a href="tel:18001234567" style="color:#fff;text-decoration:none;margin-right:16px;"><i class="bi bi-telephone-fill" style="color:#22c55e;"></i> 1800-123-4567</a>
+        <a href="mailto:info@collegekampus.in" style="color:#fff;text-decoration:none;"><i class="bi bi-envelope-fill" style="color:#22c55e;"></i> info@collegekampus.in</a>
+      </div>
+    </div>
+    <?php else: ?>
     <div class="row gy-4 py-5">
 
       <!-- Col 1: Brand -->
@@ -105,6 +125,7 @@ $base = SITE_BASE;
       </div>
 
     </div>
+    <?php endif; ?>
 
     <hr style="border-color:rgba(255,255,255,.1);margin:0;">
 

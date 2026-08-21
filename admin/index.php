@@ -286,8 +286,16 @@ textarea.content-area{font-family:monospace;font-size:.82rem;min-height:280px;}
         <h5 class="fw-bold mb-3">Recent Leads (Last 30 days)</h5>
         <?php
         $leads = [];
+        $hasUtm = false;
         try {
-            $leads = $pdo->query("SELECT id,name,phone,email,source,page_url,created_at FROM online_leads WHERE created_at >= NOW() - INTERVAL 30 DAY ORDER BY created_at DESC LIMIT 100")->fetchAll();
+            $leadCols = array_flip($pdo->query("SHOW COLUMNS FROM online_leads")->fetchAll(PDO::FETCH_COLUMN));
+            $hasUtm = isset($leadCols['utm_campaign']);
+        } catch (Exception $e) {}
+        try {
+            $leadSelect = $hasUtm
+                ? "id,name,phone,email,source,page_url,utm_source,utm_medium,utm_campaign,created_at"
+                : "id,name,phone,email,source,page_url,created_at";
+            $leads = $pdo->query("SELECT $leadSelect FROM online_leads WHERE created_at >= NOW() - INTERVAL 30 DAY ORDER BY created_at DESC LIMIT 100")->fetchAll();
         } catch(Exception $e) {}
         ?>
         <?php if (empty($leads)): ?>
@@ -295,7 +303,7 @@ textarea.content-area{font-family:monospace;font-size:.82rem;min-height:280px;}
         <?php else: ?>
         <div class="table-responsive">
         <table class="table table-hover table-sm mb-0">
-            <thead class="table-light"><tr><th>#</th><th>Name</th><th>Phone</th><th>Email</th><th>Source</th><th>Date</th></tr></thead>
+            <thead class="table-light"><tr><th>#</th><th>Name</th><th>Phone</th><th>Email</th><th>Source</th><?php if ($hasUtm): ?><th>Campaign</th><?php endif; ?><th>Date</th></tr></thead>
             <tbody>
             <?php foreach ($leads as $lead): ?>
             <tr>
@@ -304,6 +312,15 @@ textarea.content-area{font-family:monospace;font-size:.82rem;min-height:280px;}
                 <td><?= htmlspecialchars($lead['phone'] ?? '—') ?></td>
                 <td><?= htmlspecialchars($lead['email'] ?? '—') ?></td>
                 <td><span class="badge bg-secondary" style="font-size:.7rem;"><?= htmlspecialchars($lead['source'] ?? '') ?></span></td>
+                <?php if ($hasUtm): ?>
+                <td>
+                    <?php if (!empty($lead['utm_campaign']) || !empty($lead['utm_source'])): ?>
+                    <span class="badge bg-info-subtle text-info-emphasis" style="font-size:.7rem;">
+                        <?= htmlspecialchars($lead['utm_source'] ?: '—') ?><?= !empty($lead['utm_campaign']) ? ' / ' . htmlspecialchars($lead['utm_campaign']) : '' ?>
+                    </span>
+                    <?php else: ?>—<?php endif; ?>
+                </td>
+                <?php endif; ?>
                 <td><?= date('d M, H:i', strtotime($lead['created_at'])) ?></td>
             </tr>
             <?php endforeach; ?>
