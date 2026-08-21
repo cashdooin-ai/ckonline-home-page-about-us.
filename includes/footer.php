@@ -182,7 +182,8 @@ window.CK_CASHBACK = <?= json_encode($_cb, JSON_UNESCAPED_SLASHES) ?>;
 window.CK_POPUP    = <?= json_encode($_popup, JSON_UNESCAPED_SLASHES) ?>;
 window.CK_BANNERS  = <?= json_encode(array_values(array_filter($_banners, fn($b)=>!empty($b['active']) && !empty($b['text']))), JSON_UNESCAPED_SLASHES) ?>;
 </script>
-<script src="<?= $base ?>/assets/js/portal.js"></script>
+<?php $portalJsV = @filemtime(dirname(__DIR__) . '/assets/js/portal.js') ?: time(); ?>
+<script src="<?= $base ?>/assets/js/portal.js?v=<?= $portalJsV ?>"></script>
 <?php if (isset($extraScript)) echo $extraScript; ?>
 <?php include __DIR__ . '/../includes/exit-popup.php'; ?>
 <?php include __DIR__ . '/../includes/floating-cta.php'; ?>
