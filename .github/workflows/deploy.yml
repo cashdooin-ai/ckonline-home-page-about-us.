@@ -27,6 +27,10 @@
 # Recurred again: run #41 failed at Setup SSH (ssh-keyscan exited non-zero,
 # same transient blip as before - rerun_failed_jobs isn't callable from this
 # integration either, 403, so a comment-only push is the retry nudge again).
+#
+# Recurred a third time: run #42 (the retry above) failed identically,
+# same step, same ~5s duration. If this one also fails at Setup SSH, it's
+# not transient - check SSH_HOST/SSH_PORT/SSH_PRIVATE_KEY on this repo.
 
 on:
   push:
