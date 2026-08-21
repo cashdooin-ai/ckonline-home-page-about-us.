@@ -47,9 +47,11 @@ try {
 
     $existingNames = [];
     try {
-        $es = $db->prepare("SELECT cr.name FROM college_courses cc JOIN courses cr ON cr.id = cc.course_id WHERE cc.college_id = ?");
+        // college_courses is a flat table (course_name is a plain column,
+        // no separate courses catalog - see api/college-courses-save.php).
+        $es = $db->prepare("SELECT course_name FROM college_courses WHERE college_id = ? AND is_active = 1");
         $es->execute([$collegeId]);
-        $existingNames = array_column($es->fetchAll(), 'name');
+        $existingNames = array_column($es->fetchAll(), 'course_name');
     } catch (Throwable $e) {}
 
     $cName = $college['name'];

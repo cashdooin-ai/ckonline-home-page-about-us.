@@ -59,7 +59,9 @@ if ($editId) {
         $stmt->execute([$editId]);
         $editCollege = $stmt->fetch();
         if ($editCollege) {
-            $cs = $db->prepare("SELECT cr.id, cr.name, cr.category, cr.degree_level, cr.duration_years, cc.annual_fees, cc.eligibility FROM college_courses cc JOIN courses cr ON cr.id = cc.course_id WHERE cc.college_id = ? ORDER BY cr.name");
+            // college_courses is a flat table (no separate courses catalog /
+            // course_id - see api/college-courses-save.php for why).
+            $cs = $db->prepare("SELECT id, course_name, stream, degree_type, duration, annual_fees, eligibility FROM college_courses WHERE college_id = ? AND is_active = 1 ORDER BY course_name");
             $cs->execute([$editId]);
             $editCourses = $cs->fetchAll();
         }
@@ -234,14 +236,14 @@ body{background:#f1f5f9;font-family:'Inter',sans-serif;}
                 </div>
                 <?php if ($editCourses): ?>
                 <table class="table table-sm mb-0">
-                    <thead class="table-light"><tr><th>Course</th><th>Category</th><th>Level</th><th>Duration</th><th>Fees/Year</th></tr></thead>
+                    <thead class="table-light"><tr><th>Course</th><th>Stream</th><th>Degree</th><th>Duration</th><th>Fees/Year</th></tr></thead>
                     <tbody>
                     <?php foreach ($editCourses as $cr): ?>
                     <tr>
-                        <td><?= htmlspecialchars($cr['name']) ?></td>
-                        <td><?= htmlspecialchars($cr['category'] ?? '—') ?></td>
-                        <td><?= htmlspecialchars(strtoupper($cr['degree_level'] ?? '—')) ?></td>
-                        <td><?= $cr['duration_years'] ? $cr['duration_years'] . ' yr' : '—' ?></td>
+                        <td><?= htmlspecialchars($cr['course_name']) ?></td>
+                        <td><?= htmlspecialchars($cr['stream'] ?? '—') ?></td>
+                        <td><?= htmlspecialchars($cr['degree_type'] ?? '—') ?></td>
+                        <td><?= htmlspecialchars($cr['duration'] ?? '—') ?></td>
                         <td><?= $cr['annual_fees'] ? '₹' . number_format($cr['annual_fees']) : '—' ?></td>
                     </tr>
                     <?php endforeach; ?>
