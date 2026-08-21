@@ -4,8 +4,11 @@
 # Stop WordPress rewrite rules from propagating into this folder
 RewriteEngine Off
 
-# Serve index.html as default document (About Us page)
-DirectoryIndex index.html portal.html index.php
+# index.php (the real degree-finder homepage) is now the default document
+# for "/" - it's the actively-maintained, DB-driven page and the one this
+# site's own nav/CTAs treat as home. index.html (About Us) moves to its own
+# clean /about URL below instead of silently owning "/".
+DirectoryIndex index.php
 
 # PHP settings for Hostinger shared hosting
 php_value upload_max_filesize 10M
@@ -39,13 +42,13 @@ php_value max_execution_time 60
     RewriteRule ^blog/([a-zA-Z0-9_-]+)/?$ blog-post.php?slug=$1 [L,QSA]
 
     # Clean URLs for top-level static/marketing pages (SEO-friendly, no
-    # .php extension). courses.php and index.php are intentionally left
-    # alone: courses/ is a real subdirectory serving its own stream pages
-    # (e.g. /dashboard/courses/online-mba), and index.php is reachable only
-    # by its full path today since index.html (the About Us page) is the
-    # actual DirectoryIndex for "/".
+    # .php extension). courses/ is a real subdirectory serving its own
+    # stream pages (e.g. /dashboard/courses/online-mba), so the courses.php
+    # *listing* page gets a distinct name, /programs, instead of competing
+    # with it for the bare /courses path.
     RewriteRule ^ck-assured/?$ ck-assured.php [L,QSA]
     RewriteRule ^colleges/?$ colleges.php [L,QSA]
+    RewriteRule ^programs/?$ courses.php [L,QSA]
     RewriteRule ^compare/?$ compare.php [L,QSA]
     RewriteRule ^counselling/?$ counselling.php [L,QSA]
     RewriteRule ^coupons/?$ coupons.php [L,QSA]

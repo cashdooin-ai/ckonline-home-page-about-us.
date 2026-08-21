@@ -176,19 +176,19 @@ $base = SITE_BASE;
 
         <!-- Explore Programs -->
         <li class="nav-item">
-          <a class="nav-link <?= $currentPage==='courses'?'active':'' ?>" href="<?= $base ?>/courses.php">
+          <a class="nav-link <?= $currentPage==='courses'?'active':'' ?>" href="<?= $base ?>/programs">
             Explore Programs <span class="caret">&#9660;</span>
           </a>
           <div class="ck-dropdown ck-mega">
             <div class="ck-mega-inner">
               <div class="ck-mega-sidebar">
                 <div style="padding:0 20px 8px;font-size:.7rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.08em;">By Level</div>
-                <a href="<?= $base ?>/courses.php?level=pg" class="ck-mega-sidebar-item"><span class="icon" style="background:#ede9fe;color:#7c3aed;">PG</span>PG Courses</a>
-                <a href="<?= $base ?>/courses.php?level=ug" class="ck-mega-sidebar-item"><span class="icon" style="background:#dbeafe;color:#2563eb;">UG</span>UG Courses</a>
-                <a href="<?= $base ?>/courses.php?level=certificate" class="ck-mega-sidebar-item"><span class="icon" style="background:#dcfce7;color:#16a34a;">Cr</span>Certificate</a>
-                <a href="<?= $base ?>/courses.php?level=diploma" class="ck-mega-sidebar-item"><span class="icon" style="background:#fef3c7;color:#d97706;">Di</span>Diploma</a>
+                <a href="<?= $base ?>/programs?level=pg" class="ck-mega-sidebar-item"><span class="icon" style="background:#ede9fe;color:#7c3aed;">PG</span>PG Courses</a>
+                <a href="<?= $base ?>/programs?level=ug" class="ck-mega-sidebar-item"><span class="icon" style="background:#dbeafe;color:#2563eb;">UG</span>UG Courses</a>
+                <a href="<?= $base ?>/programs?level=certificate" class="ck-mega-sidebar-item"><span class="icon" style="background:#dcfce7;color:#16a34a;">Cr</span>Certificate</a>
+                <a href="<?= $base ?>/programs?level=diploma" class="ck-mega-sidebar-item"><span class="icon" style="background:#fef3c7;color:#d97706;">Di</span>Diploma</a>
                 <div class="dd-divider" style="margin:8px 16px;border-top:1px solid #e2e8f0;"></div>
-                <a href="<?= $base ?>/courses.php" class="ck-mega-sidebar-item" style="color:#2563eb;"><span class="icon" style="background:#eff6ff;color:#2563eb;"><i class="bi bi-grid-fill"></i></span>All Programs</a>
+                <a href="<?= $base ?>/programs" class="ck-mega-sidebar-item" style="color:#2563eb;"><span class="icon" style="background:#eff6ff;color:#2563eb;"><i class="bi bi-grid-fill"></i></span>All Programs</a>
               </div>
               <div class="ck-mega-content">
                 <div class="ck-mega-content-label">Popular Programs</div>
@@ -292,7 +292,7 @@ $base = SITE_BASE;
 
         <!-- About Us -->
         <li class="nav-item">
-          <a class="nav-link" href="<?= $base ?>/index.php#about-us">About Us</a>
+          <a class="nav-link" href="<?= $base ?>/#about-us">About Us</a>
         </li>
 
       </ul>
