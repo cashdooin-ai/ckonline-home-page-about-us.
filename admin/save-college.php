@@ -36,7 +36,7 @@ try {
     // on any install where the shape differs.
     $textFields    = ['description', 'short_name', 'city', 'state', 'accreditation', 'naac_grade', 'website'];
     $numberFields  = ['established_year', 'min_fees', 'max_fees', 'rating'];
-    $checkboxFields = ['ugc_approved'];
+    $checkboxFields = ['ugc_approved', 'is_online'];
     $selectFields  = [
         'institution_type' => ['university', 'college'],
         'online_mode'      => ['online', 'distance', 'hybrid'],

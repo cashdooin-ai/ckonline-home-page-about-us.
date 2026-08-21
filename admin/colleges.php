@@ -31,13 +31,20 @@ foreach (['city', 'state', 'college_type', 'institution_type', 'min_fees', 'max_
     if (isset($has[$col])) $listSelect .= ", $col";
 }
 
+// This admin manages online.collegekampus.com's curated online/distance
+// universities, not the whole shared `colleges` table (which also holds
+// every regular offline college from explore.collegekampus.com's dataset,
+// via database/seed_online_colleges.sql's is_online flag). Without this
+// filter the list here is dominated by unrelated regular colleges.
+$onlineWhere = isset($has['is_online']) ? 'is_online = 1' : '1=1';
+
 $colleges = [];
 try {
     if ($search !== '') {
-        $stmt = $db->prepare("SELECT $listSelect FROM colleges WHERE name LIKE ? ORDER BY name ASC LIMIT 100");
+        $stmt = $db->prepare("SELECT $listSelect FROM colleges WHERE $onlineWhere AND name LIKE ? ORDER BY name ASC LIMIT 100");
         $stmt->execute(['%' . $search . '%']);
     } else {
-        $stmt = $db->query("SELECT $listSelect FROM colleges ORDER BY name ASC LIMIT 100");
+        $stmt = $db->query("SELECT $listSelect FROM colleges WHERE $onlineWhere ORDER BY name ASC LIMIT 100");
     }
     $colleges = $stmt->fetchAll();
 } catch (Throwable $e) {
@@ -63,6 +70,7 @@ if ($editId) {
 // actually exists on this install. type = text|number|select|checkbox.
 $typeCol = isset($has['college_type']) ? 'college_type' : (isset($has['type']) ? 'type' : null);
 $fieldDefs = [
+    'is_online'        => ['label' => 'Online / Distance College (shows on the public site)', 'type' => 'checkbox', 'col' => 12, 'default_checked_if_new' => true],
     'short_name'       => ['label' => 'Short Name', 'type' => 'text', 'col' => 6],
     'institution_type' => ['label' => 'Institution Type', 'type' => 'select', 'options' => ['university', 'college'], 'col' => 6],
     'online_mode'      => ['label' => 'Delivery Mode', 'type' => 'select', 'options' => ['online', 'distance', 'hybrid'], 'col' => 6],
@@ -170,9 +178,11 @@ body{background:#f1f5f9;font-family:'Inter',sans-serif;}
 
                         <?php foreach ($fieldDefs as $col => $def): if (!isset($has[$col])) continue; ?>
                         <div class="col-md-<?= $def['col'] ?>">
-                            <?php if ($def['type'] === 'checkbox'): ?>
+                            <?php if ($def['type'] === 'checkbox'):
+                                $checkboxChecked = $editCollege ? !empty($editCollege[$col]) : !empty($def['default_checked_if_new']);
+                            ?>
                             <div class="form-check mt-4">
-                                <input type="checkbox" class="form-check-input" name="<?= $col ?>" id="f_<?= $col ?>" value="1" <?= !empty($editCollege[$col]) ? 'checked' : '' ?>>
+                                <input type="checkbox" class="form-check-input" name="<?= $col ?>" id="f_<?= $col ?>" value="1" <?= $checkboxChecked ? 'checked' : '' ?>>
                                 <label class="form-check-label fw-bold" for="f_<?= $col ?>"><?= htmlspecialchars($def['label']) ?></label>
                             </div>
                             <?php else: ?>
@@ -217,7 +227,10 @@ body{background:#f1f5f9;font-family:'Inter',sans-serif;}
             <div class="admin-card">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0 fw-bold">Courses &amp; Fees (<?= count($editCourses) ?>)</h5>
-                    <button type="button" class="btn btn-outline-primary btn-sm" id="aiCoursesBtn" onclick="aiSuggestCourses(<?= $editCollege['id'] ?>)">✨ AI Suggest Courses &amp; Fees</button>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addManualCourseRow()"><i class="bi bi-plus-lg"></i> Add Course Manually</button>
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="aiCoursesBtn" onclick="aiSuggestCourses(<?= $editCollege['id'] ?>)">✨ AI Suggest Courses &amp; Fees</button>
+                    </div>
                 </div>
                 <?php if ($editCourses): ?>
                 <table class="table table-sm mb-0">
@@ -235,11 +248,11 @@ body{background:#f1f5f9;font-family:'Inter',sans-serif;}
                     </tbody>
                 </table>
                 <?php else: ?>
-                <p class="text-muted text-center py-3 mb-0">No courses yet. Use "AI Suggest Courses &amp; Fees" above to draft a starting list.</p>
+                <p class="text-muted text-center py-3 mb-0">No courses yet. Add one manually, or use "AI Suggest Courses &amp; Fees" above to draft a starting list.</p>
                 <?php endif; ?>
                 <div id="aiCoursesStatus" class="mt-2" style="font-size:.82rem;"></div>
                 <div id="aiCoursesPanel" style="display:none;margin-top:14px;">
-                    <div class="ai-note">⚠️ AI-generated estimates based on general knowledge of this institution — not verified against a live source. Review and edit before saving.</div>
+                    <div class="ai-note" id="courseFormNote" style="display:none;">⚠️ AI-generated estimates based on general knowledge of this institution — not verified against a live source. Review and edit before saving.</div>
                     <div class="table-responsive">
                     <table class="table table-sm" id="aiCoursesTable">
                         <thead class="table-light">
@@ -288,23 +301,12 @@ async function aiRewriteDescription(collegeId) {
     btn.disabled = false; btn.textContent = '✨ AI Rewrite';
 }
 
-async function aiSuggestCourses(collegeId) {
-    const btn = document.getElementById('aiCoursesBtn');
-    const status = document.getElementById('aiCoursesStatus');
-    btn.disabled = true; btn.textContent = 'Thinking…'; status.textContent = '';
-    try {
-        const body = new FormData();
-        body.append('college_id', collegeId);
-        const r = await fetch('/dashboard/api/ai-suggest-courses.php', { method: 'POST', body });
-        const d = await r.json();
-        if (!d.success || !Array.isArray(d.suggestions) || d.suggestions.length === 0) {
-            status.innerHTML = '<span class="text-danger">Error: ' + (d.error || 'No suggestions returned — try again.') + '</span>';
-        } else {
-            const tbody = document.getElementById('aiCoursesTbody');
-            tbody.innerHTML = d.suggestions.map((c, i) => `
+function courseRowHtml(c, i) {
+    c = c || {};
+    return `
                 <tr>
                     <td><input type="checkbox" class="ai-course-check" checked data-idx="${i}"></td>
-                    <td><input type="text" class="form-control form-control-sm ai-c-name" value="${(c.name || '').replace(/"/g, '&quot;')}"></td>
+                    <td><input type="text" class="form-control form-control-sm ai-c-name" value="${(c.name || '').replace(/"/g, '&quot;')}" placeholder="Course name"></td>
                     <td>
                         <select class="form-select form-select-sm ai-c-category">
                             ${AI_CATEGORIES.map(cat => `<option value="${cat}" ${cat === c.category ? 'selected' : ''}>${cat}</option>`).join('')}
@@ -316,10 +318,36 @@ async function aiSuggestCourses(collegeId) {
                         </select>
                     </td>
                     <td><input type="number" step="0.5" class="form-control form-control-sm ai-c-duration" value="${c.duration_years || 4}" style="width:70px;"></td>
-                    <td><input type="number" class="form-control form-control-sm ai-c-fees" value="${c.annual_fees || ''}" style="width:110px;"></td>
+                    <td><input type="number" class="form-control form-control-sm ai-c-fees" value="${c.annual_fees || ''}" style="width:110px;" placeholder="0"></td>
                     <td><input type="text" class="form-control form-control-sm ai-c-eligibility" value="${(c.eligibility || '').replace(/"/g, '&quot;')}"></td>
                 </tr>
-            `).join('');
+    `;
+}
+
+function addManualCourseRow() {
+    const tbody = document.getElementById('aiCoursesTbody');
+    const nextIdx = tbody.querySelectorAll('tr').length;
+    tbody.insertAdjacentHTML('beforeend', courseRowHtml(null, nextIdx));
+    document.getElementById('courseFormNote').style.display = 'none';
+    document.getElementById('aiCoursesPanel').style.display = '';
+    document.getElementById('aiCoursesStatus').textContent = '';
+}
+
+async function aiSuggestCourses(collegeId) {
+    const btn = document.getElementById('aiCoursesBtn');
+    const status = document.getElementById('aiCoursesStatus');
+    btn.disabled = true; btn.textContent = 'Thinking…'; status.textContent = '';
+    try {
+        const body = new FormData();
+        body.append('college_id', collegeId);
+        const r = await fetch('/dashboard/api/ai-suggest-courses.php', { method: 'POST', body });
+        const d = await r.json();
+        if (!d.success || !Array.isArray(d.suggestions) || d.suggestions.length === 0) {
+            status.innerHTML = '<span class="text-danger">Error: ' + (d.error || 'No suggestions returned — try again, or use "Add Course Manually" instead.') + '</span>';
+        } else {
+            const tbody = document.getElementById('aiCoursesTbody');
+            tbody.innerHTML = d.suggestions.map((c, i) => courseRowHtml(c, i)).join('');
+            document.getElementById('courseFormNote').style.display = '';
             document.getElementById('aiCoursesPanel').style.display = '';
             status.textContent = '';
         }
