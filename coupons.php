@@ -156,7 +156,7 @@ $coupons = [
                 <div class="cp-validity">
                   <i class="bi bi-clock"></i> Valid till <?= htmlspecialchars($c['validity']) ?>
                 </div>
-                <a href="<?= $base ?>/counselling.php?course=<?= urlencode($c['prog']) ?>&coupon=<?= urlencode($c['code']) ?>"
+                <a href="<?= $base ?>/counselling?course=<?= urlencode($c['prog']) ?>&coupon=<?= urlencode($c['code']) ?>"
                    class="btn-apply-enroll">Apply &amp; Enroll &#8594;</a>
               </div>
             </div>

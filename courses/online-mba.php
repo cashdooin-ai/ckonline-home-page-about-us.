@@ -107,7 +107,7 @@ require_once __DIR__ . '/../includes/header.php';
         <div>
           <?php $specs = ['Finance','Marketing','Human Resource Management','Operations Management','Information Technology','Business Analytics','International Business','Healthcare Management','Supply Chain Management','Entrepreneurship & Startups','Banking & Financial Services','Digital Marketing']; ?>
           <?php foreach($specs as $s): ?>
-          <a href="<?= $base ?>/colleges.php?course=MBA&spec=<?= urlencode($s) ?>" class="spec-chip"><?= htmlspecialchars($s) ?></a>
+          <a href="<?= $base ?>/colleges?course=MBA&spec=<?= urlencode($s) ?>" class="spec-chip"><?= htmlspecialchars($s) ?></a>
           <?php endforeach; ?>
         </div>
       </div>
@@ -119,7 +119,7 @@ require_once __DIR__ . '/../includes/header.php';
           <div class="col-12 loading-placeholder"><div class="spinner-border spinner-border-sm me-2"></div> Loading universities...</div>
         </div>
         <div class="text-center mt-3">
-          <a href="<?= $base ?>/colleges.php?course=MBA" class="btn-ck-primary" style="border-radius:10px;padding:10px 24px;">
+          <a href="<?= $base ?>/colleges?course=MBA" class="btn-ck-primary" style="border-radius:10px;padding:10px 24px;">
             View All 138+ MBA Universities <i class="bi bi-arrow-right ms-1"></i>
           </a>
         </div>
@@ -265,7 +265,7 @@ function ckToggleFaq(idx){
       var grid = document.getElementById('mbaCollegeGrid');
       var colleges = data.colleges || data.data || data || [];
       if (!Array.isArray(colleges) || colleges.length === 0){
-        grid.innerHTML = '<div class="col-12"><p style="color:#9ca3af;font-size:.85rem;">University data loading... <a href="' + window.CK_BASE + '/colleges.php?course=MBA">Browse all MBA universities</a></p></div>';
+        grid.innerHTML = '<div class="col-12"><p style="color:#9ca3af;font-size:.85rem;">University data loading... <a href="' + window.CK_BASE + '/colleges?course=MBA">Browse all MBA universities</a></p></div>';
         return;
       }
       var html = '';
@@ -290,7 +290,7 @@ function ckToggleFaq(idx){
       grid.innerHTML = html;
     })
     .catch(function(){
-      document.getElementById('mbaCollegeGrid').innerHTML = '<div class="col-12"><p style="font-size:.85rem;color:#9ca3af;">Unable to load data. <a href="' + window.CK_BASE + '/colleges.php?course=MBA">Browse all MBA universities</a></p></div>';
+      document.getElementById('mbaCollegeGrid').innerHTML = '<div class="col-12"><p style="font-size:.85rem;color:#9ca3af;">Unable to load data. <a href="' + window.CK_BASE + '/colleges?course=MBA">Browse all MBA universities</a></p></div>';
     });
 })();
 

@@ -290,7 +290,7 @@ include __DIR__ . '/includes/header.php';
             </div>
           </div>
           <div class="results-cta">
-            <a href="<?= $base ?>/colleges.php" class="btn btn-primary px-4">View All Universities &amp; Compare &#8594;</a>
+            <a href="<?= $base ?>/colleges" class="btn btn-primary px-4">View All Universities &amp; Compare &#8594;</a>
           </div>
         </div>
 
@@ -417,7 +417,7 @@ include __DIR__ . '/includes/header.php';
 
   function renderResults(colleges){
     var c=document.getElementById('resultsContainer');
-    if(!colleges||!colleges.length){c.innerHTML='<div class="text-center text-muted py-4">No exact matches found. <a href="<?= $base ?>/colleges.php" class="text-primary">Browse all universities &#8594;</a></div>';return;}
+    if(!colleges||!colleges.length){c.innerHTML='<div class="text-center text-muted py-4">No exact matches found. <a href="<?= $base ?>/colleges" class="text-primary">Browse all universities &#8594;</a></div>';return;}
     c.innerHTML=colleges.map(function(col){
       var name=esc(col.name||col.college_name||'University');
       var loc=esc(col.location||col.state||'');

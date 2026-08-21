@@ -62,7 +62,7 @@ include __DIR__ . '/includes/header.php';
   <p>We take reasonable technical and organisational measures to protect your information against unauthorised access, loss, or misuse. No method of transmission over the internet is 100% secure, and we cannot guarantee absolute security.</p>
 
   <h2>8. Your Choices</h2>
-  <p>You can ask us to access, correct, or delete your personal information, or to stop contacting you, at any time by writing to <a href="mailto:info@collegekampus.in">info@collegekampus.in</a> or using our <a href="<?= SITE_BASE ?>/contact.php">Contact Us</a> page.</p>
+  <p>You can ask us to access, correct, or delete your personal information, or to stop contacting you, at any time by writing to <a href="mailto:info@collegekampus.in">info@collegekampus.in</a> or using our <a href="<?= SITE_BASE ?>/contact">Contact Us</a> page.</p>
 
   <h2>9. Children's Privacy</h2>
   <p>Our services are intended for prospective college students and their families. We do not knowingly collect personal information from children under 13.</p>

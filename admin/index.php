@@ -165,7 +165,7 @@ textarea.content-area{font-family:monospace;font-size:.82rem;min-height:280px;}
                 <td><?= $p['published_at'] ? date('d M Y', strtotime($p['published_at'])) : date('d M Y', strtotime($p['created_at'])) ?></td>
                 <td>
                     <a href="?tab=posts&edit=<?= $p['id'] ?>" class="btn btn-xs btn-outline-secondary btn-sm me-1" title="Edit"><i class="bi bi-pencil"></i></a>
-                    <a href="/dashboard/blog-post.php?slug=<?= urlencode($p['slug'] ?? '') ?>" target="_blank" class="btn btn-xs btn-outline-primary btn-sm me-1" title="View"><i class="bi bi-eye"></i></a>
+                    <a href="/dashboard/blog/<?= urlencode($p['slug'] ?? '') ?>" target="_blank" class="btn btn-xs btn-outline-primary btn-sm me-1" title="View"><i class="bi bi-eye"></i></a>
                     <a href="save-blog.php?delete=<?= $p['id'] ?>"
                        onclick="return confirm('Delete this post?')"
                        class="btn btn-xs btn-outline-danger btn-sm" title="Delete"><i class="bi bi-trash"></i></a>

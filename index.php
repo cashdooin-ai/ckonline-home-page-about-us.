@@ -13,7 +13,7 @@ $cms_defaults = [
     'cta_primary'         => 'Browse Universities',
     'cta_secondary'       => 'Talk to a Counsellor',
     'stats_bar_colleges'  => '50+',
-    'carousel_slides'     => '[{"title":"Find Your Perfect Online Degree","subtitle":"Explore 50+ UGC-approved universities in India","img":"https://placehold.co/800x400/1a4fba/ffffff?text=Find+Your+Perfect+Online+Degree","btn_text":"Explore Now","btn_link":"colleges.php"},{"title":"Compare 50+ Universities","subtitle":"Side-by-side comparison in just 2 minutes","img":"https://placehold.co/800x400/16a34a/ffffff?text=Compare+50+Universities","btn_text":"Compare Now","btn_link":"compare.php"},{"title":"Free Expert Counselling","subtitle":"Talk to certified counsellors — no commission, no bias","img":"https://placehold.co/800x400/ea580c/ffffff?text=Free+Expert+Counselling","btn_text":"Book Free Session","btn_link":"counselling.php"}]',
+    'carousel_slides'     => '[{"title":"Find Your Perfect Online Degree","subtitle":"Explore 50+ UGC-approved universities in India","img":"https://placehold.co/800x400/1a4fba/ffffff?text=Find+Your+Perfect+Online+Degree","btn_text":"Explore Now","btn_link":"colleges"},{"title":"Compare 50+ Universities","subtitle":"Side-by-side comparison in just 2 minutes","img":"https://placehold.co/800x400/16a34a/ffffff?text=Compare+50+Universities","btn_text":"Compare Now","btn_link":"compare"},{"title":"Free Expert Counselling","subtitle":"Talk to certified counsellors — no commission, no bias","img":"https://placehold.co/800x400/ea580c/ffffff?text=Free+Expert+Counselling","btn_text":"Book Free Session","btn_link":"counselling"}]',
 ];
 
 try {
@@ -246,12 +246,12 @@ require_once __DIR__ . '/includes/header.php';
         </div>
         <div class="hero-tags">
           <span class="hero-tag-label">Popular:</span>
-          <a href="colleges.php?course=MBA" class="hero-tag">MBA</a>
-          <a href="colleges.php?course=BCA" class="hero-tag">BCA</a>
-          <a href="colleges.php?course=BBA" class="hero-tag">BBA</a>
-          <a href="colleges.php?course=BCOM" class="hero-tag">B.Com</a>
-          <a href="colleges.php?course=MCA" class="hero-tag">MCA</a>
-          <a href="colleges.php?course=MA" class="hero-tag">MA</a>
+          <a href="colleges?course=MBA" class="hero-tag">MBA</a>
+          <a href="colleges?course=BCA" class="hero-tag">BCA</a>
+          <a href="colleges?course=BBA" class="hero-tag">BBA</a>
+          <a href="colleges?course=BCOM" class="hero-tag">B.Com</a>
+          <a href="colleges?course=MCA" class="hero-tag">MCA</a>
+          <a href="colleges?course=MA" class="hero-tag">MA</a>
         </div>
       </div>
 
@@ -361,42 +361,42 @@ require_once __DIR__ . '/includes/header.php';
     </div>
     <div class="row g-3">
       <div class="col-6 col-md-3 col-lg-2">
-        <a href="colleges.php?course=MBA" class="prog-card">
+        <a href="colleges?course=MBA" class="prog-card">
           <div class="prog-icon" style="background:#eff6ff"><span style="font-size:1.6rem">💼</span></div>
           <div class="prog-label">Online MBA</div>
           <div class="prog-count">138+ colleges</div>
         </a>
       </div>
       <div class="col-6 col-md-3 col-lg-2">
-        <a href="colleges.php?course=BCA" class="prog-card">
+        <a href="colleges?course=BCA" class="prog-card">
           <div class="prog-icon" style="background:#f0fdf4"><span style="font-size:1.6rem">💻</span></div>
           <div class="prog-label">Online BCA</div>
           <div class="prog-count">95+ colleges</div>
         </a>
       </div>
       <div class="col-6 col-md-3 col-lg-2">
-        <a href="colleges.php?course=MCA" class="prog-card">
+        <a href="colleges?course=MCA" class="prog-card">
           <div class="prog-icon" style="background:#fef9c3"><span style="font-size:1.6rem">🖥️</span></div>
           <div class="prog-label">Online MCA</div>
           <div class="prog-count">82+ colleges</div>
         </a>
       </div>
       <div class="col-6 col-md-3 col-lg-2">
-        <a href="colleges.php?course=BBA" class="prog-card">
+        <a href="colleges?course=BBA" class="prog-card">
           <div class="prog-icon" style="background:#fdf4ff"><span style="font-size:1.6rem">📊</span></div>
           <div class="prog-label">Online BBA</div>
           <div class="prog-count">110+ colleges</div>
         </a>
       </div>
       <div class="col-6 col-md-3 col-lg-2">
-        <a href="colleges.php?course=BCOM" class="prog-card">
+        <a href="colleges?course=BCOM" class="prog-card">
           <div class="prog-icon" style="background:#fff7ed"><span style="font-size:1.6rem">💰</span></div>
           <div class="prog-label">Online B.Com</div>
           <div class="prog-count">120+ colleges</div>
         </a>
       </div>
       <div class="col-6 col-md-3 col-lg-2">
-        <a href="colleges.php?course=MA" class="prog-card">
+        <a href="colleges?course=MA" class="prog-card">
           <div class="prog-icon" style="background:#fef2f2"><span style="font-size:1.6rem">🎓</span></div>
           <div class="prog-label">Online MA</div>
           <div class="prog-count">75+ colleges</div>
@@ -431,7 +431,7 @@ require_once __DIR__ . '/includes/header.php';
       <div class="col-md-6 col-lg-4"><div class="skel" style="height:220px;border-radius:14px"></div></div>
     </div>
     <div class="text-center mt-4">
-      <a href="colleges.php" class="btn btn-primary px-5 fw-bold">
+      <a href="colleges" class="btn btn-primary px-5 fw-bold">
         <i class="bi bi-grid me-2"></i>View All Universities
       </a>
     </div>
@@ -448,10 +448,10 @@ require_once __DIR__ . '/includes/header.php';
           <h2>Compare Online Universities<br>Side by Side — in 2 Minutes</h2>
           <p>Compare fees, placements, NAAC ratings, course duration and more across multiple universities at once.</p>
           <div class="d-flex flex-wrap gap-3">
-            <a href="compare.php" class="btn-compare-big">
+            <a href="compare" class="btn-compare-big">
               <i class="bi bi-bar-chart-steps"></i> Compare Colleges Now
             </a>
-            <a href="counselling.php" class="btn btn-outline-light px-4">
+            <a href="counselling" class="btn btn-outline-light px-4">
               <i class="bi bi-headset me-2"></i>Free Counselling
             </a>
           </div>
@@ -618,8 +618,8 @@ require_once __DIR__ . '/includes/header.php';
     <h2 class="text-white fw-900 mb-2" style="font-size:clamp(1.5rem,3vw,2.2rem)">Ready to Find Your Online University?</h2>
     <p class="text-white-50 mb-4">Join 1.25 lakh+ students who discovered their perfect online degree on CollegeKampus.</p>
     <div class="d-flex gap-3 justify-content-center flex-wrap">
-      <a href="colleges.php" class="btn btn-light btn-lg px-5 fw-bold"><?= htmlspecialchars(cms('cta_primary')) ?></a>
-      <a href="counselling.php" class="btn btn-outline-light btn-lg px-5"><?= htmlspecialchars(cms('cta_secondary')) ?></a>
+      <a href="colleges" class="btn btn-light btn-lg px-5 fw-bold"><?= htmlspecialchars(cms('cta_primary')) ?></a>
+      <a href="counselling" class="btn btn-outline-light btn-lg px-5"><?= htmlspecialchars(cms('cta_secondary')) ?></a>
     </div>
   </div>
 </section>
@@ -760,30 +760,30 @@ require_once __DIR__ . '/includes/header.php';
       <div class="col-lg-2 col-md-3 col-6">
         <h6 class="fw-700 mb-3 text-uppercase" style="font-size:.75rem;letter-spacing:.08em">Programs</h6>
         <ul class="list-unstyled ck-footer-links">
-          <li><a href="colleges.php?course=MBA">Online MBA</a></li>
-          <li><a href="colleges.php?course=BCA">Online BCA</a></li>
-          <li><a href="colleges.php?course=MCA">Online MCA</a></li>
-          <li><a href="colleges.php?course=BBA">Online BBA</a></li>
-          <li><a href="colleges.php?course=BCOM">Online B.Com</a></li>
+          <li><a href="colleges?course=MBA">Online MBA</a></li>
+          <li><a href="colleges?course=BCA">Online BCA</a></li>
+          <li><a href="colleges?course=MCA">Online MCA</a></li>
+          <li><a href="colleges?course=BBA">Online BBA</a></li>
+          <li><a href="colleges?course=BCOM">Online B.Com</a></li>
         </ul>
       </div>
       <div class="col-lg-2 col-md-3 col-6">
         <h6 class="fw-700 mb-3 text-uppercase" style="font-size:.75rem;letter-spacing:.08em">Universities</h6>
         <ul class="list-unstyled ck-footer-links">
-          <li><a href="colleges.php?type=government">Government</a></li>
-          <li><a href="colleges.php?type=private">Private</a></li>
-          <li><a href="colleges.php?type=deemed">Deemed</a></li>
-          <li><a href="colleges.php?sort=nirf">NIRF Ranked</a></li>
-          <li><a href="colleges.php?accreditation=NAAC">NAAC A++</a></li>
+          <li><a href="colleges?type=government">Government</a></li>
+          <li><a href="colleges?type=private">Private</a></li>
+          <li><a href="colleges?type=deemed">Deemed</a></li>
+          <li><a href="colleges?sort=nirf">NIRF Ranked</a></li>
+          <li><a href="colleges?accreditation=NAAC">NAAC A++</a></li>
         </ul>
       </div>
       <div class="col-lg-2 col-md-3 col-6">
         <h6 class="fw-700 mb-3 text-uppercase" style="font-size:.75rem;letter-spacing:.08em">Tools</h6>
         <ul class="list-unstyled ck-footer-links">
-          <li><a href="compare.php">Compare Colleges</a></li>
-          <li><a href="counselling.php">Free Counselling</a></li>
+          <li><a href="compare">Compare Colleges</a></li>
+          <li><a href="counselling">Free Counselling</a></li>
           <li><a href="apply.php">Apply Online</a></li>
-          <li><a href="contact.php">Contact Us</a></li>
+          <li><a href="contact">Contact Us</a></li>
         </ul>
       </div>
       <div class="col-lg-2 col-md-3 col-6">
@@ -825,7 +825,7 @@ require_once __DIR__ . '/includes/header.php';
 function heroGo() {
   const program = document.getElementById('heroProgram').value;
   const search  = document.getElementById('heroSearch').value.trim();
-  let url = '/dashboard/colleges.php?';
+  let url = '/dashboard/colleges?';
   if (program) url += 'course=' + encodeURIComponent(program) + '&';
   if (search)  url += 'search=' + encodeURIComponent(search);
   window.location.href = url;
@@ -877,7 +877,7 @@ function renderColleges(colleges) {
           </div>
         </div>
         <div class="uni-card-footer">
-          <a href="/dashboard/college-detail.php?slug=${encodeURIComponent(slug)}" class="btn-view-uni">View Details</a>
+          <a href="/dashboard/college/${encodeURIComponent(slug)}" class="btn-view-uni">View Details</a>
           <button class="btn-cmp-uni btn-compare-add" data-id="${c.id}" data-name="${escHtml(c.name||'')}" onclick="addToCompare('${c.id}','${escHtml(c.name||'')}')">+ Compare</button>
         </div>
       </div>
@@ -910,7 +910,7 @@ function loadFeatured(type) {
       updateCompareButtons();
     })
     .catch(() => {
-      grid.innerHTML = '<div class="col-12 text-center text-muted py-3">Unable to load. <a href="colleges.php">Browse all universities</a></div>';
+      grid.innerHTML = '<div class="col-12 text-center text-muted py-3">Unable to load. <a href="colleges">Browse all universities</a></div>';
     });
 }
 loadFeatured('all');

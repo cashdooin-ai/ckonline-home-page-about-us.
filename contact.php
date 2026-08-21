@@ -128,7 +128,7 @@ include __DIR__ . '/includes/header.php';
         </div>
 
         <div style="margin-top:20px;">
-          <a href="<?= $base ?>/counselling.php" class="btn-ck-primary" style="width:100%;justify-content:center;padding:10px;">
+          <a href="<?= $base ?>/counselling" class="btn-ck-primary" style="width:100%;justify-content:center;padding:10px;">
             <i class="bi bi-headset me-2"></i>Book Free Counselling
           </a>
         </div>
@@ -141,7 +141,7 @@ include __DIR__ . '/includes/header.php';
           <div style="font-size:3rem;margin-bottom:12px;">&#10003;</div>
           <h3 style="font-size:1.3rem;font-weight:800;color:#16a34a;margin-bottom:8px;">Message Sent!</h3>
           <p style="color:#64748b;margin-bottom:20px;">Thank you for reaching out. We'll get back to you within 24 hours.</p>
-          <a href="<?= $base ?>/colleges.php" class="btn-ck-primary" style="padding:12px 24px;">Browse Colleges</a>
+          <a href="<?= $base ?>/colleges" class="btn-ck-primary" style="padding:12px 24px;">Browse Colleges</a>
         </div>
         <?php else: ?>
         <h2 style="font-size:1.1rem;font-weight:800;color:#0f172a;margin-bottom:6px;">Send Us a Message</h2>

@@ -215,35 +215,35 @@ include __DIR__ . '/includes/header.php';
         <span class="pc-icon">&#128202;</span>
         <h4>Online MBA</h4>
         <p>2 years &middot; PG</p>
-        <a href="<?= $base ?>/colleges.php?course=MBA">Explore &#8594;</a>
+        <a href="<?= $base ?>/colleges?course=MBA">Explore &#8594;</a>
       </div>
       <div class="prog-card">
         <span class="assured-badge">CK Assured &#10003;</span>
         <span class="pc-icon">&#128421;</span>
         <h4>Online MCA</h4>
         <p>2 years &middot; PG</p>
-        <a href="<?= $base ?>/colleges.php?course=MCA">Explore &#8594;</a>
+        <a href="<?= $base ?>/colleges?course=MCA">Explore &#8594;</a>
       </div>
       <div class="prog-card">
         <span class="assured-badge">CK Assured &#10003;</span>
         <span class="pc-icon">&#128203;</span>
         <h4>Online BBA</h4>
         <p>3 years &middot; UG</p>
-        <a href="<?= $base ?>/colleges.php?course=BBA">Explore &#8594;</a>
+        <a href="<?= $base ?>/colleges?course=BBA">Explore &#8594;</a>
       </div>
       <div class="prog-card">
         <span class="assured-badge">CK Assured &#10003;</span>
         <span class="pc-icon">&#128187;</span>
         <h4>Online BCA</h4>
         <p>3 years &middot; UG</p>
-        <a href="<?= $base ?>/colleges.php?course=BCA">Explore &#8594;</a>
+        <a href="<?= $base ?>/colleges?course=BCA">Explore &#8594;</a>
       </div>
       <div class="prog-card">
         <span class="assured-badge">CK Assured &#10003;</span>
         <span class="pc-icon">&#128200;</span>
         <h4>Online M.Com</h4>
         <p>2 years &middot; PG</p>
-        <a href="<?= $base ?>/colleges.php?course=M.Com">Explore &#8594;</a>
+        <a href="<?= $base ?>/colleges?course=M.Com">Explore &#8594;</a>
       </div>
     </div>
   </div>

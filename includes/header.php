@@ -16,7 +16,11 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
 $pageTitle    = isset($pageTitle)    ? $pageTitle    : 'Online Colleges & Distance Education in India';
 $pageDesc     = isset($pageDesc)     ? $pageDesc     : 'Discover 40,000+ online and distance colleges in India. Compare courses, fees, placements and apply free at CollegeKampus Online.';
 $pageKeywords = isset($pageKeywords) ? $pageKeywords : 'online colleges India, distance education, UGC approved universities, online MBA, online BBA, online BCA, college admissions 2025';
-$pageCanonical = isset($pageCanonical) ? $pageCanonical : SITE_BASE . '/' . basename($_SERVER['PHP_SELF']);
+// Defaults to the actual clean URL the visitor requested (Apache's internal
+// rewrite for these routes leaves REQUEST_URI as the pretty path, not the
+// underlying .php filename) rather than re-deriving the raw script name -
+// same pattern used across the other CollegeKampus properties.
+$pageCanonical = isset($pageCanonical) ? $pageCanonical : 'https://' . SITE_DOMAIN . $_SERVER['REQUEST_URI'];
 $pageOgImage  = isset($pageOgImage)  ? $pageOgImage  : SITE_BASE . '/assets/img/og-default.jpg';
 $pageType     = isset($pageType)     ? $pageType     : 'website';
 
@@ -189,14 +193,14 @@ $base = SITE_BASE;
               <div class="ck-mega-content">
                 <div class="ck-mega-content-label">Popular Programs</div>
                 <div class="ck-mega-grid">
-                  <a href="<?= $base ?>/colleges.php?course=MBA" class="ck-mega-link"><span class="prog-icon" style="background:#ede9fe;color:#7c3aed;">&#128202;</span>Online MBA<span class="prog-count">320+</span></a>
-                  <a href="<?= $base ?>/colleges.php?course=BBA" class="ck-mega-link"><span class="prog-icon" style="background:#dbeafe;color:#2563eb;">&#127919;</span>Online BBA<span class="prog-count">180+</span></a>
-                  <a href="<?= $base ?>/colleges.php?course=BCA" class="ck-mega-link"><span class="prog-icon" style="background:#dcfce7;color:#16a34a;">&#128187;</span>Online BCA<span class="prog-count">150+</span></a>
-                  <a href="<?= $base ?>/colleges.php?course=MCA" class="ck-mega-link"><span class="prog-icon" style="background:#e0f2fe;color:#0369a1;">&#128421;</span>Online MCA<span class="prog-count">120+</span></a>
-                  <a href="<?= $base ?>/colleges.php?course=B.Com" class="ck-mega-link"><span class="prog-icon" style="background:#fef3c7;color:#d97706;">&#128200;</span>Online B.Com<span class="prog-count">200+</span></a>
-                  <a href="<?= $base ?>/colleges.php?course=MA" class="ck-mega-link"><span class="prog-icon" style="background:#fce7f3;color:#be185d;">&#128218;</span>Online MA<span class="prog-count">240+</span></a>
-                  <a href="<?= $base ?>/colleges.php?course=M.Com" class="ck-mega-link"><span class="prog-icon" style="background:#f0fdf4;color:#16a34a;">&#128176;</span>Online M.Com<span class="prog-count">160+</span></a>
-                  <a href="<?= $base ?>/colleges.php?course=B.Sc" class="ck-mega-link"><span class="prog-icon" style="background:#f0f9ff;color:#0ea5e9;">&#128300;</span>Online B.Sc<span class="prog-count">190+</span></a>
+                  <a href="<?= $base ?>/colleges?course=MBA" class="ck-mega-link"><span class="prog-icon" style="background:#ede9fe;color:#7c3aed;">&#128202;</span>Online MBA<span class="prog-count">320+</span></a>
+                  <a href="<?= $base ?>/colleges?course=BBA" class="ck-mega-link"><span class="prog-icon" style="background:#dbeafe;color:#2563eb;">&#127919;</span>Online BBA<span class="prog-count">180+</span></a>
+                  <a href="<?= $base ?>/colleges?course=BCA" class="ck-mega-link"><span class="prog-icon" style="background:#dcfce7;color:#16a34a;">&#128187;</span>Online BCA<span class="prog-count">150+</span></a>
+                  <a href="<?= $base ?>/colleges?course=MCA" class="ck-mega-link"><span class="prog-icon" style="background:#e0f2fe;color:#0369a1;">&#128421;</span>Online MCA<span class="prog-count">120+</span></a>
+                  <a href="<?= $base ?>/colleges?course=B.Com" class="ck-mega-link"><span class="prog-icon" style="background:#fef3c7;color:#d97706;">&#128200;</span>Online B.Com<span class="prog-count">200+</span></a>
+                  <a href="<?= $base ?>/colleges?course=MA" class="ck-mega-link"><span class="prog-icon" style="background:#fce7f3;color:#be185d;">&#128218;</span>Online MA<span class="prog-count">240+</span></a>
+                  <a href="<?= $base ?>/colleges?course=M.Com" class="ck-mega-link"><span class="prog-icon" style="background:#f0fdf4;color:#16a34a;">&#128176;</span>Online M.Com<span class="prog-count">160+</span></a>
+                  <a href="<?= $base ?>/colleges?course=B.Sc" class="ck-mega-link"><span class="prog-icon" style="background:#f0f9ff;color:#0ea5e9;">&#128300;</span>Online B.Sc<span class="prog-count">190+</span></a>
                 </div>
               </div>
             </div>
@@ -205,21 +209,21 @@ $base = SITE_BASE;
 
         <!-- Top Universities -->
         <li class="nav-item">
-          <a class="nav-link <?= $currentPage==='colleges'?'active':'' ?>" href="<?= $base ?>/colleges.php">
+          <a class="nav-link <?= $currentPage==='colleges'?'active':'' ?>" href="<?= $base ?>/colleges">
             Top Universities <span class="caret">&#9660;</span>
           </a>
           <div class="ck-dropdown ck-simple-dropdown">
-            <a href="<?= $base ?>/colleges.php?sort=naac"><i class="bi bi-award text-primary"></i>By NAAC Grade</a>
-            <a href="<?= $base ?>/colleges.php?sort=nirf"><i class="bi bi-trophy text-warning"></i>By NIRF Rank</a>
+            <a href="<?= $base ?>/colleges?sort=naac"><i class="bi bi-award text-primary"></i>By NAAC Grade</a>
+            <a href="<?= $base ?>/colleges?sort=nirf"><i class="bi bi-trophy text-warning"></i>By NIRF Rank</a>
             <div class="dd-divider"></div>
-            <a href="<?= $base ?>/colleges.php?type=government"><i class="bi bi-bank text-success"></i>Government Universities</a>
-            <a href="<?= $base ?>/colleges.php?type=private"><i class="bi bi-building text-info"></i>Private Universities</a>
-            <a href="<?= $base ?>/colleges.php?type=deemed"><i class="bi bi-mortarboard" style="color:#7c3aed"></i>Deemed Universities</a>
+            <a href="<?= $base ?>/colleges?type=government"><i class="bi bi-bank text-success"></i>Government Universities</a>
+            <a href="<?= $base ?>/colleges?type=private"><i class="bi bi-building text-info"></i>Private Universities</a>
+            <a href="<?= $base ?>/colleges?type=deemed"><i class="bi bi-mortarboard" style="color:#7c3aed"></i>Deemed Universities</a>
             <div class="dd-divider"></div>
-            <a href="<?= $base ?>/colleges.php?state=Maharashtra"><i class="bi bi-geo-alt text-danger"></i>Maharashtra</a>
-            <a href="<?= $base ?>/colleges.php?state=Delhi"><i class="bi bi-geo-alt text-danger"></i>Delhi</a>
-            <a href="<?= $base ?>/colleges.php?state=Karnataka"><i class="bi bi-geo-alt text-danger"></i>Karnataka</a>
-            <a href="<?= $base ?>/colleges.php" style="color:#2563eb;font-weight:600;"><i class="bi bi-arrow-right"></i>View All States</a>
+            <a href="<?= $base ?>/colleges?state=Maharashtra"><i class="bi bi-geo-alt text-danger"></i>Maharashtra</a>
+            <a href="<?= $base ?>/colleges?state=Delhi"><i class="bi bi-geo-alt text-danger"></i>Delhi</a>
+            <a href="<?= $base ?>/colleges?state=Karnataka"><i class="bi bi-geo-alt text-danger"></i>Karnataka</a>
+            <a href="<?= $base ?>/colleges" style="color:#2563eb;font-weight:600;"><i class="bi bi-arrow-right"></i>View All States</a>
           </div>
         </li>
 
@@ -230,27 +234,27 @@ $base = SITE_BASE;
             <div class="ck-mega-inner" style="grid-template-columns:1fr 1fr;">
               <div style="padding:18px;border-right:1px solid #f1f5f9;">
                 <div class="ck-mega-content-label">Pre-Admission Tools</div>
-                <a href="<?= $base ?>/suggest.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
+                <a href="<?= $base ?>/suggest" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
                   <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#127919; Suggest My University</span>
                   <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Get personalised college matches</span>
                 </a>
-                <a href="<?= $base ?>/tools/roi-calculator.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
+                <a href="<?= $base ?>/roi-calculator" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
                   <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#128202; ROI Calculator</span>
                   <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Is your degree worth it?</span>
                 </a>
-                <a href="<?= $base ?>/compare.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
+                <a href="<?= $base ?>/compare" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
                   <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#9878; Compare Colleges</span>
                   <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Compare up to 3 universities</span>
                 </a>
-                <a href="<?= $base ?>/counselling.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
+                <a href="<?= $base ?>/counselling" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
                   <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#127891; Free Counselling</span>
                   <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Talk to expert mentors</span>
                 </a>
-                <a href="<?= $base ?>/coupons.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
+                <a href="<?= $base ?>/coupons" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
                   <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#128184; Coupons &amp; Offers</span>
                   <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Save on your degree</span>
                 </a>
-                <a href="<?= $base ?>/colleges.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;padding:10px;">
+                <a href="<?= $base ?>/colleges" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;padding:10px;">
                   <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#128269; College Predictor</span>
                   <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Find colleges by score</span>
                 </a>
@@ -269,15 +273,15 @@ $base = SITE_BASE;
                   <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#128221; Apply Online</span>
                   <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Start your application</span>
                 </a>
-                <a href="<?= $base ?>/ck-assured.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
+                <a href="<?= $base ?>/ck-assured" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
                   <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#9989; CK Assured</span>
                   <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">100% placement guarantee</span>
                 </a>
-                <a href="<?= $base ?>/contact.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
+                <a href="<?= $base ?>/contact" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:4px;padding:10px;">
                   <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#128222; Ask an Expert</span>
                   <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Get personalised advice</span>
                 </a>
-                <a href="<?= $base ?>/blog.php" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;padding:10px;">
+                <a href="<?= $base ?>/blog" class="ck-mega-link" style="flex-direction:column;align-items:flex-start;gap:1px;padding:10px;">
                   <span style="display:flex;align-items:center;gap:7px;font-weight:600;">&#128240; Blog &amp; Articles</span>
                   <span style="font-size:.72rem;color:#9ca3af;padding-left:22px;">Tips, guides &amp; news</span>
                 </a>
@@ -297,18 +301,18 @@ $base = SITE_BASE;
       <div class="d-flex align-items-center gap-2 ck-right-actions ms-xl-auto">
         <span class="ck-ai-badge d-none d-xl-inline-flex"><i class="bi bi-stars me-1"></i>AI-Powered</span>
         <?php if (!empty($_SESSION['compare_list'])): ?>
-        <a href="<?= $base ?>/compare.php" class="btn-ck-green" id="navCompareBtn">
+        <a href="<?= $base ?>/compare" class="btn-ck-green" id="navCompareBtn">
           <i class="bi bi-bar-chart-line"></i> Compare
           <span class="badge bg-white text-success ms-1" id="navCompareCount"><?= count($_SESSION['compare_list']) ?></span>
         </a>
         <?php endif; ?>
-        <a href="<?= $base ?>/colleges.php" class="btn-ck-green d-none d-xl-inline-flex">
+        <a href="<?= $base ?>/colleges" class="btn-ck-green d-none d-xl-inline-flex">
           <i class="bi bi-lightning-fill"></i> Compare in 2 mins
         </a>
-        <a href="<?= $base ?>/counselling.php" class="btn-ck-primary d-none d-xl-inline-flex">
+        <a href="<?= $base ?>/counselling" class="btn-ck-primary d-none d-xl-inline-flex">
           <i class="bi bi-person-circle"></i> Sign In
         </a>
-        <a href="<?= $base ?>/colleges.php" class="btn-ck-search" aria-label="Search">
+        <a href="<?= $base ?>/colleges" class="btn-ck-search" aria-label="Search">
           <i class="bi bi-search"></i>
         </a>
       </div>
