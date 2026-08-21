@@ -154,6 +154,23 @@ $base = SITE_BASE;
   </div>
 </div>
 
+<?php if (!empty($landingMode)): ?>
+<!-- Campaign-mode navbar: a visitor who clicked a paid ad should see the
+     lead form, not 15 ways to leave the page - logo + phone only, no mega
+     menu, no dropdowns, no sign-in/compare links. -->
+<nav class="navbar ck-navbar" id="mainNav" role="navigation" aria-label="Main navigation">
+  <div class="container d-flex align-items-center justify-content-between" style="height:64px;">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="<?= $base ?>/index.php" aria-label="CollegeKampus Online Home">
+      <div class="ck-logo-icon">CK</div>
+      <div class="lh-1">
+        <span class="ck-brand-main">CollegeKampus</span>
+        <span class="ck-brand-sub d-block">Online</span>
+      </div>
+    </a>
+    <a href="tel:18001234567" class="btn-ck-green"><i class="bi bi-telephone-fill"></i> 1800-123-4567</a>
+  </div>
+</nav>
+<?php else: ?>
 <!-- Mega-menu Navbar -->
 <nav class="navbar ck-navbar" id="mainNav" role="navigation" aria-label="Main navigation">
   <div class="container d-flex align-items-center">
@@ -319,6 +336,7 @@ $base = SITE_BASE;
     </div><!-- /navMain -->
   </div>
 </nav>
+<?php endif; ?>
 
 <script>
 (function(){

@@ -4,6 +4,16 @@ require_once __DIR__ . '/config/db.php';
 $id   = intval($_GET['id'] ?? 0);
 $slug = trim($_GET['slug'] ?? '');
 
+// Ad-campaign / lead-gen landing mode: reached via ?lp=1 or any utm_source
+// (paid traffic), strips the mega-nav and footer link farm so a visitor who
+// clicked an ad sees the lead form, not 15 ways to leave the page. Captured
+// UTM params are threaded into the lead form's hidden fields below so leads
+// are attributed back to the campaign that generated them.
+$utmSource   = trim($_GET['utm_source'] ?? '');
+$utmMedium   = trim($_GET['utm_medium'] ?? '');
+$utmCampaign = trim($_GET['utm_campaign'] ?? '');
+$landingMode = !empty($_GET['lp']) || $utmSource !== '';
+
 if (!$id && !$slug) {
     header('Location: ' . SITE_BASE . '/colleges');
     exit;
@@ -265,7 +275,9 @@ $modeVal = $college['delivery_mode'] ?? $college['online_mode'] ?? '';
         </div>
         <div class="college-hero-ctas">
           <a href="<?= $base ?>/apply.php?college_id=<?= $id ?>" class="btn-hero-primary">&#128221; Apply Now</a>
+          <?php if (!$landingMode): ?>
           <button class="btn-hero-outline" onclick="addToCompare('<?= $id ?>','<?= addslashes(htmlspecialchars($college['name'])) ?>')">&#9878; Add to Compare</button>
+          <?php endif; ?>
           <a href="<?= $base ?>/counselling?college=<?= urlencode($college['name']) ?>" class="btn-hero-outline">&#128222; Get Free Advice</a>
         </div>
       </div>
@@ -450,6 +462,9 @@ $modeVal = $college['delivery_mode'] ?? $college['online_mode'] ?? '';
           <div class="apply-sidebar-header">
             <h3>&#9993; Quick Enquiry</h3>
             <p>Get personalised guidance — 100% Free</p>
+            <?php if ($landingMode): ?>
+            <p style="margin:8px 0 0;font-size:.72rem;font-weight:700;background:rgba(255,255,255,.15);display:inline-flex;padding:3px 10px;border-radius:12px;">&#9989; Official Admission Partner</p>
+            <?php endif; ?>
           </div>
           <div class="apply-sidebar-body">
             <?php if (!empty($_GET['submitted'])): ?>
@@ -461,8 +476,11 @@ $modeVal = $college['delivery_mode'] ?? $college['online_mode'] ?? '';
             <form method="POST" action="<?= $base ?>/api/leads.php" onsubmit="return handleApply(event,this)">
               <input type="hidden" name="college_id" value="<?= $id ?>">
               <input type="hidden" name="college_name" value="<?= htmlspecialchars($college['name']) ?>">
-              <input type="hidden" name="source" value="college-detail">
+              <input type="hidden" name="source" value="<?= $landingMode ? 'college-landing' : 'college-detail' ?>">
               <input type="hidden" name="page_url" value="<?= htmlspecialchars((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https://' : 'http://') . ($_SERVER['HTTP_HOST'] ?? '') . ($_SERVER['REQUEST_URI'] ?? '')) ?>">
+              <input type="hidden" name="utm_source" value="<?= htmlspecialchars($utmSource) ?>">
+              <input type="hidden" name="utm_medium" value="<?= htmlspecialchars($utmMedium) ?>">
+              <input type="hidden" name="utm_campaign" value="<?= htmlspecialchars($utmCampaign) ?>">
               <div class="apply-field">
                 <label>Full Name *</label>
                 <input type="text" name="name" placeholder="Your full name" required>

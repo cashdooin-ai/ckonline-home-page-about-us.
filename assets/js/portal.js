@@ -154,26 +154,26 @@ function renderCollegeCard(c) {
     ? `<img src="${escHtml(c.logo_url)}" alt="${escHtml(c.name)}" class="college-logo" onerror="this.style.display='none'">`
     : `<div class="college-logo-placeholder">${escHtml((c.short_name||c.name||'').substring(0,2).toUpperCase())}</div>`;
   const urlKey   = c.url_key || c.slug || c.id;
-  const detailUrl = `${window.CK_BASE||''}/college-detail.php?slug=${encodeURIComponent(urlKey)}`;
+  const detailUrl = `${window.CK_BASE||''}/college/${encodeURIComponent(urlKey)}`;
 
   // Cashback badge from CMS (injected as window.CK_CASHBACK by header)
   const cb = window.CK_CASHBACK;
   const cashbackBadge = (cb && cb.enabled) ? `<div class="ck-cashback-badge"><i class="bi bi-cash-coin"></i> ${escHtml(cb.badge_text)}</div>` : '';
 
-  return `<div class="college-card">
+  return `<div class="college-card" onclick="window.location='${detailUrl}'" style="cursor:pointer;">
     <div class="college-card-header">
       ${logo}
       <div class="college-card-badges">${typeBadge}${naac}${nirf}${ugc}${mode}</div>
     </div>
     <div class="college-card-body">
-      <div class="college-card-name">${escHtml(c.name)}</div>
+      <div class="college-card-name"><a href="${detailUrl}" onclick="event.stopPropagation()" style="color:inherit;text-decoration:none;">${escHtml(c.name)}</a></div>
       ${location ? `<div class="college-card-location">📍 ${escHtml(location)}</div>` : ''}
       ${courses}${fees}${pkg}
       ${cashbackBadge}
     </div>
     <div class="college-card-footer">
-      <a href="${detailUrl}" class="btn-view">${cb && cb.enabled ? escHtml(cb.cta) : 'View Details'}</a>
-      <button class="btn-compare-add" data-id="${escHtml(String(c.id))}" data-name="${escHtml(c.name)}" onclick="addToCompare(this.dataset.id,this.dataset.name)">⚖ Compare</button>
+      <a href="${detailUrl}" class="btn-view" onclick="event.stopPropagation()">${cb && cb.enabled ? escHtml(cb.cta) : 'View Details'}</a>
+      <button class="btn-compare-add" data-id="${escHtml(String(c.id))}" data-name="${escHtml(c.name)}" onclick="event.stopPropagation();addToCompare(this.dataset.id,this.dataset.name)">⚖ Compare</button>
     </div>
   </div>`;
 }
