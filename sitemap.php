@@ -14,11 +14,11 @@ echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
 // Static pages
 $staticPages = [
     ['url' => $base . '/portal.html',      'priority' => '1.0', 'freq' => 'daily'],
-    ['url' => $base . '/colleges.php',     'priority' => '0.9', 'freq' => 'daily'],
+    ['url' => $base . '/colleges',     'priority' => '0.9', 'freq' => 'daily'],
     ['url' => $base . '/courses.php',      'priority' => '0.9', 'freq' => 'weekly'],
-    ['url' => $base . '/compare.php',      'priority' => '0.7', 'freq' => 'weekly'],
-    ['url' => $base . '/counselling.php',  'priority' => '0.8', 'freq' => 'weekly'],
-    ['url' => $base . '/contact.php',      'priority' => '0.6', 'freq' => 'monthly'],
+    ['url' => $base . '/compare',      'priority' => '0.7', 'freq' => 'weekly'],
+    ['url' => $base . '/counselling',  'priority' => '0.8', 'freq' => 'weekly'],
+    ['url' => $base . '/contact',      'priority' => '0.6', 'freq' => 'monthly'],
     ['url' => $base . '/index.html',       'priority' => '0.8', 'freq' => 'monthly'],
 ];
 
@@ -39,7 +39,7 @@ try {
         $identifier = !empty($c['slug']) ? urlencode($c['slug']) : $c['id'];
         $lastmod = !empty($c['updated_at']) ? date('Y-m-d', strtotime($c['updated_at'])) : $today;
         echo "  <url>\n";
-        echo "    <loc>" . htmlspecialchars($base . '/college-detail.php?slug=' . $identifier) . "</loc>\n";
+        echo "    <loc>" . htmlspecialchars($base . '/college/' . $identifier) . "</loc>\n";
         echo "    <lastmod>{$lastmod}</lastmod>\n";
         echo "    <changefreq>weekly</changefreq>\n";
         echo "    <priority>0.8</priority>\n";

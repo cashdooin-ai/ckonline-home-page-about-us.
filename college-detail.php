@@ -5,7 +5,7 @@ $id   = intval($_GET['id'] ?? 0);
 $slug = trim($_GET['slug'] ?? '');
 
 if (!$id && !$slug) {
-    header('Location: ' . SITE_BASE . '/colleges.php');
+    header('Location: ' . SITE_BASE . '/colleges');
     exit;
 }
 
@@ -40,7 +40,7 @@ try {
     $college = $stmt->fetch();
 
     if (!$college) {
-        header('Location: ' . SITE_BASE . '/colleges.php');
+        header('Location: ' . SITE_BASE . '/colleges');
         exit;
     }
     $id = $college['id'];
@@ -270,7 +270,7 @@ $modeVal = $college['delivery_mode'] ?? $college['online_mode'] ?? '';
         <div class="college-hero-ctas">
           <a href="<?= $base ?>/apply.php?college_id=<?= $id ?>" class="btn-hero-primary">&#128221; Apply Now</a>
           <button class="btn-hero-outline" onclick="addToCompare('<?= $id ?>','<?= addslashes(htmlspecialchars($college['name'])) ?>')">&#9878; Add to Compare</button>
-          <a href="<?= $base ?>/counselling.php?college=<?= urlencode($college['name']) ?>" class="btn-hero-outline">&#128222; Get Free Advice</a>
+          <a href="<?= $base ?>/counselling?college=<?= urlencode($college['name']) ?>" class="btn-hero-outline">&#128222; Get Free Advice</a>
         </div>
       </div>
     </div>
@@ -379,7 +379,7 @@ $modeVal = $college['delivery_mode'] ?? $college['online_mode'] ?? '';
             <?php else: ?>
             <div style="text-align:center;padding:40px;color:#64748b;">
               <div style="font-size:2rem;margin-bottom:8px;">&#128218;</div>
-              <p>Course details not available. <a href="<?= $base ?>/counselling.php" style="color:#2563eb;">Contact us for details</a></p>
+              <p>Course details not available. <a href="<?= $base ?>/counselling" style="color:#2563eb;">Contact us for details</a></p>
             </div>
             <?php endif; ?>
           </div>
@@ -423,7 +423,7 @@ $modeVal = $college['delivery_mode'] ?? $college['online_mode'] ?? '';
               <?php endif; ?>
             </div>
             <?php if (empty($college['placement_rate']) && empty($college['avg_package'])): ?>
-            <p style="color:#64748b;font-size:.875rem;">Placement data not available. <a href="<?= $base ?>/counselling.php" style="color:#2563eb;">Contact us</a> for more information.</p>
+            <p style="color:#64748b;font-size:.875rem;">Placement data not available. <a href="<?= $base ?>/counselling" style="color:#2563eb;">Contact us</a> for more information.</p>
             <?php endif; ?>
           </div>
         </div>
@@ -434,7 +434,7 @@ $modeVal = $college['delivery_mode'] ?? $college['online_mode'] ?? '';
           <h3 style="font-size:1rem;font-weight:700;margin-bottom:14px;">Similar Universities in <?= htmlspecialchars($college['state']??'India') ?></h3>
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;">
             <?php foreach($related as $r): $rSlug = $r['slug']??$r['id']; ?>
-            <a href="<?= $base ?>/college-detail.php?slug=<?= urlencode($rSlug) ?>" class="related-card">
+            <a href="<?= $base ?>/college/<?= urlencode($rSlug) ?>" class="related-card">
               <div class="related-logo"><?= htmlspecialchars(substr($r['short_name']??$r['name'],0,2)) ?></div>
               <div>
                 <div style="font-size:.85rem;font-weight:700;color:#0f172a;margin-bottom:2px;"><?= htmlspecialchars($r['name']) ?></div>

@@ -31,6 +31,30 @@ php_value max_execution_time 60
     RewriteEngine On
     RewriteRule ^config/ - [F,L]
     RewriteRule ^database/ - [F,L]
+
+    # Clean URLs for slug-based detail pages
+    # /college/some-university -> college-detail.php?slug=some-university
+    RewriteRule ^college/([a-zA-Z0-9_-]+)/?$ college-detail.php?slug=$1 [L,QSA]
+    # /blog/some-article -> blog-post.php?slug=some-article
+    RewriteRule ^blog/([a-zA-Z0-9_-]+)/?$ blog-post.php?slug=$1 [L,QSA]
+
+    # Clean URLs for top-level static/marketing pages (SEO-friendly, no
+    # .php extension). courses.php and index.php are intentionally left
+    # alone: courses/ is a real subdirectory serving its own stream pages
+    # (e.g. /dashboard/courses/online-mba), and index.php is reachable only
+    # by its full path today since index.html (the About Us page) is the
+    # actual DirectoryIndex for "/".
+    RewriteRule ^ck-assured/?$ ck-assured.php [L,QSA]
+    RewriteRule ^colleges/?$ colleges.php [L,QSA]
+    RewriteRule ^compare/?$ compare.php [L,QSA]
+    RewriteRule ^counselling/?$ counselling.php [L,QSA]
+    RewriteRule ^coupons/?$ coupons.php [L,QSA]
+    RewriteRule ^suggest/?$ suggest.php [L,QSA]
+    RewriteRule ^roi-calculator/?$ tools/roi-calculator.php [L,QSA]
+    RewriteRule ^blog/?$ blog.php [L,QSA]
+    RewriteRule ^contact/?$ contact.php [L,QSA]
+    RewriteRule ^privacy-policy/?$ privacy-policy.php [L,QSA]
+    RewriteRule ^terms/?$ terms.php [L,QSA]
 </IfModule>
 
 # Enable GZIP compression

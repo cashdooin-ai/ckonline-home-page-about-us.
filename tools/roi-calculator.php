@@ -168,7 +168,7 @@ svg.break-chart{width:100%;border-radius:8px;background:#f8fafc;overflow:visible
       <div class="text-muted small">Loading universities&hellip;</div>
     </div>
     <div class="feat-cta">
-      <a href="<?= $base ?>/colleges.php" class="btn btn-primary px-5">View All Universities &amp; Compare &#8594;</a>
+      <a href="<?= $base ?>/colleges" class="btn btn-primary px-5">View All Universities &amp; Compare &#8594;</a>
     </div>
   </div>
 </div>

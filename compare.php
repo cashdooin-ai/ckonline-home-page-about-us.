@@ -85,7 +85,7 @@ include __DIR__ . '/includes/header.php';
       <div id="compareResultsWrap" style="position:relative;margin-bottom:16px;"></div>
       <button onclick="goCompare()" class="btn-ck-primary" style="padding:10px 24px;font-size:.9rem;">&#9878; Compare Now</button>
       <div id="compareError" style="display:none;color:#dc2626;font-size:.82rem;margin-top:10px;font-weight:600;"></div>
-      <p style="margin-top:20px;font-size:.82rem;color:#9ca3af;">Or <a href="<?= $base ?>/colleges.php" style="color:#2563eb;">browse colleges</a> and click "Add to Compare"</p>
+      <p style="margin-top:20px;font-size:.82rem;color:#9ca3af;">Or <a href="<?= $base ?>/colleges" style="color:#2563eb;">browse colleges</a> and click "Add to Compare"</p>
     </div>
 
     <script>
@@ -164,7 +164,7 @@ include __DIR__ . '/includes/header.php';
         errEl.style.display = 'block';
         return;
       }
-      window.location = (window.CK_BASE || '') + '/compare.php?ids=' + ids.join(',');
+      window.location = (window.CK_BASE || '') + '/compare?ids=' + ids.join(',');
     }
 
     renderSlots();
@@ -173,7 +173,7 @@ include __DIR__ . '/includes/header.php';
     <?php else: ?>
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:20px 0 8px;">
       <h2 style="font-size:1.1rem;font-weight:700;color:#0f172a;margin:0;">Comparing <?= count($colleges) ?> Universities</h2>
-      <a href="<?= $base ?>/compare.php" style="font-size:.85rem;color:#2563eb;text-decoration:none;">&#43; Compare Different Colleges</a>
+      <a href="<?= $base ?>/compare" style="font-size:.85rem;color:#2563eb;text-decoration:none;">&#43; Compare Different Colleges</a>
     </div>
     <div class="compare-table-wrap">
       <table class="compare-table">
@@ -226,7 +226,7 @@ include __DIR__ . '/includes/header.php';
             <td class="row-label">Actions</td>
             <?php foreach($colleges as $col): $colSlug=$col['slug']??$col['id']; ?>
             <td class="college-cell">
-              <a href="<?= $base ?>/college-detail.php?slug=<?= urlencode($colSlug) ?>" class="btn-view" style="display:block;margin-bottom:8px;text-align:center;">View Details</a>
+              <a href="<?= $base ?>/college/<?= urlencode($colSlug) ?>" class="btn-view" style="display:block;margin-bottom:8px;text-align:center;">View Details</a>
               <a href="<?= $base ?>/apply.php?college_id=<?= $col['id'] ?>" class="btn-view" style="display:block;text-align:center;background:#22c55e;">Apply Now</a>
             </td>
             <?php endforeach; ?>
@@ -235,9 +235,9 @@ include __DIR__ . '/includes/header.php';
       </table>
     </div>
     <div style="text-align:center;padding:20px 0 40px;">
-      <a href="<?= $base ?>/colleges.php" class="btn-ck-green" style="padding:12px 28px;font-size:.9rem;">&#43; Add More Colleges to Compare</a>
+      <a href="<?= $base ?>/colleges" class="btn-ck-green" style="padding:12px 28px;font-size:.9rem;">&#43; Add More Colleges to Compare</a>
       &nbsp;
-      <a href="<?= $base ?>/counselling.php" class="btn-ck-primary" style="padding:12px 28px;font-size:.9rem;">&#127891; Get Free Counselling</a>
+      <a href="<?= $base ?>/counselling" class="btn-ck-primary" style="padding:12px 28px;font-size:.9rem;">&#127891; Get Free Counselling</a>
     </div>
     <?php endif; ?>
   </div>

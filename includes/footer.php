@@ -36,14 +36,14 @@ $base = SITE_BASE;
       <div class="col-lg-2 col-md-3 col-6">
         <h6 class="text-white fw-bold mb-3" style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;">Explore</h6>
         <ul class="ck-footer-links">
-          <li><a href="<?= $base ?>/colleges.php">All Colleges</a></li>
+          <li><a href="<?= $base ?>/colleges">All Colleges</a></li>
           <li><a href="<?= $base ?>/courses.php">All Courses</a></li>
-          <li><a href="<?= $base ?>/colleges.php?type=government">Govt Universities</a></li>
-          <li><a href="<?= $base ?>/colleges.php?type=private">Private Universities</a></li>
-          <li><a href="<?= $base ?>/colleges.php?type=deemed">Deemed Universities</a></li>
-          <li><a href="<?= $base ?>/compare.php">Compare Colleges</a></li>
-          <li><a href="<?= $base ?>/colleges.php?sort=nirf">NIRF Rankings</a></li>
-          <li><a href="<?= $base ?>/colleges.php?sort=naac">NAAC Accredited</a></li>
+          <li><a href="<?= $base ?>/colleges?type=government">Govt Universities</a></li>
+          <li><a href="<?= $base ?>/colleges?type=private">Private Universities</a></li>
+          <li><a href="<?= $base ?>/colleges?type=deemed">Deemed Universities</a></li>
+          <li><a href="<?= $base ?>/compare">Compare Colleges</a></li>
+          <li><a href="<?= $base ?>/colleges?sort=nirf">NIRF Rankings</a></li>
+          <li><a href="<?= $base ?>/colleges?sort=naac">NAAC Accredited</a></li>
         </ul>
       </div>
 
@@ -51,14 +51,14 @@ $base = SITE_BASE;
       <div class="col-lg-2 col-md-3 col-6">
         <h6 class="text-white fw-bold mb-3" style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;">Top Programs</h6>
         <ul class="ck-footer-links">
-          <li><a href="<?= $base ?>/colleges.php?course=MBA">Online MBA</a></li>
-          <li><a href="<?= $base ?>/colleges.php?course=BBA">Online BBA</a></li>
-          <li><a href="<?= $base ?>/colleges.php?course=BCA">Online BCA</a></li>
-          <li><a href="<?= $base ?>/colleges.php?course=MCA">Online MCA</a></li>
-          <li><a href="<?= $base ?>/colleges.php?course=B.Com">Online B.Com</a></li>
-          <li><a href="<?= $base ?>/colleges.php?course=MA">Online MA</a></li>
-          <li><a href="<?= $base ?>/colleges.php?course=M.Com">Online M.Com</a></li>
-          <li><a href="<?= $base ?>/colleges.php?course=B.Sc">Online B.Sc</a></li>
+          <li><a href="<?= $base ?>/colleges?course=MBA">Online MBA</a></li>
+          <li><a href="<?= $base ?>/colleges?course=BBA">Online BBA</a></li>
+          <li><a href="<?= $base ?>/colleges?course=BCA">Online BCA</a></li>
+          <li><a href="<?= $base ?>/colleges?course=MCA">Online MCA</a></li>
+          <li><a href="<?= $base ?>/colleges?course=B.Com">Online B.Com</a></li>
+          <li><a href="<?= $base ?>/colleges?course=MA">Online MA</a></li>
+          <li><a href="<?= $base ?>/colleges?course=M.Com">Online M.Com</a></li>
+          <li><a href="<?= $base ?>/colleges?course=B.Sc">Online B.Sc</a></li>
         </ul>
       </div>
 
@@ -66,13 +66,13 @@ $base = SITE_BASE;
       <div class="col-lg-2 col-md-3 col-6">
         <h6 class="text-white fw-bold mb-3" style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;">Quick Links</h6>
         <ul class="ck-footer-links">
-          <li><a href="<?= $base ?>/counselling.php">Free Counselling</a></li>
+          <li><a href="<?= $base ?>/counselling">Free Counselling</a></li>
           <li><a href="<?= $base ?>/apply.php">Apply Online</a></li>
-          <li><a href="<?= $base ?>/compare.php">Compare Tool</a></li>
+          <li><a href="<?= $base ?>/compare">Compare Tool</a></li>
           <li><a href="<?= $base ?>/index.html#about">About Us</a></li>
-          <li><a href="<?= $base ?>/contact.php">Contact Us</a></li>
-          <li><a href="<?= $base ?>/colleges.php?delivery_mode=online">Online Colleges</a></li>
-          <li><a href="<?= $base ?>/colleges.php?delivery_mode=hybrid">Hybrid Colleges</a></li>
+          <li><a href="<?= $base ?>/contact">Contact Us</a></li>
+          <li><a href="<?= $base ?>/colleges?delivery_mode=online">Online Colleges</a></li>
+          <li><a href="<?= $base ?>/colleges?delivery_mode=hybrid">Hybrid Colleges</a></li>
           <li><a href="https://careers.collegekampus.com/join-us.php">Careers at CollegeKampus</a></li>
           <li><a href="https://partner.collegekampus.com/register.php">Become a Partner</a></li>
         </ul>
@@ -99,7 +99,7 @@ $base = SITE_BASE;
             <a href="mailto:info@collegekampus.in">info@collegekampus.in</a>
           </li>
         </ul>
-        <a href="<?= $base ?>/counselling.php" class="btn-ck-primary" style="width:100%;justify-content:center;">
+        <a href="<?= $base ?>/counselling" class="btn-ck-primary" style="width:100%;justify-content:center;">
           <i class="bi bi-headset"></i> Book Free Session
         </a>
       </div>
@@ -112,8 +112,8 @@ $base = SITE_BASE;
       <div class="col-md-8 text-center text-md-start">
         <small style="color:rgba(255,255,255,.45);">
           &copy; <?= date('Y') ?> CollegeKampus Online. All rights reserved. &nbsp;|&nbsp;
-          <a href="<?= $base ?>/privacy-policy.php" style="color:rgba(255,255,255,.45);text-decoration:none;">Privacy Policy</a> &nbsp;|&nbsp;
-          <a href="<?= $base ?>/terms.php"          style="color:rgba(255,255,255,.45);text-decoration:none;">Terms of Use</a> &nbsp;|&nbsp;
+          <a href="<?= $base ?>/privacy-policy" style="color:rgba(255,255,255,.45);text-decoration:none;">Privacy Policy</a> &nbsp;|&nbsp;
+          <a href="<?= $base ?>/terms"          style="color:rgba(255,255,255,.45);text-decoration:none;">Terms of Use</a> &nbsp;|&nbsp;
           <a href="<?= $base ?>/sitemap.php"        style="color:rgba(255,255,255,.45);text-decoration:none;">Sitemap</a>
         </small>
       </div>

@@ -1,6 +1,6 @@
 <?php
 $slug = trim($_GET['slug'] ?? '');
-if (!$slug) { header('Location: ' . (defined('SITE_BASE') ? SITE_BASE : '') . '/blog.php'); exit; }
+if (!$slug) { header('Location: ' . (defined('SITE_BASE') ? SITE_BASE : '') . '/blog'); exit; }
 
 // Safe slug
 $slug = preg_replace('/[^a-zA-Z0-9\-_]/', '', $slug);
@@ -58,7 +58,7 @@ if ($useStatic) {
 if ($post) {
     $pageTitle    = $post['meta_title'] ?? $post['title'];
     $pageDesc     = $post['meta_desc']  ?? $post['excerpt'] ?? '';
-    $pageCanonical = SITE_BASE . '/blog-post.php?slug=' . urlencode($slug);
+    $pageCanonical = SITE_BASE . '/blog/' . urlencode($slug);
     $pageOgImage  = !empty($post['featured_image']) ? $post['featured_image'] : SITE_BASE . '/assets/img/og-default.jpg';
     $pageType     = 'article';
 
@@ -169,13 +169,13 @@ $catGradients = [
     <i class="bi bi-journal-x display-3 text-muted"></i>
     <h2 class="mt-3">Post Not Found</h2>
     <p class="text-muted">The article you're looking for doesn't exist or has been removed.</p>
-    <a href="<?= SITE_BASE ?>/blog.php" class="btn btn-primary mt-2">← Back to Blog</a>
+    <a href="<?= SITE_BASE ?>/blog" class="btn btn-primary mt-2">← Back to Blog</a>
     <?php if (!empty($relatedPosts)): ?>
     <h4 class="mt-5 mb-3">You might like these</h4>
     <div class="row justify-content-center g-3">
         <?php foreach ($relatedPosts as $rp): ?>
         <div class="col-md-4">
-            <a href="<?= SITE_BASE ?>/blog-post.php?slug=<?= urlencode($rp['slug']) ?>" class="related-card">
+            <a href="<?= SITE_BASE ?>/blog/<?= urlencode($rp['slug']) ?>" class="related-card">
                 <div class="rc-cat"><?= htmlspecialchars($rp['category'] ?? '') ?></div>
                 <div class="rc-title"><?= htmlspecialchars($rp['title']) ?></div>
             </a>
@@ -279,7 +279,7 @@ $encUrl   = urlencode($pageCanonical ?? '');
             <div class="sidebar-card" style="background:#fff;border-radius:14px;border:1px solid #e2e8f0;padding:20px;">
                 <h5 style="font-size:.95rem;font-weight:700;color:#0f172a;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid #eff6ff;">Related Articles</h5>
                 <?php foreach ($relatedPosts as $rp): ?>
-                <a href="<?= SITE_BASE ?>/blog-post.php?slug=<?= urlencode($rp['slug']) ?>" class="related-card">
+                <a href="<?= SITE_BASE ?>/blog/<?= urlencode($rp['slug']) ?>" class="related-card">
                     <div class="rc-cat"><?= htmlspecialchars($rp['category'] ?? '') ?></div>
                     <div class="rc-title"><?= htmlspecialchars($rp['title']) ?></div>
                 </a>

@@ -148,7 +148,7 @@ include __DIR__ . '/includes/header.php';
           <div style="font-size:1.5rem;margin-bottom:6px;">&#127891;</div>
           <div style="font-size:.85rem;font-weight:700;color:#1e40af;margin-bottom:4px;">Not sure what to study?</div>
           <div style="font-size:.78rem;color:#3b82f6;margin-bottom:12px;">Get free expert guidance on the right program for you.</div>
-          <a href="<?= $base ?>/counselling.php" class="btn-ck-primary" style="width:100%;justify-content:center;padding:10px;">Free Counselling</a>
+          <a href="<?= $base ?>/counselling" class="btn-ck-primary" style="width:100%;justify-content:center;padding:10px;">Free Counselling</a>
         </div>
       </aside>
 
@@ -161,7 +161,7 @@ include __DIR__ . '/includes/header.php';
             </h2>
             <p style="font-size:.85rem;color:#64748b;margin:0;"><?= count($filteredPrograms) ?> programs available</p>
           </div>
-          <a href="<?= $base ?>/counselling.php" class="btn-ck-green">&#9889; Get Free Guidance</a>
+          <a href="<?= $base ?>/counselling" class="btn-ck-green">&#9889; Get Free Guidance</a>
         </div>
 
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;">
@@ -169,7 +169,7 @@ include __DIR__ . '/includes/header.php';
             $key = strtolower($p['slug']);
             $uniCount = isset($counts[$key]) ? $counts[$key] : rand(80,350);
           ?>
-          <div class="program-card" onclick="window.location='<?= $base ?>/colleges.php?course=<?= urlencode($p['slug']) ?>'">
+          <div class="program-card" onclick="window.location='<?= $base ?>/colleges?course=<?= urlencode($p['slug']) ?>'">
             <div style="display:flex;align-items:center;gap:14px;">
               <div class="prog-icon-lg" style="background:<?= $p['bg'] ?>;color:<?= $p['color'] ?>;"><?= $p['icon'] ?></div>
               <div>
@@ -194,7 +194,7 @@ include __DIR__ . '/includes/header.php';
             </div>
             <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;">
               <span class="prog-uni-count">&#127979; <?= $uniCount ?>+ Universities</span>
-              <a href="<?= $base ?>/colleges.php?course=<?= urlencode($p['slug']) ?>" class="btn-compare-uni" onclick="event.stopPropagation()">
+              <a href="<?= $base ?>/colleges?course=<?= urlencode($p['slug']) ?>" class="btn-compare-uni" onclick="event.stopPropagation()">
                 Compare Universities &#8594;
               </a>
             </div>
@@ -206,7 +206,7 @@ include __DIR__ . '/includes/header.php';
         <div style="background:linear-gradient(135deg,#0f172a,#1e3a5f);border-radius:16px;padding:40px 32px;text-align:center;margin-top:40px;color:#fff;">
           <h3 style="font-size:1.4rem;font-weight:800;margin-bottom:8px;">Still Confused? Talk to Our Experts for Free</h3>
           <p style="color:rgba(255,255,255,.7);margin-bottom:20px;">1.25L+ students helped &bull; 600+ expert mentors &bull; 100% Free</p>
-          <a href="<?= $base ?>/counselling.php" class="btn-ck-green" style="padding:12px 28px;font-size:.95rem;">
+          <a href="<?= $base ?>/counselling" class="btn-ck-green" style="padding:12px 28px;font-size:.95rem;">
             &#127891; Book Free Counselling Session
           </a>
         </div>

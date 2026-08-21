@@ -171,7 +171,7 @@ include __DIR__ . '/includes/header.php';
               <span class="check">&#10003;</span>
               <h3>Request Submitted!</h3>
               <p>Thank you, <strong><?= htmlspecialchars($_POST['name']??'') ?></strong>! Our expert counsellor will contact you within 24 hours.</p>
-              <a href="<?= $base ?>/colleges.php" class="btn-ck-primary" style="padding:12px 24px;">Browse Colleges</a>
+              <a href="<?= $base ?>/colleges" class="btn-ck-primary" style="padding:12px 24px;">Browse Colleges</a>
             </div>
             <?php else: ?>
             <?php if ($error): ?><div class="alert-error">&#9888; <?= htmlspecialchars($error) ?></div><?php endif; ?>

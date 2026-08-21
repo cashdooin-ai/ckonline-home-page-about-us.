@@ -238,7 +238,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nl_email'])) {
                         <div class="post-body">
                             <span class="cat-badge"><?= htmlspecialchars($p['category'] ?? 'General') ?></span>
                             <div class="post-title">
-                                <a href="<?= SITE_BASE ?>/blog-post.php?slug=<?= urlencode($p['slug']) ?>">
+                                <a href="<?= SITE_BASE ?>/blog/<?= urlencode($p['slug']) ?>">
                                     <?= htmlspecialchars($p['title']) ?>
                                 </a>
                             </div>
@@ -248,7 +248,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nl_email'])) {
                                 <?php if ($dateStr): ?><span><i class="bi bi-calendar3"></i> <?= $dateStr ?></span><?php endif; ?>
                                 <span><i class="bi bi-clock"></i> <?= htmlspecialchars($readTime) ?></span>
                             </div>
-                            <a class="read-more" href="<?= SITE_BASE ?>/blog-post.php?slug=<?= urlencode($p['slug']) ?>">Read More →</a>
+                            <a class="read-more" href="<?= SITE_BASE ?>/blog/<?= urlencode($p['slug']) ?>">Read More →</a>
                         </div>
                     </div>
                 </div>
@@ -296,7 +296,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nl_email'])) {
             <div class="sidebar-card">
                 <h5><i class="bi bi-clock-history text-primary me-2"></i>Recent Posts</h5>
                 <?php foreach (array_slice($useStatic ? $staticPosts : $posts, 0, 4) as $rp): ?>
-                <a href="<?= SITE_BASE ?>/blog-post.php?slug=<?= urlencode($rp['slug']) ?>"
+                <a href="<?= SITE_BASE ?>/blog/<?= urlencode($rp['slug']) ?>"
                    style="display:block;font-size:.82rem;font-weight:600;color:#374151;text-decoration:none;padding:6px 0;border-bottom:1px solid #f1f5f9;line-height:1.4;transition:color .2s;"
                    onmouseover="this.style.color='#2563eb'" onmouseout="this.style.color='#374151'">
                     <?= htmlspecialchars($rp['title']) ?>
