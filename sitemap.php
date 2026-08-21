@@ -13,13 +13,12 @@ echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
 
 // Static pages
 $staticPages = [
-    ['url' => $base . '/portal.html',      'priority' => '1.0', 'freq' => 'daily'],
+    ['url' => $base,                       'priority' => '1.0', 'freq' => 'daily'],
     ['url' => $base . '/colleges',     'priority' => '0.9', 'freq' => 'daily'],
-    ['url' => $base . '/courses.php',      'priority' => '0.9', 'freq' => 'weekly'],
+    ['url' => $base . '/programs',         'priority' => '0.9', 'freq' => 'weekly'],
     ['url' => $base . '/compare',      'priority' => '0.7', 'freq' => 'weekly'],
     ['url' => $base . '/counselling',  'priority' => '0.8', 'freq' => 'weekly'],
     ['url' => $base . '/contact',      'priority' => '0.6', 'freq' => 'monthly'],
-    ['url' => $base . '/index.html',       'priority' => '0.8', 'freq' => 'monthly'],
 ];
 
 foreach ($staticPages as $page) {

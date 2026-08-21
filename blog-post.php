@@ -299,7 +299,7 @@ $encUrl   = urlencode($pageCanonical ?? '');
                     ['name'=>'Online B.Com','icon'=>'📈','url'=>'bcom'],
                 ];
                 foreach ($programs as $prog): ?>
-                <a href="<?= SITE_BASE ?>/courses.php?program=<?= $prog['url'] ?>"
+                <a href="<?= SITE_BASE ?>/programs?program=<?= $prog['url'] ?>"
                    style="display:flex;align-items:center;gap:10px;padding:8px 0;text-decoration:none;color:#374151;border-bottom:1px solid #f1f5f9;font-size:.875rem;font-weight:600;transition:color .2s;"
                    onmouseover="this.style.color='#2563eb'" onmouseout="this.style.color='#374151'">
                     <span><?= $prog['icon'] ?></span> <?= $prog['name'] ?>

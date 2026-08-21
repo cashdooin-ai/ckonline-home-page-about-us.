@@ -37,7 +37,7 @@ $base = SITE_BASE;
         <h6 class="text-white fw-bold mb-3" style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;">Explore</h6>
         <ul class="ck-footer-links">
           <li><a href="<?= $base ?>/colleges">All Colleges</a></li>
-          <li><a href="<?= $base ?>/courses.php">All Courses</a></li>
+          <li><a href="<?= $base ?>/programs">All Courses</a></li>
           <li><a href="<?= $base ?>/colleges?type=government">Govt Universities</a></li>
           <li><a href="<?= $base ?>/colleges?type=private">Private Universities</a></li>
           <li><a href="<?= $base ?>/colleges?type=deemed">Deemed Universities</a></li>
@@ -69,7 +69,7 @@ $base = SITE_BASE;
           <li><a href="<?= $base ?>/counselling">Free Counselling</a></li>
           <li><a href="<?= $base ?>/apply.php">Apply Online</a></li>
           <li><a href="<?= $base ?>/compare">Compare Tool</a></li>
-          <li><a href="<?= $base ?>/index.html#about">About Us</a></li>
+          <li><a href="<?= $base ?>/#about-us">About Us</a></li>
           <li><a href="<?= $base ?>/contact">Contact Us</a></li>
           <li><a href="<?= $base ?>/colleges?delivery_mode=online">Online Colleges</a></li>
           <li><a href="<?= $base ?>/colleges?delivery_mode=hybrid">Hybrid Colleges</a></li>

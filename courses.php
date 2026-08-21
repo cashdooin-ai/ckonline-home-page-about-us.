@@ -126,19 +126,19 @@ include __DIR__ . '/includes/header.php';
       <aside class="courses-sidebar">
         <div class="courses-sidebar-nav">
           <div class="courses-sidebar-header">&#128218; Browse by Level</div>
-          <a href="<?= $base ?>/courses.php" class="courses-sidebar-item <?= $activeLevel===''?'active':'' ?>">
+          <a href="<?= $base ?>/programs" class="courses-sidebar-item <?= $activeLevel===''?'active':'' ?>">
             <span class="sicon" style="background:#f1f5f9;color:#374151;">&#128218;</span>All Programs
             <span class="badge-count"><?= count($programs) ?></span>
           </a>
-          <a href="<?= $base ?>/courses.php?level=pg" class="courses-sidebar-item <?= $activeLevel==='pg'?'active':'' ?>">
+          <a href="<?= $base ?>/programs?level=pg" class="courses-sidebar-item <?= $activeLevel==='pg'?'active':'' ?>">
             <span class="sicon" style="background:#ede9fe;color:#7c3aed;">PG</span>PG Courses
             <span class="badge-count"><?= count(array_filter($programs,fn($p)=>$p['level']==='pg')) ?></span>
           </a>
-          <a href="<?= $base ?>/courses.php?level=ug" class="courses-sidebar-item <?= $activeLevel==='ug'?'active':'' ?>">
+          <a href="<?= $base ?>/programs?level=ug" class="courses-sidebar-item <?= $activeLevel==='ug'?'active':'' ?>">
             <span class="sicon" style="background:#dbeafe;color:#2563eb;">UG</span>UG Courses
             <span class="badge-count"><?= count(array_filter($programs,fn($p)=>$p['level']==='ug')) ?></span>
           </a>
-          <a href="<?= $base ?>/courses.php?level=certificate" class="courses-sidebar-item <?= $activeLevel==='certificate'?'active':'' ?>">
+          <a href="<?= $base ?>/programs?level=certificate" class="courses-sidebar-item <?= $activeLevel==='certificate'?'active':'' ?>">
             <span class="sicon" style="background:#dcfce7;color:#16a34a;">Cr</span>Certificate
             <span class="badge-count"><?= count(array_filter($programs,fn($p)=>$p['level']==='certificate')) ?></span>
           </a>

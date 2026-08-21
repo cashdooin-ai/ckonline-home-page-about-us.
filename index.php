@@ -63,6 +63,10 @@ if (empty($carouselSlides)) {
 <?php
 $pageTitle = 'CollegeKampus Online — Find Your Dream Online Degree in India';
 $pageDesc  = 'Compare 50+ online universities in India. Explore MBA, BCA, B.Com, BBA and more online degree programs. Check fees, placements and apply in minutes.';
+// Always canonicalize to the bare root - this page is reachable both there
+// (now the DirectoryIndex) and at its literal /index.php filename, and both
+// should point search engines at the same one clean URL.
+$pageCanonical = rtrim(SITE_BASE, '/') . '/';
 $extraHead = <<<'EXTRAHEAD_CSS'
   <link rel="stylesheet" href="style.css">
 <style>
@@ -404,7 +408,7 @@ require_once __DIR__ . '/includes/header.php';
       </div>
     </div>
     <div class="text-center mt-4">
-      <a href="courses.php" class="btn btn-outline-primary px-4 fw-semibold">View All Programs <i class="bi bi-arrow-right ms-1"></i></a>
+      <a href="programs" class="btn btn-outline-primary px-4 fw-semibold">View All Programs <i class="bi bi-arrow-right ms-1"></i></a>
     </div>
   </div>
 </section>
