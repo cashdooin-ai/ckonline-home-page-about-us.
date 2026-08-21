@@ -20,6 +20,7 @@ $state   = trim($_POST['state'] ?? $_POST['preferred_state'] ?? '');
 $qualification = trim($_POST['current_qualification'] ?? '');
 $college_id = intval($_POST['college_id'] ?? 0);
 $course_id  = intval($_POST['course_id'] ?? 0);
+$collegeName = trim($_POST['college_name'] ?? '');
 // lead-form.php's widget sends this as "referrer_url"; other forms may send
 // "page_url" directly - either way, this is what shows as the source page
 // in admin's Leads list (the online_leads.page_url column already exists
@@ -83,6 +84,29 @@ try {
     $stmt = $db->prepare("INSERT INTO online_leads ($colStr) VALUES ($ph)");
     $stmt->execute($insertVals);
     $leadId = $db->lastInsertId();
+
+    // Mirror into the shared leads CRM ckampus-dasboard's admin already
+    // manages (see includes/leads-schema.php's pushLeadToSharedCrm() for
+    // the full reasoning) so staff/affiliates can work this lead through
+    // that admin's existing status/call-log/assignment pipeline. This is
+    // deliberately AFTER the online_leads insert above - a failure here
+    // must never affect what the visitor submitting the form sees.
+    pushLeadToSharedCrm($db, [
+        'name'          => $name,
+        'email'         => $email,
+        'phone'         => $phone,
+        'course'        => $course,
+        'college_name'  => $collegeName,
+        'college_id'    => $college_id,
+        'state'         => $state,
+        'source'        => $source,
+        'message'       => $message,
+        'qualification' => $qualification,
+        'utm_source'    => $utmSource,
+        'utm_medium'    => $utmMedium,
+        'utm_campaign'  => $utmCampaign,
+        'page_url'      => $page_url,
+    ]);
 
     // If this is an application, also insert into applications table if exists
     $appId = null;
