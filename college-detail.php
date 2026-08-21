@@ -47,21 +47,17 @@ try {
 
     // Courses offered
     try {
-        $ccCols = [];
-        $st2 = $db->query("SHOW COLUMNS FROM college_courses");
-        foreach ($st2->fetchAll() as $r) $ccCols[] = $r['Field'];
-        $crCols = [];
-        $st3 = $db->query("SHOW COLUMNS FROM courses");
-        foreach ($st3->fetchAll() as $r) $crCols[] = $r['Field'];
-
-        $crSelect = 'cr.id, cr.name';
-        if (in_array('duration', $crCols)) $crSelect .= ', cr.duration';
-        if (in_array('degree_level', $crCols)) $crSelect .= ', cr.degree_level';
-        if (in_array('fees', $ccCols)) $crSelect .= ', cc.fees';
-        if (in_array('seats', $ccCols)) $crSelect .= ', cc.seats';
-        if (in_array('admission_deadline', $ccCols)) $crSelect .= ', cc.admission_deadline';
-
-        $stmt2 = $db->prepare("SELECT $crSelect FROM college_courses cc JOIN courses cr ON cr.id = cc.course_id WHERE cc.college_id = ? ORDER BY cr.name");
+        // college_courses is a flat table - course_name/stream/duration/
+        // degree_type/annual_fees/seats_available/eligibility live directly
+        // on the row, no separate courses catalog to join (there never was
+        // one on this shared DB - see api/college-courses-save.php for the
+        // full story). Aliased to the column names this page's display code
+        // and the college_streams fallback below both already expect.
+        $stmt2 = $db->prepare(
+            "SELECT course_name AS name, stream, degree_type AS degree_level, duration,
+                    annual_fees AS fees, seats_available AS seats
+             FROM college_courses WHERE college_id = ? AND is_active = 1 ORDER BY course_name"
+        );
         $stmt2->execute([$id]);
         $courses = $stmt2->fetchAll();
 

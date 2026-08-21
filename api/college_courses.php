@@ -12,12 +12,13 @@ $collegeId = !empty($_GET['college_id']) ? (int)$_GET['college_id'] : 0;
 
 if (!$collegeId) { echo json_encode([]); exit; }
 
+// college_courses is a flat table - no separate courses catalog to join
+// (see api/college-courses-save.php for the full story).
 $stmt = $pdo->prepare("
-    SELECT cr.id, cr.name, cc.annual_fees
-    FROM college_courses cc
-    JOIN courses cr ON cc.course_id = cr.id
-    WHERE cc.college_id = ? AND cc.is_active = 1
-    ORDER BY cr.name
+    SELECT id, course_name AS name, annual_fees
+    FROM college_courses
+    WHERE college_id = ? AND is_active = 1
+    ORDER BY course_name
 ");
 $stmt->execute([$collegeId]);
 echo json_encode($stmt->fetchAll(), JSON_UNESCAPED_UNICODE);
