@@ -70,7 +70,14 @@ $base = SITE_BASE;
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="<?= $base ?>/assets/css/portal.css">
+    <?php
+    // Cache-bust portal.css/portal.js with the file's own mtime, so a
+    // deployed CSS/JS change takes effect on a normal reload instead of
+    // silently continuing to serve whatever the browser cached under the
+    // un-versioned URL until the visitor happens to hard-refresh.
+    $portalCssV = @filemtime(dirname(__DIR__) . '/assets/css/portal.css') ?: time();
+    ?>
+    <link rel="stylesheet" href="<?= $base ?>/assets/css/portal.css?v=<?= $portalCssV ?>">
     <script>window.CK_BASE = '<?= rtrim(SITE_BASE, '/') ?>';</script>
     <?php if (isset($extraHead)) echo $extraHead; ?>
 <style>
