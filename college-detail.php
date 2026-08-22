@@ -504,7 +504,7 @@ $modeVal = $college['delivery_mode'] ?? $college['online_mode'] ?? '';
                 </select>
               </div>
               <button type="submit" class="btn-apply-submit">&#9993; Get Free Counselling</button>
-              <p style="font-size:.72rem;color:#9ca3af;text-align:center;margin-top:10px;">By submitting you agree to our <a href="#" style="color:#2563eb;">Privacy Policy</a></p>
+              <p style="font-size:.72rem;color:#9ca3af;text-align:center;margin-top:10px;">By submitting you agree to our <a href="<?= $base ?>/privacy-policy" style="color:#2563eb;">Privacy Policy</a></p>
             </form>
             <?php endif; ?>
           </div>
