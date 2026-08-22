@@ -1,7 +1,8 @@
 <?php
 // Admin-only: AI course/fee suggestions for a college, using the same
-// Claude-direct call pattern as api/ai-generate.php. Suggestions are
-// returned for admin review — nothing is written to the database here.
+// multi-provider AI system (includes/ai-chat.php) as api/ai-generate.php.
+// Suggestions are returned for admin review — nothing is written to the
+// database here.
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 header('Content-Type: application/json');
@@ -18,18 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/ai-chat.php';
 
 $collegeId = (int)($_POST['college_id'] ?? 0);
 if (!$collegeId) {
     http_response_code(400);
     echo json_encode(['error' => 'college_id is required']);
-    exit;
-}
-
-$apiKey = getenv('ANTHROPIC_API_KEY') ?: '';
-if (!$apiKey) {
-    http_response_code(500);
-    echo json_encode(['error' => 'ANTHROPIC_API_KEY not set on server. Contact the administrator.']);
     exit;
 }
 
@@ -75,44 +70,10 @@ Return ONLY a valid JSON array, at most 8 courses, no markdown code fences, no c
 [{"name":"...","category":"...","degree_level":"...","duration_years":0,"annual_fees":0,"eligibility":"..."}]
 PROMPT;
 
-    $payload = json_encode([
-        'model'      => 'claude-sonnet-4-6',
-        'max_tokens' => 2048,
-        'messages'   => [['role' => 'user', 'content' => $prompt]],
-    ]);
+    $result = kampusAIGetReply($db, '', [['role' => 'user', 'parts' => [['text' => $prompt]]]]);
 
-    $ch = curl_init('https://api.anthropic.com/v1/messages');
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => $payload,
-        CURLOPT_TIMEOUT        => 90,
-        CURLOPT_HTTPHEADER     => [
-            'x-api-key: ' . $apiKey,
-            'anthropic-version: 2023-06-01',
-            'content-type: application/json',
-        ],
-    ]);
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $curlErr  = curl_error($ch);
-    curl_close($ch);
-
-    if ($curlErr) {
-        http_response_code(500);
-        echo json_encode(['error' => 'Network error contacting AI: ' . $curlErr]);
-        exit;
-    }
-
-    $data = json_decode($response, true);
-    if ($httpCode !== 200) {
-        http_response_code(502);
-        echo json_encode(['error' => 'Claude API error (' . $httpCode . '): ' . ($data['error']['message'] ?? $response)]);
-        exit;
-    }
-
-    $text = $data['content'][0]['text'] ?? '';
-    $text = preg_replace('/^```(?:json)?\s*/i', '', trim($text));
+    $text = trim($result['reply'] ?? '');
+    $text = preg_replace('/^```(?:json)?\s*/i', '', $text);
     $text = preg_replace('/\s*```$/', '', $text);
     $suggestions = json_decode(trim($text), true);
 

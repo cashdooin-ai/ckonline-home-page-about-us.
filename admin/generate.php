@@ -44,7 +44,7 @@ body{background:#f1f5f9;font-family:'Inter',sans-serif;}
 <div class="container-fluid py-4 px-4">
     <div class="mb-4">
         <h5 class="fw-800 mb-1" style="font-weight:800;">AI Content Generator</h5>
-        <p class="text-muted mb-0" style="font-size:.875rem;">Powered by Claude AI (claude-sonnet-4-6) · Generates SEO-optimised content for CollegeKampus Online</p>
+        <p class="text-muted mb-0" style="font-size:.875rem;">Powered by KampusAI · uses the same AI provider settings configured in the main admin · Generates SEO-optimised content for CollegeKampus Online</p>
     </div>
 
     <div class="row g-4">
@@ -142,7 +142,7 @@ body{background:#f1f5f9;font-family:'Inter',sans-serif;}
     <!-- Tips -->
     <div class="alert alert-info mt-4" style="font-size:.85rem;">
         <strong>💡 Tips:</strong>
-        Generation takes 15–45 seconds depending on content length. The API key must be set as <code>ANTHROPIC_API_KEY</code> environment variable on the server.
+        Generation takes 15–45 seconds depending on content length. Uses whichever AI provider (Gemini, Groq, OpenAI, Anthropic, Cohere) is configured in the main admin's <strong>Admin → Settings → AI Providers</strong> — no separate setup needed here.
         After generating, review the content before publishing. You can edit the HTML in the text area before saving.
     </div>
 </div>
@@ -182,7 +182,7 @@ async function generateContent(type) {
     }
 
     setGenerating(type, true);
-    setStatus(type, '<span class="progress-spinner"></span> Contacting Claude AI... please wait.');
+    setStatus(type, '<span class="progress-spinner"></span> Contacting AI... please wait.');
 
     const body = new FormData();
     body.append('type', type);
@@ -198,7 +198,7 @@ async function generateContent(type) {
         } else {
             const resultId = type === 'blog' ? 'blogResult' : 'progResult';
             document.getElementById(resultId).value = data.content;
-            setStatus(type, '✅ Generated successfully! Tokens used: ' + (data.tokens_used || 'n/a') + '. Review and save below.');
+            setStatus(type, '✅ Generated successfully via ' + (data.provider || 'AI') + (data.model ? ' (' + data.model + ')' : '') + '. Review and save below.');
             showSaveSection(type);
         }
     } catch(e) {
