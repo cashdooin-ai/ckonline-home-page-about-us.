@@ -14,6 +14,18 @@ $cms_defaults = [
     'cta_secondary'       => 'Talk to a Counsellor',
     'stats_bar_colleges'  => '50+',
     'carousel_slides'     => '[{"title":"Find Your Perfect Online Degree","subtitle":"Explore 50+ UGC-approved universities in India","img":"https://placehold.co/800x400/1a4fba/ffffff?text=Find+Your+Perfect+Online+Degree","btn_text":"Explore Now","btn_link":"colleges"},{"title":"Compare 50+ Universities","subtitle":"Side-by-side comparison in just 2 minutes","img":"https://placehold.co/800x400/16a34a/ffffff?text=Compare+50+Universities","btn_text":"Compare Now","btn_link":"compare"},{"title":"Free Expert Counselling","subtitle":"Talk to certified counsellors — no commission, no bias","img":"https://placehold.co/800x400/ea580c/ffffff?text=Free+Expert+Counselling","btn_text":"Book Free Session","btn_link":"counselling"}]',
+    // Footer fields (Site Settings > Footer) - this page has its own footer
+    // markup below rather than including includes/footer.php, so it needs
+    // the same defaults that file's site-settings-loader.php falls back to.
+    'footer_tagline'      => "India's trusted online college discovery platform. Compare 500+ UGC-approved universities and apply in minutes.",
+    'contact_phone'       => '1800-123-4567',
+    'contact_email'       => 'info@collegekampus.in',
+    'contact_hours'       => 'Mon–Sat 9am–7pm',
+    'social_facebook'     => 'https://www.facebook.com/collegekampus',
+    'social_instagram'    => 'https://www.instagram.com/collegekampus',
+    'social_twitter'      => 'https://twitter.com/collegekampus',
+    'social_linkedin'     => 'https://www.linkedin.com/company/collegekampus',
+    'social_youtube'      => 'https://www.youtube.com/collegekampus',
 ];
 
 try {
@@ -752,13 +764,13 @@ require_once __DIR__ . '/includes/header.php';
             <span class="ck-brand-sub d-block">Online</span>
           </div>
         </div>
-        <p class="small" style="color:rgba(255,255,255,.55)">India's trusted online college discovery platform. Compare 50+ UGC-approved universities and apply in minutes.</p>
+        <p class="small" style="color:rgba(255,255,255,.55)"><?= htmlspecialchars(cms('footer_tagline')) ?></p>
         <div class="d-flex gap-2 mt-3">
-          <a href="#" class="ck-social"><i class="bi bi-facebook"></i></a>
-          <a href="#" class="ck-social"><i class="bi bi-instagram"></i></a>
-          <a href="#" class="ck-social"><i class="bi bi-twitter-x"></i></a>
-          <a href="#" class="ck-social"><i class="bi bi-linkedin"></i></a>
-          <a href="#" class="ck-social"><i class="bi bi-youtube"></i></a>
+          <a href="<?= htmlspecialchars(cms('social_facebook')) ?>" rel="noopener" target="_blank" class="ck-social"><i class="bi bi-facebook"></i></a>
+          <a href="<?= htmlspecialchars(cms('social_instagram')) ?>" rel="noopener" target="_blank" class="ck-social"><i class="bi bi-instagram"></i></a>
+          <a href="<?= htmlspecialchars(cms('social_twitter')) ?>" rel="noopener" target="_blank" class="ck-social"><i class="bi bi-twitter-x"></i></a>
+          <a href="<?= htmlspecialchars(cms('social_linkedin')) ?>" rel="noopener" target="_blank" class="ck-social"><i class="bi bi-linkedin"></i></a>
+          <a href="<?= htmlspecialchars(cms('social_youtube')) ?>" rel="noopener" target="_blank" class="ck-social"><i class="bi bi-youtube"></i></a>
         </div>
       </div>
       <div class="col-lg-2 col-md-3 col-6">
@@ -793,9 +805,9 @@ require_once __DIR__ . '/includes/header.php';
       <div class="col-lg-2 col-md-3 col-6">
         <h6 class="fw-700 mb-3 text-uppercase" style="font-size:.75rem;letter-spacing:.08em">Contact</h6>
         <ul class="list-unstyled ck-footer-links">
-          <li><i class="bi bi-telephone me-1 text-primary"></i>1800-123-4567</li>
-          <li class="mt-2"><i class="bi bi-envelope me-1 text-primary"></i>info@collegekampus.in</li>
-          <li class="mt-2"><i class="bi bi-clock me-1 text-primary"></i>Mon–Sat 9am–7pm</li>
+          <li><i class="bi bi-telephone me-1 text-primary"></i><?= htmlspecialchars(cms('contact_phone')) ?></li>
+          <li class="mt-2"><i class="bi bi-envelope me-1 text-primary"></i><?= htmlspecialchars(cms('contact_email')) ?></li>
+          <li class="mt-2"><i class="bi bi-clock me-1 text-primary"></i><?= htmlspecialchars(cms('contact_hours')) ?></li>
         </ul>
       </div>
     </div>
@@ -805,9 +817,9 @@ require_once __DIR__ . '/includes/header.php';
         <small style="color:rgba(255,255,255,.4)">&copy; <?= date('Y') ?> CollegeKampus Online. All rights reserved.</small>
       </div>
       <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
-        <small><a href="#" style="color:rgba(255,255,255,.4);text-decoration:none">Privacy Policy</a>
-        &bull; <a href="#" style="color:rgba(255,255,255,.4);text-decoration:none">Terms of Use</a>
-        &bull; <a href="#" style="color:rgba(255,255,255,.4);text-decoration:none">Sitemap</a></small>
+        <small><a href="<?= $base ?>/privacy-policy" style="color:rgba(255,255,255,.4);text-decoration:none">Privacy Policy</a>
+        &bull; <a href="<?= $base ?>/terms" style="color:rgba(255,255,255,.4);text-decoration:none">Terms of Use</a>
+        &bull; <a href="<?= $base ?>/sitemap.php" style="color:rgba(255,255,255,.4);text-decoration:none">Sitemap</a></small>
       </div>
     </div>
   </div>
