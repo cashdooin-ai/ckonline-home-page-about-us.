@@ -1,7 +1,8 @@
 <?php
 // AI Content Generation Endpoint — CollegeKampus
-// Uses Claude API (claude-sonnet-4-6) to generate SEO blog posts and program pages.
-// NOTE: Set ANTHROPIC_API_KEY environment variable on server.
+// Uses the same multi-provider AI system (Gemini/Groq/OpenAI/Anthropic/
+// Cohere) already configured in the main admin's AI Providers settings -
+// see includes/ai-chat.php.
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -15,12 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$apiKey = getenv('ANTHROPIC_API_KEY') ?: '';
-if (!$apiKey) {
-    http_response_code(500);
-    echo json_encode(['error' => 'ANTHROPIC_API_KEY not set on server. Contact the administrator.']);
-    exit;
-}
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/ai-chat.php';
 
 $type    = $_POST['type']    ?? 'blog';
 $topic   = trim($_POST['topic']   ?? '');
@@ -74,59 +71,28 @@ Requirements:
 PROMPT;
 }
 
-// ── Call Claude API ───────────────────────────────────────────────────────────
-$payload = json_encode([
-    'model'      => 'claude-sonnet-4-6',
-    'max_tokens' => 4096,
-    'messages'   => [
-        ['role' => 'user', 'content' => $prompt]
-    ]
-]);
-
-$ch = curl_init('https://api.anthropic.com/v1/messages');
-curl_setopt_array($ch, [
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_POST           => true,
-    CURLOPT_POSTFIELDS     => $payload,
-    CURLOPT_TIMEOUT        => 120,
-    CURLOPT_HTTPHEADER     => [
-        'x-api-key: ' . $apiKey,
-        'anthropic-version: 2023-06-01',
-        'content-type: application/json',
-    ],
-]);
-
-$response = curl_exec($ch);
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$curlErr  = curl_error($ch);
-curl_close($ch);
-
-if ($curlErr) {
+// ── Call AI (first configured provider that succeeds) ─────────────────────────
+try {
+    $db = getDB();
+    $result = kampusAIGetReply($db, '', [['role' => 'user', 'parts' => [['text' => $prompt]]]]);
+} catch (Throwable $e) {
     http_response_code(500);
-    echo json_encode(['error' => 'Network error contacting AI: ' . $curlErr]);
+    echo json_encode(['error' => $e->getMessage()]);
     exit;
 }
 
-$data = json_decode($response, true);
-
-if ($httpCode !== 200) {
-    $errMsg = $data['error']['message'] ?? $response;
-    http_response_code(502);
-    echo json_encode(['error' => 'Claude API error (' . $httpCode . '): ' . $errMsg]);
-    exit;
-}
-
-$generatedContent = $data['content'][0]['text'] ?? '';
+$generatedContent = trim($result['reply'] ?? '');
 
 if (!$generatedContent) {
     http_response_code(500);
-    echo json_encode(['error' => 'No content returned from AI. Response: ' . substr($response, 0, 200)]);
+    echo json_encode(['error' => 'No content returned from AI.']);
     exit;
 }
 
 echo json_encode([
-    'content'     => $generatedContent,
-    'type'        => $type,
-    'subject'     => $subject,
-    'tokens_used' => $data['usage']['output_tokens'] ?? 0,
+    'content'  => $generatedContent,
+    'type'     => $type,
+    'subject'  => $subject,
+    'provider' => $result['provider'],
+    'model'    => $result['model'],
 ]);
