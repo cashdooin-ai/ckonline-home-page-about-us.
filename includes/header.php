@@ -36,6 +36,7 @@ $defaultJsonLd = [
 $jsonLd = isset($jsonLd) ? $jsonLd : $defaultJsonLd;
 
 $base = SITE_BASE;
+require_once __DIR__ . '/site-settings-loader.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -156,8 +157,8 @@ $base = SITE_BASE;
 <!-- Top bar -->
 <div class="ck-topbar d-none d-md-block">
   <div class="container d-flex justify-content-between align-items-center">
-    <span><i class="bi bi-envelope-fill me-1"></i>info@collegekampus.in &nbsp;|&nbsp; <i class="bi bi-telephone-fill me-1"></i>1800-123-4567 (Toll Free)</span>
-    <span><i class="bi bi-clock me-1"></i>Mon–Sat 9am–7pm &nbsp;|&nbsp; <i class="bi bi-star-fill me-1 text-warning"></i>4.8/5 &middot; 1.25L+ students helped</span>
+    <span><i class="bi bi-envelope-fill me-1"></i><?= htmlspecialchars(cms('contact_email')) ?> &nbsp;|&nbsp; <i class="bi bi-telephone-fill me-1"></i><?= htmlspecialchars(cms('contact_phone')) ?> (Toll Free)</span>
+    <span><i class="bi bi-clock me-1"></i><?= htmlspecialchars(cms('contact_hours')) ?> &nbsp;|&nbsp; <i class="bi bi-star-fill me-1 text-warning"></i>4.8/5 &middot; 1.25L+ students helped</span>
   </div>
 </div>
 

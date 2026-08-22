@@ -1,6 +1,8 @@
 <?php
 if (!defined('SITE_BASE')) require_once dirname(__DIR__) . '/config/db.php';
 $base = SITE_BASE;
+require_once __DIR__ . '/site-settings-loader.php';
+$_contactPhoneTel = preg_replace('/[^0-9+]/', '', cms('contact_phone'));
 ?>
 </main>
 
@@ -21,8 +23,8 @@ $base = SITE_BASE;
         <span class="ms-md-3" style="color:rgba(255,255,255,.6);font-size:.8rem;">Official Admission Partner &middot; UGC Approved Only</span>
       </div>
       <div class="col-md-6 text-md-end">
-        <a href="tel:18001234567" style="color:#fff;text-decoration:none;margin-right:16px;"><i class="bi bi-telephone-fill" style="color:#22c55e;"></i> 1800-123-4567</a>
-        <a href="mailto:info@collegekampus.in" style="color:#fff;text-decoration:none;"><i class="bi bi-envelope-fill" style="color:#22c55e;"></i> info@collegekampus.in</a>
+        <a href="tel:<?= htmlspecialchars($_contactPhoneTel) ?>" style="color:#fff;text-decoration:none;margin-right:16px;"><i class="bi bi-telephone-fill" style="color:#22c55e;"></i> <?= htmlspecialchars(cms('contact_phone')) ?></a>
+        <a href="mailto:<?= htmlspecialchars(cms('contact_email')) ?>" style="color:#fff;text-decoration:none;"><i class="bi bi-envelope-fill" style="color:#22c55e;"></i> <?= htmlspecialchars(cms('contact_email')) ?></a>
       </div>
     </div>
     <?php else: ?>
@@ -37,18 +39,18 @@ $base = SITE_BASE;
             <span class="ck-brand-sub d-block" style="color:#22c55e;">Online</span>
           </div>
         </div>
-        <p class="small mb-3" style="color:rgba(255,255,255,.6);">India's most trusted platform for online &amp; distance college discovery. Compare 40,000+ colleges, explore courses, and apply free.</p>
+        <p class="small mb-3" style="color:rgba(255,255,255,.6);"><?= htmlspecialchars(cms('footer_tagline')) ?></p>
         <div class="d-flex gap-2 flex-wrap mb-3">
           <span style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);padding:3px 10px;border-radius:4px;font-size:.72rem;font-weight:600;">UGC Approved</span>
           <span style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);padding:3px 10px;border-radius:4px;font-size:.72rem;font-weight:600;">AICTE Listed</span>
           <span style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);padding:3px 10px;border-radius:4px;font-size:.72rem;font-weight:600;">NAAC Accredited</span>
         </div>
         <div class="d-flex gap-2">
-          <a href="https://www.facebook.com/collegekampus"  rel="noopener" target="_blank" class="ck-social-link" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-          <a href="https://www.instagram.com/collegekampus" rel="noopener" target="_blank" class="ck-social-link" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-          <a href="https://twitter.com/collegekampus"       rel="noopener" target="_blank" class="ck-social-link" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
-          <a href="https://www.linkedin.com/company/collegekampus" rel="noopener" target="_blank" class="ck-social-link" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
-          <a href="https://www.youtube.com/collegekampus"   rel="noopener" target="_blank" class="ck-social-link" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+          <a href="<?= htmlspecialchars(cms('social_facebook')) ?>"  rel="noopener" target="_blank" class="ck-social-link" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+          <a href="<?= htmlspecialchars(cms('social_instagram')) ?>" rel="noopener" target="_blank" class="ck-social-link" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+          <a href="<?= htmlspecialchars(cms('social_twitter')) ?>"       rel="noopener" target="_blank" class="ck-social-link" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+          <a href="<?= htmlspecialchars(cms('social_linkedin')) ?>" rel="noopener" target="_blank" class="ck-social-link" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+          <a href="<?= htmlspecialchars(cms('social_youtube')) ?>"   rel="noopener" target="_blank" class="ck-social-link" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
         </div>
       </div>
 
@@ -108,7 +110,7 @@ $base = SITE_BASE;
           </li>
           <li style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
             <i class="bi bi-telephone-fill" style="color:#22c55e;flex-shrink:0;"></i>
-            <a href="tel:18001234567">1800-123-4567</a>&nbsp;<span style="font-size:.75rem;">(Toll Free)</span>
+            <a href="tel:<?= htmlspecialchars($_contactPhoneTel) ?>"><?= htmlspecialchars(cms('contact_phone')) ?></a>&nbsp;<span style="font-size:.75rem;">(Toll Free)</span>
           </li>
           <li style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
             <i class="bi bi-whatsapp" style="color:#22c55e;flex-shrink:0;"></i>
@@ -116,7 +118,7 @@ $base = SITE_BASE;
           </li>
           <li style="display:flex;gap:8px;align-items:center;margin-bottom:16px;">
             <i class="bi bi-envelope-fill" style="color:#22c55e;flex-shrink:0;"></i>
-            <a href="mailto:info@collegekampus.in">info@collegekampus.in</a>
+            <a href="mailto:<?= htmlspecialchars(cms('contact_email')) ?>"><?= htmlspecialchars(cms('contact_email')) ?></a>
           </li>
         </ul>
         <a href="<?= $base ?>/counselling" class="btn-ck-primary" style="width:100%;justify-content:center;">
