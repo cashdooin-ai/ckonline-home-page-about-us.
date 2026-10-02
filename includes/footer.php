@@ -3,6 +3,11 @@ if (!defined('SITE_BASE')) require_once dirname(__DIR__) . '/config/db.php';
 $base = SITE_BASE;
 require_once __DIR__ . '/site-settings-loader.php';
 $_contactPhoneTel = preg_replace('/[^0-9+]/', '', cms('contact_phone'));
+// wa.me needs the full international number with no "+" - contact_phone is
+// stored as a bare 10-digit Indian number (see the topbar's "9056161621"),
+// so prepend the country code only when it's not already there.
+$_contactPhoneDigits = preg_replace('/[^0-9]/', '', cms('contact_phone'));
+$_whatsappNumber = (strlen($_contactPhoneDigits) === 10) ? '91' . $_contactPhoneDigits : $_contactPhoneDigits;
 ?>
 </main>
 
@@ -114,7 +119,7 @@ $_contactPhoneTel = preg_replace('/[^0-9+]/', '', cms('contact_phone'));
           </li>
           <li style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
             <i class="bi bi-whatsapp" style="color:#22c55e;flex-shrink:0;"></i>
-            <a href="https://wa.me/918001234567">WhatsApp Us</a>
+            <a href="https://wa.me/<?= htmlspecialchars($_whatsappNumber) ?>">WhatsApp Us</a>
           </li>
           <li style="display:flex;gap:8px;align-items:center;margin-bottom:16px;">
             <i class="bi bi-envelope-fill" style="color:#22c55e;flex-shrink:0;"></i>
