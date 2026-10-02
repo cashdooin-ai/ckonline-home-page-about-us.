@@ -1,4 +1,15 @@
-<?php /* Floating WhatsApp + Call buttons — fixed bottom-right */ ?>
+<?php
+/* Floating WhatsApp + Call buttons — fixed bottom-right */
+if (!function_exists('cms')) {
+    require_once __DIR__ . '/site-settings-loader.php';
+}
+// Same derivation as footer.php's WhatsApp link: contact_phone is stored as
+// a bare 10-digit Indian number, so prepend the 91 country code only when
+// it's not already there.
+$_floatPhoneDigits = preg_replace('/[^0-9]/', '', cms('contact_phone'));
+$_floatWhatsapp = (strlen($_floatPhoneDigits) === 10) ? '91' . $_floatPhoneDigits : $_floatPhoneDigits;
+$_floatTel = (strlen($_floatPhoneDigits) === 10) ? '+91' . $_floatPhoneDigits : ('+' . $_floatPhoneDigits);
+?>
 <style>
 #ckFloatingCTA{position:fixed;bottom:28px;right:20px;z-index:1100;display:flex;flex-direction:column;align-items:center;gap:12px;transition:bottom .2s;}
 /* Shifted up while the compare bar (colleges.php) is showing at the bottom
@@ -37,7 +48,7 @@
 </style>
 
 <div id="ckFloatingCTA" aria-label="Quick contact buttons">
-  <a href="https://wa.me/911800123456?text=Hi%2C+I+want+to+know+about+online+degrees"
+  <a href="https://wa.me/<?= htmlspecialchars($_floatWhatsapp) ?>?text=Hi%2C+I+want+to+know+about+online+degrees"
      class="ck-float-btn ck-float-btn-wa"
      target="_blank" rel="noopener"
      data-tip="Chat on WhatsApp"
@@ -46,7 +57,7 @@
   </a>
   <div class="ck-float-label">Chat</div>
 
-  <a href="tel:+911800123456"
+  <a href="tel:<?= htmlspecialchars($_floatTel) ?>"
      class="ck-float-btn ck-float-btn-call"
      data-tip="Call us free"
      aria-label="Call us">
