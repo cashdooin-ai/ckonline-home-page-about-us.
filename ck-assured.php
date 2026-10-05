@@ -32,6 +32,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (in_array('created_at', $leadCols))       { $ic[] = 'created_at';     $iv[] = date('Y-m-d H:i:s'); }
             $ph = implode(',', array_fill(0, count($ic), '?'));
             $db->prepare("INSERT INTO online_leads (" . implode(',', $ic) . ") VALUES ($ph)")->execute($iv);
+            // Mirrors into ckampus-dasboard's shared leads CRM, same as
+            // every other real lead form - this one never did, so
+            // counsellors working leads through that admin never saw
+            // CK Assured submissions at all (Codex finding on PR #16).
+            pushLeadToSharedCrm($db, [
+                'name'          => $name,
+                'email'         => $email,
+                'phone'         => $phone,
+                'course'        => $prog,
+                'qualification' => $qual,
+                'source'        => 'ck_assured',
+            ]);
             $success = true;
         } catch (Throwable $e) {
             $error = 'Sorry, something went wrong. Please try again.';

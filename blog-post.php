@@ -94,6 +94,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lead_name'])) {
             onlineLeadsEnsureSchema($pdo);
             $pdo->prepare("INSERT INTO online_leads (name,phone,email,source,page_url,created_at) VALUES (?,?,?,?,?,NOW())")
                 ->execute([$lName, $lPhone, $lEmail, 'blog-post', $pageCanonical ?? '']);
+            // Mirrors into ckampus-dasboard's shared leads CRM, same as every
+            // other real (phone-collecting) lead form - this one never did,
+            // so counsellors working leads through that admin never saw
+            // blog-post submissions at all (Codex finding on PR #16).
+            pushLeadToSharedCrm($pdo, [
+                'name'     => $lName,
+                'email'    => $lEmail,
+                'phone'    => $lPhone,
+                'source'   => 'blog-post',
+                'page_url' => $pageCanonical ?? '',
+            ]);
             $leadMsg = 'success';
         } catch(Exception $e) { $leadMsg = 'error'; }
     } else { $leadMsg = 'invalid'; }

@@ -89,7 +89,11 @@ jobs:
             CODE="000"
           fi
           echo "https://online.collegekampus.com/dashboard/ responded with HTTP $CODE"
-          if [ "$CODE" -ge 500 ] || [ "$CODE" = "000" ]; then
+          # Was only rejecting 5xx/transport failures - a wrong deploy path,
+          # a missing index file, or a broken rewrite (any of which return
+          # 404/403, not 5xx) still passed this check as a "successful"
+          # deploy (Codex finding on PR #16). Only 2xx/3xx now counts as up.
+          if [ "$CODE" -lt 200 ] || [ "$CODE" -ge 400 ]; then
             echo "::error::Site returned HTTP $CODE after deploy"
             exit 1
           fi

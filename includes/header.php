@@ -175,7 +175,8 @@ require_once __DIR__ . '/site-settings-loader.php';
         <span class="ck-brand-sub d-block">Online</span>
       </div>
     </a>
-    <a href="tel:18001234567" class="btn-ck-green"><i class="bi bi-telephone-fill"></i> 1800-123-4567</a>
+    <?php $ckContactPhone = cms('contact_phone'); ?>
+    <a href="tel:<?= htmlspecialchars(preg_replace('/[^\d+]/', '', $ckContactPhone)) ?>" class="btn-ck-green"><i class="bi bi-telephone-fill"></i> <?= htmlspecialchars($ckContactPhone) ?></a>
   </div>
 </nav>
 <?php else: ?>

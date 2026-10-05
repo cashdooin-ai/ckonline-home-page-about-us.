@@ -44,6 +44,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ph = implode(',', array_fill(0, count($insertCols), '?'));
             $stmt = $db->prepare("INSERT INTO online_leads (" . implode(',', $insertCols) . ") VALUES ($ph)");
             $stmt->execute($insertVals);
+            // Mirrors into ckampus-dasboard's shared leads CRM, same as
+            // every other real lead form - this one never did, so
+            // counsellors working leads through that admin never saw this
+            // page's submissions at all (Codex finding on PR #16).
+            pushLeadToSharedCrm($db, [
+                'name'          => $name,
+                'email'         => $email,
+                'phone'         => $phone,
+                'course'        => $course,
+                'state'         => $state,
+                'qualification' => $qualification,
+                'message'       => ($budget ? "[Budget: $budget] " : '') . $message,
+                'source'        => 'counselling',
+            ]);
             $success = true;
         } catch (Throwable $e) {
             $error = 'Sorry, something went wrong. Please try again.';

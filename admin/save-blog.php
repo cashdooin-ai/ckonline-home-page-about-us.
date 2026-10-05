@@ -4,8 +4,18 @@ require_once dirname(__DIR__) . '/config/db.php';
 $pdo = getDB();
 
 // ── DELETE ────────────────────────────────────────────────────────────────────
-if (isset($_GET['delete'])) {
-    $delId = (int)$_GET['delete'];
+// Was a bare GET (save-blog.php?delete=<id>) - a logged-in admin's session
+// cookie rides along with ANY request their browser sends, so a crafted
+// link/image/redirect on another site could trigger this delete silently.
+// Requires POST + the per-session CSRF token now, same as every other
+// state-changing action below.
+if (isset($_POST['delete'])) {
+    if (!ckCsrfCheck()) {
+        $_SESSION['flash'] = 'Error: invalid or expired form session. Please try again.';
+        header('Location: /dashboard/admin/index.php?tab=posts');
+        exit;
+    }
+    $delId = (int)$_POST['delete'];
     try {
         $pdo->prepare("DELETE FROM blog_posts WHERE id = ?")->execute([$delId]);
         $_SESSION['flash'] = 'Post deleted successfully.';

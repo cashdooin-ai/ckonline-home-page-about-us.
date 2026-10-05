@@ -125,19 +125,45 @@ include __DIR__ . '/includes/header.php';
           var results = (d.colleges || []).filter(function (c) {
             return !selected.some(function (s) { return s && s.id === c.id; });
           });
+          wrap.innerHTML = '';
+          var panel = document.createElement('div');
+          panel.style.cssText = 'position:absolute;top:0;left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.08);z-index:5;';
           if (!results.length) {
-            wrap.innerHTML = '<div style="position:absolute;top:0;left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;font-size:.82rem;color:#9ca3af;z-index:5;">No results</div>';
+            panel.style.padding = '10px 14px';
+            panel.style.fontSize = '.82rem';
+            panel.style.color = '#9ca3af';
+            panel.textContent = 'No results';
+            wrap.appendChild(panel);
             return;
           }
-          wrap.innerHTML = '<div style="position:absolute;top:0;left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.08);z-index:5;">'
-            + results.map(function (c) {
-              return '<button type="button" style="display:block;width:100%;text-align:left;background:#fff;border:none;border-bottom:1px solid #f1f5f9;padding:10px 14px;font-size:.85rem;cursor:pointer;"'
-                + ' onmouseover="this.style.background=\'#eff6ff\'" onmouseout="this.style.background=\'#fff\'"'
-                + ' onclick="selectCollege(' + slot + ',' + c.id + ',\'' + String(c.name).replace(/'/g, "\\'") + '\',\'' + String(c.city || '').replace(/'/g, "\\'") + '\')">'
-                + '<strong>' + c.name + '</strong>' + (c.city ? '<span style="color:#9ca3af;margin-left:6px;font-size:.78rem;">' + c.city + '</span>' : '')
-                + '</button>';
-            }).join('')
-            + '</div>';
+          // Built via DOM properties, not an HTML string - a college name or
+          // city (shared, partner-writable data) containing `<`, `"` or `'`
+          // must never be able to inject markup or break out of an inline
+          // event-handler attribute, which string interpolation here used
+          // to allow (escaping only `'` doesn't protect either the
+          // innerHTML or the onclick="..." attribute context).
+          results.forEach(function (c) {
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.style.cssText = 'display:block;width:100%;text-align:left;background:#fff;border:none;border-bottom:1px solid #f1f5f9;padding:10px 14px;font-size:.85rem;cursor:pointer;';
+            btn.addEventListener('mouseover', function () { btn.style.background = '#eff6ff'; });
+            btn.addEventListener('mouseout', function () { btn.style.background = '#fff'; });
+
+            var strong = document.createElement('strong');
+            strong.textContent = c.name;
+            btn.appendChild(strong);
+
+            if (c.city) {
+              var span = document.createElement('span');
+              span.style.cssText = 'color:#9ca3af;margin-left:6px;font-size:.78rem;';
+              span.textContent = c.city;
+              btn.appendChild(span);
+            }
+
+            btn.addEventListener('click', function () { selectCollege(slot, c.id, c.name, c.city || ''); });
+            panel.appendChild(btn);
+          });
+          wrap.appendChild(panel);
         }).catch(function () {});
     }
 

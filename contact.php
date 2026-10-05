@@ -36,6 +36,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ph = implode(',', array_fill(0, count($insertCols), '?'));
             $stmt = $db->prepare("INSERT INTO online_leads (" . implode(',', $insertCols) . ") VALUES ($ph)");
             $stmt->execute($insertVals);
+            // Mirrors into ckampus-dasboard's shared leads CRM, same as
+            // every other real lead form - this one never did, so
+            // counsellors working leads through that admin never saw
+            // Contact Us submissions at all (Codex finding on PR #16).
+            // Only when a phone was given: student_phone is NOT NULL on
+            // that shared table, and a no-phone contact message isn't
+            // something a counsellor can call anyway - it's still saved in
+            // online_leads above either way, just not mirrored as a
+            // workable CRM lead.
+            if ($phone) {
+                pushLeadToSharedCrm($db, [
+                    'name'    => $name,
+                    'email'   => $email,
+                    'phone'   => $phone,
+                    'source'  => 'contact',
+                    'message' => ($subject ? "[$subject] " : '') . $message,
+                ]);
+            }
             $success = true;
         } catch (Throwable $e) {
             $error = 'Sorry, something went wrong. Please try again.';

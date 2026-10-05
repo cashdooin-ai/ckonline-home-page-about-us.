@@ -3,16 +3,27 @@
 // Uses the same multi-provider AI system (Gemini/Groq/OpenAI/Anthropic/
 // Cohere) already configured in the main admin's AI Providers settings -
 // see includes/ai-chat.php.
+//
+// Admin-only (called from admin/generate.php's own JS, same-origin) - had
+// no auth check at all, so any visitor could POST a topic here and burn
+// the site's paid AI provider quota, and the wildcard CORS header let any
+// other website automate that from its own visitors' browsers too. Session
+// check is the same ck_admin_auth flag admin/auth.php's page-level guard
+// uses; CORS headers removed entirely since the only real caller is
+// same-origin and never needed them.
 
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['error' => 'POST method required']);
+    exit;
+}
+
+if (session_status() === PHP_SESSION_NONE) session_start();
+if (empty($_SESSION['ck_admin_auth'])) {
+    http_response_code(401);
+    echo json_encode(['error' => 'Admin login required']);
     exit;
 }
 
