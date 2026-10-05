@@ -210,8 +210,16 @@ function pushLeadToSharedCrm(PDO $db, array $lead): void
         $chStmt = $db->prepare("SELECT 1 FROM lead_intake_channels WHERE channel_key = 'online_portal'");
         $chStmt->execute();
         if (!$chStmt->fetch()) {
-            $db->prepare("INSERT INTO lead_intake_channels (channel_key, label, webhook_secret) VALUES (?, ?, ?)")
-                ->execute(['online_portal', 'Online Portal (online.collegekampus.com)', bin2hex(random_bytes(32))]);
+            // Codex P2: two concurrent first-ever requests can both pass the
+            // SELECT above before either INSERTs - channel_key is UNIQUE, so
+            // the losing request's INSERT throws. Caught locally (the row
+            // the winner just created is exactly what this request wanted
+            // anyway) so that request doesn't abort out to the outer catch
+            // and skip mirroring its own lead into `leads` entirely.
+            try {
+                $db->prepare("INSERT INTO lead_intake_channels (channel_key, label, webhook_secret) VALUES (?, ?, ?)")
+                    ->execute(['online_portal', 'Online Portal (online.collegekampus.com)', bin2hex(random_bytes(32))]);
+            } catch (Throwable $e) {}
         }
 
         $noteParts = [];
@@ -234,44 +242,69 @@ function pushLeadToSharedCrm(PDO $db, array $lead): void
         if (strlen($digits) === 11 && $digits[0] === '0') $digits = substr($digits, 1);
         $phoneNormalized = (strlen($digits) === 10 && preg_match('/^[6-9]\d{9}$/', $digits)) ? $digits : null;
 
-        $existingLeadId = null;
-        if ($phoneNormalized) {
-            $dupStmt = $db->prepare("SELECT id FROM leads WHERE phone_normalized = ? ORDER BY created_at DESC LIMIT 1");
-            $dupStmt->execute([$phoneNormalized]);
-            $existingLeadId = $dupStmt->fetchColumn() ?: null;
-        }
+        // Codex P2: the SELECT then conditional INSERT below isn't atomic -
+        // two concurrent submissions with the same phone number (a double-
+        // click, or a retried request) can both pass the SELECT before
+        // either INSERTs, creating two lead rows instead of one lead plus a
+        // touchpoint. phone_normalized is only a non-unique index (matching
+        // the admin's own `leads` table, which this doesn't own and won't
+        // add a UNIQUE constraint to from this separate repo), so closing
+        // this with a DB-level constraint isn't this PR's call to make -
+        // a session-scoped advisory lock on the phone number serializes
+        // concurrent requests for the SAME number through this whole
+        // check-then-insert sequence instead, without touching that table's
+        // schema. Self-releases if the connection drops, and the 5s wait
+        // comfortably covers this fast query+insert - the normal case is an
+        // uncontended lock acquired instantly.
+        $lockName = 'online_portal_lead_phone_' . ($phoneNormalized ?: uniqid('', true));
+        $db->query("SELECT GET_LOCK(" . $db->quote($lockName) . ", 5)");
+        // A missed/timed-out lock (heavy contention, or a crashed worker
+        // that never released one) falls through to the old racy behavior
+        // rather than failing the submission outright - a rare duplicate
+        // lead is a far smaller problem than losing a real one.
+        try {
+            $existingLeadId = null;
+            if ($phoneNormalized) {
+                $dupStmt = $db->prepare("SELECT id FROM leads WHERE phone_normalized = ? ORDER BY created_at DESC LIMIT 1");
+                $dupStmt->execute([$phoneNormalized]);
+                $existingLeadId = $dupStmt->fetchColumn() ?: null;
+            }
 
-        if ($existingLeadId) {
-            // Same person already has a lead row (from this portal or any
-            // other channel) - a new touchpoint note instead of a duplicate
-            // row, same as every other channel's repeat-submission path.
-            $touchpoint = 'New touchpoint via online_portal (' . ($lead['source'] ?: 'website') . ') - same person, existing lead.';
-            if ($noteText) $touchpoint .= ' | ' . $noteText;
-            try {
-                $db->prepare("INSERT INTO lead_notes (lead_id, author_type, author_id, note_type, content) VALUES (?, 'admin', 0, 'note', ?)")
-                    ->execute([$existingLeadId, mb_substr($touchpoint, 0, 500)]);
-            } catch (Throwable $e) { /* lead_notes missing - dedup itself still worked, just no note trail */ }
-            $leadIdForLog = $existingLeadId;
-        } else {
-            $ins = $db->prepare(
-                "INSERT INTO leads (partner_id, student_name, student_email, student_phone, phone_normalized, course_interest, college_interest, college_id, state, source, channel, notes)
-                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"
-            );
-            $ins->execute([
-                $partnerId,
-                $lead['name'],
-                $lead['email'] ?: null,
-                $lead['phone'],
-                $phoneNormalized,
-                $lead['course'] ?: null,
-                $lead['college_name'] ?: null,
-                $lead['college_id'] ?: null,
-                $lead['state'] ?: null,
-                'online-portal:' . ($lead['source'] ?: 'website'),
-                'online_portal',
-                $noteText,
-            ]);
-            $leadIdForLog = (int) $db->lastInsertId();
+            if ($existingLeadId) {
+                // Same person already has a lead row (from this portal or
+                // any other channel) - a new touchpoint note instead of a
+                // duplicate row, same as every other channel's
+                // repeat-submission path.
+                $touchpoint = 'New touchpoint via online_portal (' . ($lead['source'] ?: 'website') . ') - same person, existing lead.';
+                if ($noteText) $touchpoint .= ' | ' . $noteText;
+                try {
+                    $db->prepare("INSERT INTO lead_notes (lead_id, author_type, author_id, note_type, content) VALUES (?, 'admin', 0, 'note', ?)")
+                        ->execute([$existingLeadId, mb_substr($touchpoint, 0, 500)]);
+                } catch (Throwable $e) { /* lead_notes missing - dedup itself still worked, just no note trail */ }
+                $leadIdForLog = $existingLeadId;
+            } else {
+                $ins = $db->prepare(
+                    "INSERT INTO leads (partner_id, student_name, student_email, student_phone, phone_normalized, course_interest, college_interest, college_id, state, source, channel, notes)
+                     VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"
+                );
+                $ins->execute([
+                    $partnerId,
+                    $lead['name'],
+                    $lead['email'] ?: null,
+                    $lead['phone'],
+                    $phoneNormalized,
+                    $lead['course'] ?: null,
+                    $lead['college_name'] ?: null,
+                    $lead['college_id'] ?: null,
+                    $lead['state'] ?: null,
+                    'online-portal:' . ($lead['source'] ?: 'website'),
+                    'online_portal',
+                    $noteText,
+                ]);
+                $leadIdForLog = (int) $db->lastInsertId();
+            }
+        } finally {
+            $db->query("SELECT RELEASE_LOCK(" . $db->quote($lockName) . ")");
         }
 
         // Same per-attempt audit trail every other channel's own webhook
