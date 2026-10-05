@@ -31,10 +31,20 @@
 # Recurred a third time: run #42 (the retry above) failed identically,
 # same step, same ~5s duration. If this one also fails at Setup SSH, it's
 # not transient - check SSH_HOST/SSH_PORT/SSH_PRIVATE_KEY on this repo.
+#
+# Repointed from claude/quirky-cori-wuJma to main: every PR (#1-#14) this
+# repo has ever merged landed on that one long-lived feature branch instead
+# of main, which sat as the empty initial commit this whole time - the
+# actual live site's entire history lived on a branch named like a one-off
+# session, not the repo's own default branch. This change lands as part of
+# the PR that finally fast-forwards main up to that branch's tip (main was
+# already a strict ancestor of it, so this is a clean catch-up, not a
+# merge of diverging history) - going forward, PRs target main like any
+# normal repo, and that one feature branch is no longer special.
 
 on:
   push:
-    branches: [claude/quirky-cori-wuJma]
+    branches: [main]
   workflow_dispatch: {}
 
 env:
