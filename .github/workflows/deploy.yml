@@ -1,0 +1,103 @@
+# Deploy CollegeKampus Online (online.collegekampus.com) to Hostinger
+#
+# This repo's root deploys into public_html/online/dashboard/ on the same
+# Hostinger account as the ckampus-dasboard repo (shared MySQL database -
+# see config/db.php). SSH_HOST/SSH_USER/SSH_PORT/SSH_PRIVATE_KEY/DEPLOY_PATH
+# secrets need to be set on THIS repo separately (GitHub Action secrets are
+# per-repository, not shared automatically) - almost certainly the same
+# values already configured on cashdooin-ai/ckampus-dasboard, since it's the
+# same hosting account.
+#
+# SAFE deployment: only adds/updates files, never deletes anything on the
+# server (no --delete flag), and config/db.php (holds the real production DB
+# password on the server, blank in git) is excluded from every sync so a
+# deploy can never overwrite it.
+#
+# Retry nudge: the 5 required secrets were just added to this repo - this
+# comment-only edit re-triggers the push trigger below (the GitHub App
+# integration used by this session can't call the rerun/dispatch APIs
+# directly, 403 Resource not accessible by integration).
+#
+# Recurred: first attempt failed at the rsync step ("Load key ... error in
+# libcrypto") - SSH_PRIVATE_KEY held the public key's content, not the
+# private key. Replaced with a freshly generated ed25519 keypair (public
+# half registered on Hostinger as an additional key, private half now in
+# SSH_PRIVATE_KEY) - this is the retry nudge for that fix.
+#
+# Recurred again: run #41 failed at Setup SSH (ssh-keyscan exited non-zero,
+# same transient blip as before - rerun_failed_jobs isn't callable from this
+# integration either, 403, so a comment-only push is the retry nudge again).
+#
+# Recurred a third time: run #42 (the retry above) failed identically,
+# same step, same ~5s duration. If this one also fails at Setup SSH, it's
+# not transient - check SSH_HOST/SSH_PORT/SSH_PRIVATE_KEY on this repo.
+#
+# Repointed from claude/quirky-cori-wuJma to main: every PR (#1-#14) this
+# repo has ever merged landed on that one long-lived feature branch instead
+# of main, which sat as the empty initial commit this whole time - the
+# actual live site's entire history lived on a branch named like a one-off
+# session, not the repo's own default branch. This change lands as part of
+# the PR that finally fast-forwards main up to that branch's tip (main was
+# already a strict ancestor of it, so this is a clean catch-up, not a
+# merge of diverging history) - going forward, PRs target main like any
+# normal repo, and that one feature branch is no longer special.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+env:
+  SSH_PORT: ${{ secrets.SSH_PORT || 65002 }}
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${{ env.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Deploy to public_html/online/dashboard/
+        run: |
+          rsync -azr --checksum --update \
+            --exclude='config/db.php' \
+            --exclude='.git' \
+            --exclude='.gitignore' \
+            --exclude='.gitkeep' \
+            --exclude='.github' \
+            --exclude='README.md' \
+            --exclude='*.log' \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
+            ./ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/public_html/online/dashboard/
+
+      - name: Verify site is up
+        run: |
+          sleep 2
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://online.collegekampus.com/dashboard/")
+          CURL_EXIT=$?
+          if [ "$CURL_EXIT" -ne 0 ] || [ -z "$CODE" ]; then
+            CODE="000"
+          fi
+          echo "https://online.collegekampus.com/dashboard/ responded with HTTP $CODE"
+          # Was only rejecting 5xx/transport failures - a wrong deploy path,
+          # a missing index file, or a broken rewrite (any of which return
+          # 404/403, not 5xx) still passed this check as a "successful"
+          # deploy (Codex finding on PR #16). Only 2xx/3xx now counts as up.
+          if [ "$CODE" -lt 200 ] || [ "$CODE" -ge 400 ]; then
+            echo "::error::Site returned HTTP $CODE after deploy"
+            exit 1
+          fi
+
+      - name: Cleanup SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key

@@ -1,0 +1,26 @@
+# CollegeKampus Online Portal — robots.txt
+# Place this file in the /dashboard/ subfolder root
+
+User-agent: *
+Allow: /dashboard/
+
+# Block sensitive folders
+Disallow: /dashboard/config/
+Disallow: /dashboard/database/
+Disallow: /dashboard/includes/
+Disallow: /dashboard/api/
+
+# Allow important pages
+Allow: /dashboard/colleges.php
+Allow: /dashboard/courses.php
+Allow: /dashboard/college-detail.php
+Allow: /dashboard/compare.php
+Allow: /dashboard/counselling.php
+Allow: /dashboard/apply.php
+Allow: /dashboard/contact.php
+Allow: /dashboard/portal.html
+Allow: /dashboard/index.html
+Allow: /dashboard/assets/
+
+# Sitemap location
+Sitemap: https://online.collegekampus.com/dashboard/sitemap.php
