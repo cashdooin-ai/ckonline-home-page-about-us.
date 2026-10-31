@@ -3,6 +3,43 @@ $pageTitle = 'Compare Online Colleges Side-by-Side | CollegeKampus';
 $pageDesc  = 'Compare up to 3 online universities side-by-side on fees, NAAC grade, NIRF rank, delivery mode, placements and more.';
 require_once __DIR__ . '/config/db.php';
 
+if (session_status() === PHP_SESSION_NONE) session_start();
+
+// Full comparison data is gated behind a quick lead-capture form, not a
+// login - this site has no account/login system at all (unlike
+// cutoffs.collegekampus.com, which already had one to gate on). Only the
+// first comparison row shows for free; submitting name+phone here unlocks
+// the rest for the rest of this session (no re-asking on every compare).
+$compareLeadMsg = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cmp_lead_name'])) {
+    $clName  = trim($_POST['cmp_lead_name'] ?? '');
+    $clPhone = trim($_POST['cmp_lead_phone'] ?? '');
+    $clEmail = trim($_POST['cmp_lead_email'] ?? '');
+    if ($clName && $clPhone) {
+        try {
+            require_once __DIR__ . '/includes/leads-schema.php';
+            $pdo = getDB();
+            onlineLeadsEnsureSchema($pdo);
+            $pdo->prepare("INSERT INTO online_leads (name,phone,email,source,page_url,created_at) VALUES (?,?,?,?,?,NOW())")
+                ->execute([$clName, $clPhone, $clEmail, 'compare-unlock', $_SERVER['REQUEST_URI'] ?? '']);
+            // Mirrors every other real (phone-collecting) lead form on this
+            // site - see blog-post.php's own identical comment on why.
+            pushLeadToSharedCrm($pdo, [
+                'name'     => $clName,
+                'email'    => $clEmail,
+                'phone'    => $clPhone,
+                'source'   => 'compare-unlock',
+                'page_url' => $_SERVER['REQUEST_URI'] ?? '',
+            ]);
+            $_SESSION['ck_compare_unlocked'] = true;
+            $compareLeadMsg = 'success';
+        } catch (Exception $e) { $compareLeadMsg = 'error'; }
+    } else {
+        $compareLeadMsg = 'invalid';
+    }
+}
+$compareUnlocked = !empty($_SESSION['ck_compare_unlocked']);
+
 $idsParam = trim($_GET['ids'] ?? '');
 $ids = array_slice(array_filter(array_map('intval', explode(',', $idsParam))), 0, 3);
 
@@ -61,6 +98,14 @@ include __DIR__ . '/includes/header.php';
 .compare-table .highlight-blue{color:#2563eb;font-weight:700;}
 .compare-table tr:hover .college-cell{background:#f8fafc;}
 .clabel-icon{margin-right:5px;}
+.cmp-lead-gate{background:linear-gradient(135deg,#eff6ff,#dbeafe);border:2px dashed #2563eb;border-radius:12px;padding:24px;margin:10px 16px;text-align:center;}
+.cmp-lead-gate h4{font-size:1rem;font-weight:800;color:#1d4ed8;margin:0 0 6px;}
+.cmp-lead-gate p{font-size:.85rem;color:#475569;margin:0 0 14px;}
+.cmp-lead-msg{font-size:.8rem;margin-bottom:10px;font-weight:600;}
+.cmp-lead-msg.warn{color:#b45309;}
+.cmp-lead-form{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:560px;margin:0 auto;}
+.cmp-lead-form input{flex:1;min-width:150px;padding:10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:.85rem;}
+.cmp-lead-form button{white-space:nowrap;}
 </style>
 
 <div class="compare-hero">
@@ -237,7 +282,11 @@ include __DIR__ . '/includes/header.php';
             ['Courses Offered', function($c){ return $c['all_courses']??'—'; }, null],
             ['Website', function($c){ return !empty($c['website'])?'<a href="'.htmlspecialchars($c['website']).'" target="_blank" rel="noopener" style="color:#2563eb;">Visit Website</a>':'—'; }, null],
           ];
-          foreach($rows as [$label, $fn, $hl]):
+          // Unlocked visitors see every row; everyone else sees just the
+          // first (College Type) before the lead-gate row cuts it off -
+          // $rows stays untouched above so this is purely a render-time cap.
+          $visibleRows = $compareUnlocked ? $rows : array_slice($rows, 0, 1);
+          foreach($visibleRows as [$label, $fn, $hl]):
           ?>
           <tr>
             <td class="row-label"><?= $label ?></td>
@@ -246,6 +295,24 @@ include __DIR__ . '/includes/header.php';
             <?php endforeach; ?>
           </tr>
           <?php endforeach; ?>
+          <?php if (!$compareUnlocked): ?>
+          <tr>
+            <td colspan="<?= count($colleges) + 1 ?>" style="padding:0;border-bottom:none;">
+              <div class="cmp-lead-gate">
+                <h4>&#128274; <?= count($rows) - 1 ?> more rows - unlock free</h4>
+                <p>Enter your details to see fees, placements, NAAC/NIRF, courses and more for every college above.</p>
+                <?php if ($compareLeadMsg === 'invalid'): ?><div class="cmp-lead-msg warn">Please enter your name and phone.</div><?php endif; ?>
+                <?php if ($compareLeadMsg === 'error'): ?><div class="cmp-lead-msg warn">Something went wrong - please try again.</div><?php endif; ?>
+                <form method="POST" action="?ids=<?= htmlspecialchars($idsParam) ?>" class="cmp-lead-form">
+                  <input type="text" name="cmp_lead_name" placeholder="Your Name *" required>
+                  <input type="tel" name="cmp_lead_phone" placeholder="Phone Number *" required pattern="[0-9]{10}">
+                  <input type="email" name="cmp_lead_email" placeholder="Email (optional)">
+                  <button type="submit" class="btn-ck-primary">Unlock Full Comparison</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          <?php else: ?>
           <tr>
             <td class="row-label">Actions</td>
             <?php foreach($colleges as $col): $colSlug=$col['slug']??$col['id']; ?>
@@ -255,6 +322,7 @@ include __DIR__ . '/includes/header.php';
             </td>
             <?php endforeach; ?>
           </tr>
+          <?php endif; ?>
         </tbody>
       </table>
     </div>
