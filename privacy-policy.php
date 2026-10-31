@@ -62,7 +62,7 @@ include __DIR__ . '/includes/header.php';
   <p>We take reasonable technical and organisational measures to protect your information against unauthorised access, loss, or misuse. No method of transmission over the internet is 100% secure, and we cannot guarantee absolute security.</p>
 
   <h2>8. Your Choices</h2>
-  <p>You can ask us to access, correct, or delete your personal information, or to stop contacting you, at any time by writing to <a href="mailto:info@collegekampus.in">info@collegekampus.in</a> or using our <a href="<?= SITE_BASE ?>/contact">Contact Us</a> page.</p>
+  <p>You can ask us to access, correct, or delete your personal information, or to stop contacting you, at any time by writing to <a href="mailto:support@collegekampus.in">support@collegekampus.in</a> or using our <a href="<?= SITE_BASE ?>/contact">Contact Us</a> page.</p>
 
   <h2>9. Children's Privacy</h2>
   <p>Our services are intended for prospective college students and their families. We do not knowingly collect personal information from children under 13.</p>
@@ -71,7 +71,7 @@ include __DIR__ . '/includes/header.php';
   <p>We may update this Privacy Policy from time to time. The "Last updated" date at the top of this page reflects the most recent revision. Continued use of the site after changes take effect constitutes acceptance of the updated policy.</p>
 
   <h2>11. Contact Us</h2>
-  <p>If you have any questions about this Privacy Policy, reach us at <a href="mailto:info@collegekampus.in">info@collegekampus.in</a> or <a href="tel:18001234567">1800-123-4567</a>.</p>
+  <p>If you have any questions about this Privacy Policy, reach us at <a href="mailto:support@collegekampus.in">support@collegekampus.in</a> or <a href="tel:18001234567">1800-123-4567</a>.</p>
 </div>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>

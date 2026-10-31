@@ -19,7 +19,7 @@ $cms_defaults = [
     // the same defaults that file's site-settings-loader.php falls back to.
     'footer_tagline'      => "India's trusted online college discovery platform. Compare 500+ UGC-approved universities and apply in minutes.",
     'contact_phone'       => '1800-123-4567',
-    'contact_email'       => 'info@collegekampus.in',
+    'contact_email'       => 'support@collegekampus.in',
     'contact_hours'       => 'Mon–Sat 9am–7pm',
     'social_facebook'     => 'https://www.facebook.com/collegekampus',
     'social_instagram'    => 'https://www.instagram.com/collegekampus',

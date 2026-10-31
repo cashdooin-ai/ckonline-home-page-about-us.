@@ -117,7 +117,7 @@ include __DIR__ . '/includes/header.php';
           <div class="contact-info-icon"><i class="bi bi-envelope-fill"></i></div>
           <div>
             <div class="contact-info-label">Email</div>
-            <div class="contact-info-val"><a href="mailto:info@collegekampus.in">info@collegekampus.in</a></div>
+            <div class="contact-info-val"><a href="mailto:support@collegekampus.in">support@collegekampus.in</a></div>
             <div style="font-size:.78rem;color:#9ca3af;margin-top:2px;">We reply within 24 hours</div>
           </div>
         </div>
