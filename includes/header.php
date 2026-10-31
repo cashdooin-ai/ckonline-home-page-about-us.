@@ -19,10 +19,24 @@ $pageKeywords = isset($pageKeywords) ? $pageKeywords : 'online colleges India, d
 // Defaults to the actual clean URL the visitor requested (Apache's internal
 // rewrite for these routes leaves REQUEST_URI as the pretty path, not the
 // underlying .php filename) rather than re-deriving the raw script name -
-// same pattern used across the other CollegeKampus properties.
-$pageCanonical = isset($pageCanonical) ? $pageCanonical : 'https://' . SITE_DOMAIN . $_SERVER['REQUEST_URI'];
+// same pattern used across the other CollegeKampus properties. Query string
+// stripped: pages like blog.php (?q=/&cat=/&page=) and colleges.php (?search=
+// /&state=/&type=/&course=/&delivery_mode=/&sort=/&featured=/&naac=) take
+// several filter/search/pagination params, none of which should mint their
+// own canonical - without this, every filter combination self-canonicalizes
+// as a distinct page instead of consolidating to the base listing, which is
+// a textbook duplicate-content problem on what are likely the site's two
+// highest-value pages. A page that genuinely wants a query string in its
+// canonical (none currently do) can still set $pageCanonical explicitly
+// before including this file, same as blog-post.php and index.php already do.
+$pageCanonical = isset($pageCanonical) ? $pageCanonical : 'https://' . SITE_DOMAIN . strtok($_SERVER['REQUEST_URI'], '?');
 $pageOgImage  = isset($pageOgImage)  ? $pageOgImage  : SITE_BASE . '/assets/img/og-default.jpg';
 $pageType     = isset($pageType)     ? $pageType     : 'website';
+// A page with no real search-landing value (a portal switcher, an internal
+// bridge/utility screen) can set this before including header.php to opt
+// out of indexing - same override pattern as every other $page* default
+// above. Everything else keeps the indexable default.
+$pageRobots   = isset($pageRobots)   ? $pageRobots   : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
 
 $defaultJsonLd = [
     '@context' => 'https://schema.org',
@@ -46,7 +60,7 @@ require_once __DIR__ . '/site-settings-loader.php';
     <title><?= htmlspecialchars($pageTitle) ?> | CollegeKampus Online</title>
     <meta name="description" content="<?= htmlspecialchars($pageDesc) ?>">
     <meta name="keywords"    content="<?= htmlspecialchars($pageKeywords) ?>">
-    <meta name="robots"      content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="robots"      content="<?= htmlspecialchars($pageRobots) ?>">
     <meta name="author"      content="CollegeKampus Online">
     <link rel="canonical"    href="<?= htmlspecialchars($pageCanonical) ?>">
     <meta property="og:type"        content="<?= htmlspecialchars($pageType) ?>">
@@ -168,7 +182,7 @@ require_once __DIR__ . '/site-settings-loader.php';
      menu, no dropdowns, no sign-in/compare links. -->
 <nav class="navbar ck-navbar" id="mainNav" role="navigation" aria-label="Main navigation">
   <div class="container d-flex align-items-center justify-content-between" style="height:64px;">
-    <a class="navbar-brand d-flex align-items-center gap-2" href="<?= $base ?>/index.php" aria-label="CollegeKampus Online Home">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="<?= $base ?>/" aria-label="CollegeKampus Online Home">
       <div class="ck-logo-icon">CK</div>
       <div class="lh-1">
         <span class="ck-brand-main">CollegeKampus</span>
@@ -185,7 +199,7 @@ require_once __DIR__ . '/site-settings-loader.php';
   <div class="container d-flex align-items-center">
 
     <!-- Logo -->
-    <a class="navbar-brand d-flex align-items-center gap-2" href="<?= $base ?>/index.php" aria-label="CollegeKampus Online Home">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="<?= $base ?>/" aria-label="CollegeKampus Online Home">
       <div class="ck-logo-icon">CK</div>
       <div class="lh-1">
         <span class="ck-brand-main">CollegeKampus</span>

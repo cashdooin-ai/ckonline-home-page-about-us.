@@ -9,6 +9,8 @@ Disallow: /dashboard/config/
 Disallow: /dashboard/database/
 Disallow: /dashboard/includes/
 Disallow: /dashboard/api/
+Disallow: /dashboard/admin/
+Disallow: /dashboard/admin-bridge.php
 
 # Allow important pages
 Allow: /dashboard/colleges.php

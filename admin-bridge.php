@@ -23,6 +23,10 @@ if ($action === 'partner') {
 }
 
 $pageTitle = 'Portal Access | CollegeKampus';
+// Internal portal switcher - no search-landing value, and (see below) its
+// "Integration Overview" panel used to spell out real internal
+// infrastructure details, so it should never be crawled/indexed either way.
+$pageRobots = 'noindex, nofollow';
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="page-wrapper">
@@ -62,11 +66,11 @@ include __DIR__ . '/includes/header.php';
         <div class="mt-5 p-4 bg-light rounded">
           <h5><i class="bi bi-info-circle me-2"></i>Integration Overview</h5>
           <ul class="mb-0 small text-muted">
-            <li>All three portals share the same MySQL database: <code>u939138857_ckampus_dash26</code></li>
+            <li>All three portals share the same backend database</li>
             <li>Student leads from this portal flow into the admin CRM automatically</li>
             <li>College data updated by partners appears live here within seconds</li>
-            <li>Admin can feature/unfeature colleges — reflected here via <code>is_featured</code> flag</li>
-            <li>Partner portal manages <code>college_courses</code>, <code>college_streams</code> tables</li>
+            <li>Admin can feature/unfeature colleges, reflected here immediately</li>
+            <li>Partner portal manages each college's courses and streams</li>
           </ul>
         </div>
       </div>
