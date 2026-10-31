@@ -77,9 +77,21 @@ try {
             // $rawSlugForTitleMatch above) and 301-redirect to the real
             // slug URL instead of dead-ending already-indexed/linked
             // traffic on a URL that was never a valid slug to begin with.
-            $tStmt = $pdo->prepare("SELECT slug FROM blog_posts WHERE status = 'published' AND LOWER(title) = LOWER(?) LIMIT 1");
-            $tStmt->execute([$rawSlugForTitleMatch]);
-            $realSlug = $tStmt->fetchColumn();
+            // Tried as-is first (a raw title URL, spaces already restored
+            // from +), then again with hyphens read as spaces too (an
+            // already slug-shaped but not-quite-matching URL, e.g. one an
+            // external site auto-slugified from the title on its own).
+            $titleCandidates = array_unique(array_filter([
+                $rawSlugForTitleMatch,
+                str_replace('-', ' ', $rawSlugForTitleMatch),
+            ]));
+            $realSlug = null;
+            foreach ($titleCandidates as $candidate) {
+                $tStmt = $pdo->prepare("SELECT slug FROM blog_posts WHERE status = 'published' AND LOWER(title) = LOWER(?) LIMIT 1");
+                $tStmt->execute([$candidate]);
+                $realSlug = $tStmt->fetchColumn();
+                if ($realSlug) break;
+            }
             if ($realSlug) {
                 header('Location: ' . SITE_BASE . '/blog/' . urlencode($realSlug), true, 301);
                 exit;
