@@ -79,18 +79,6 @@ try {
         if ($search) { $where[] = "(title LIKE ? OR excerpt LIKE ?)"; $params[] = "%$search%"; $params[] = "%$search%"; }
         if ($cat)    { $where[] = "category = ?"; $params[] = $cat; }
 
-        // Hide posts with no real body in either content column. Some posts
-        // are published through the shared ckampus-dasboard admin (which
-        // writes to a `content` column) rather than this site's own admin
-        // (which writes to `content_html`) - blog-post.php falls back
-        // between the two, but when BOTH are empty the row is a genuinely
-        // blank/broken post, not just a column-name mismatch, and listing
-        // its title as a clickable card would only lead to a dead page.
-        $hasContentCol = $pdo->query("SHOW COLUMNS FROM blog_posts LIKE 'content'")->rowCount() > 0;
-        $where[] = $hasContentCol
-            ? "COALESCE(NULLIF(content_html,''), NULLIF(content,'')) IS NOT NULL"
-            : "content_html IS NOT NULL AND content_html != ''";
-
         // Count first, then clamp $page into range - a page requested past
         // the end (stale bookmark, a crawler walking ?page=N, or just the
         // result count shrinking after this page was last viewed) used to

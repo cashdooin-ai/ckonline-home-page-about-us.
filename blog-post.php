@@ -12,6 +12,11 @@ if (!defined('SITE_BASE')) {
 $slug = trim($_GET['slug'] ?? '');
 if (!$slug) { header('Location: ' . (defined('SITE_BASE') ? SITE_BASE : '') . '/blog'); exit; }
 
+// Kept before sanitization below for the title-match fallback further
+// down - some already-indexed/linked blog URLs use the raw post title
+// (spaces as +, mixed case) instead of a proper slug.
+$rawSlugForTitleMatch = trim(str_replace('+', ' ', $slug));
+
 // Safe slug
 $slug = preg_replace('/[^a-zA-Z0-9\-_]/', '', $slug);
 
@@ -61,20 +66,23 @@ try {
             if (empty($post['meta_desc']) && !empty($post['meta_description'])) {
                 $post['meta_desc'] = $post['meta_description'];
             }
-
-            if (empty($post['content_html'])) {
-                // Still empty after the cross-admin fallback above - a
-                // genuinely blank/broken row, not just a column-name
-                // mismatch. Show "not found" instead of a page with a
-                // title, author and date but no article body.
-                $post = null;
-            } else {
-                // increment views
-                $pdo->prepare("UPDATE blog_posts SET views = views + 1 WHERE id = ?")->execute([$post['id']]);
-                // related posts
-                $relStmt = $pdo->prepare("SELECT slug,title,category,published_at FROM blog_posts WHERE status='published' AND id != ? AND category = ? LIMIT 3");
-                $relStmt->execute([$post['id'], $post['category']]);
-                $relatedPosts = $relStmt->fetchAll();
+            // increment views
+            $pdo->prepare("UPDATE blog_posts SET views = views + 1 WHERE id = ?")->execute([$post['id']]);
+            // related posts
+            $relStmt = $pdo->prepare("SELECT slug,title,category,published_at FROM blog_posts WHERE status='published' AND id != ? AND category = ? LIMIT 3");
+            $relStmt->execute([$post['id'], $post['category']]);
+            $relatedPosts = $relStmt->fetchAll();
+        } elseif ($rawSlugForTitleMatch !== '') {
+            // No exact slug match - try the title (see
+            // $rawSlugForTitleMatch above) and 301-redirect to the real
+            // slug URL instead of dead-ending already-indexed/linked
+            // traffic on a URL that was never a valid slug to begin with.
+            $tStmt = $pdo->prepare("SELECT slug FROM blog_posts WHERE status = 'published' AND LOWER(title) = LOWER(?) LIMIT 1");
+            $tStmt->execute([$rawSlugForTitleMatch]);
+            $realSlug = $tStmt->fetchColumn();
+            if ($realSlug) {
+                header('Location: ' . SITE_BASE . '/blog/' . urlencode($realSlug), true, 301);
+                exit;
             }
         }
     }
