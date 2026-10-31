@@ -251,7 +251,7 @@ include __DIR__ . '/includes/header.php';
             <th class="row-label" style="background:#0f172a;"></th>
             <?php foreach($colleges as $col): ?>
             <th class="college-header">
-              <?php if(!empty($col['logo_url'])): ?><img src="<?= htmlspecialchars($col['logo_url']) ?>" style="width:44px;height:44px;border-radius:8px;object-fit:contain;background:#fff;display:block;margin:0 auto 8px;" onerror="this.remove()"><?php endif; ?>
+              <?php if(!empty($col['logo_url'])): ?><img src="<?= htmlspecialchars($col['logo_url']) ?>" alt="<?= htmlspecialchars($col['name']) ?> logo" style="width:44px;height:44px;border-radius:8px;object-fit:contain;background:#fff;display:block;margin:0 auto 8px;" onerror="this.remove()"><?php endif; ?>
               <div class="cname"><?= htmlspecialchars($col['name']) ?></div>
               <div class="cloc"><?= htmlspecialchars(implode(', ',array_filter([$col['city']??'',$col['state']??'']))) ?></div>
             </th>
