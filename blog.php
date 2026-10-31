@@ -73,25 +73,42 @@ try {
         $cat    = trim($_GET['cat'] ?? '');
         $page   = max(1, (int)($_GET['page'] ?? 1));
         $perPage = 6;
-        $offset  = ($page - 1) * $perPage;
 
         $where = ["status = 'published'"];
         $params = [];
         if ($search) { $where[] = "(title LIKE ? OR excerpt LIKE ?)"; $params[] = "%$search%"; $params[] = "%$search%"; }
         if ($cat)    { $where[] = "category = ?"; $params[] = $cat; }
+
+        // Count first, then clamp $page into range - a page requested past
+        // the end (stale bookmark, a crawler walking ?page=N, or just the
+        // result count shrinking after this page was last viewed) used to
+        // run the SELECT at an offset past every real row, which came back
+        // empty and fell through to $useStatic below, silently replacing a
+        // real (if empty-on-this-page) result set with six unrelated 2025
+        // demo posts. Mirrors the same clamp convention used for admin
+        // list pages elsewhere on CollegeKampus.
+        $cntSql  = "SELECT COUNT(*) FROM blog_posts WHERE " . implode(' AND ', $where);
+        $cntStmt = $pdo->prepare($cntSql);
+        $cntStmt->execute($params);
+        $totalPosts = (int)$cntStmt->fetchColumn();
+        $totalPages = (int)ceil($totalPosts / $perPage);
+        if ($totalPages > 0 && $page > $totalPages) {
+            $page = $totalPages;
+        }
+        $offset = ($page - 1) * $perPage;
+
         $sql = "SELECT * FROM blog_posts WHERE " . implode(' AND ', $where) . " ORDER BY published_at DESC LIMIT $perPage OFFSET $offset";
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         $posts = $stmt->fetchAll();
 
-        if (!empty($posts)) $useStatic = false;
-
-        // total count for pagination
-        $cntSql  = "SELECT COUNT(*) FROM blog_posts WHERE " . implode(' AND ', $where);
-        $cntStmt = $pdo->prepare($cntSql);
-        $cntStmt->execute($params);
-        $totalPosts = (int)$cntStmt->fetchColumn();
-        $totalPages  = (int)ceil($totalPosts / $perPage);
+        // Whether this specific page/filter combination happens to be
+        // empty (handled by the "No posts found" state below) or not, any
+        // real post anywhere in this result set means there's a real blog
+        // to show - the six 2025 demo posts are a fallback for "this table
+        // is empty or unreachable", never for "this particular page or
+        // search came up empty".
+        if ($totalPosts > 0) $useStatic = false;
     }
 } catch (Exception $e) { /* silent fallback */ }
 
