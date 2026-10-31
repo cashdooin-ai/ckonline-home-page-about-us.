@@ -277,7 +277,7 @@ textarea.json-area{font-family:monospace;font-size:.78rem;min-height:200px;}
           </div>
           <div class="col-md-4">
             <label class="form-label fw-bold">Contact Email</label>
-            <input type="email" name="contact_email" class="form-control" value="<?= gs($pdo,'contact_email','info@collegekampus.in') ?>">
+            <input type="email" name="contact_email" class="form-control" value="<?= gs($pdo,'contact_email','support@collegekampus.in') ?>">
           </div>
           <div class="col-md-4">
             <label class="form-label fw-bold">Office Hours</label>

@@ -65,7 +65,7 @@ include __DIR__ . '/includes/header.php';
   <p>We may update these Terms of Use from time to time. The "Last updated" date above reflects the most recent revision. Continued use of the Platform after changes take effect constitutes acceptance of the updated terms.</p>
 
   <h2>11. Contact Us</h2>
-  <p>Questions about these Terms of Use can be sent to <a href="mailto:info@collegekampus.in">info@collegekampus.in</a> or <a href="tel:18001234567">1800-123-4567</a>.</p>
+  <p>Questions about these Terms of Use can be sent to <a href="mailto:support@collegekampus.in">support@collegekampus.in</a> or <a href="tel:18001234567">1800-123-4567</a>.</p>
 </div>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>
