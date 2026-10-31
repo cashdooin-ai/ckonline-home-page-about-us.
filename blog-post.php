@@ -1,4 +1,14 @@
 <?php
+// getDB() (called below, before includes/header.php normally would load
+// this) lives in config/db.php - header.php only requires it conditionally
+// (if !defined('SITE_BASE')), so without this, every single request here
+// hit "Call to undefined function getDB()" - a PHP Error, not an Exception,
+// which the try/catch below does NOT catch, surfacing as an uncaught fatal
+// error (HTTP 500) on every post, DB-backed or static-fallback alike.
+if (!defined('SITE_BASE')) {
+    require_once __DIR__ . '/config/db.php';
+}
+
 $slug = trim($_GET['slug'] ?? '');
 if (!$slug) { header('Location: ' . (defined('SITE_BASE') ? SITE_BASE : '') . '/blog'); exit; }
 
