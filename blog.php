@@ -236,6 +236,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nl_email'])) {
             <?php else: ?>
             <div class="row g-4">
                 <?php foreach ($posts as $p):
+                    // Posts published via the shared ckampus-dasboard admin
+                    // store the author under author_name, not author - see
+                    // blog-post.php for the full explanation.
+                    if (empty($p['author']) && !empty($p['author_name'])) {
+                        $p['author'] = $p['author_name'];
+                    }
                     $catKey  = $p['category'] ?? 'Online MBA';
                     $grad    = $catGradients[$catKey] ?? 'linear-gradient(135deg,#2563eb,#1d4ed8)';
                     $excerpt = $p['excerpt'] ?? '';

@@ -12,6 +12,11 @@ if (!defined('SITE_BASE')) {
 $slug = trim($_GET['slug'] ?? '');
 if (!$slug) { header('Location: ' . (defined('SITE_BASE') ? SITE_BASE : '') . '/blog'); exit; }
 
+// Kept before sanitization below for the title-match fallback further
+// down - some already-indexed/linked blog URLs use the raw post title
+// (spaces as +, mixed case) instead of a proper slug.
+$rawSlugForTitleMatch = trim(str_replace('+', ' ', $slug));
+
 // Safe slug
 $slug = preg_replace('/[^a-zA-Z0-9\-_]/', '', $slug);
 
@@ -46,12 +51,51 @@ try {
         if ($dbPost) {
             $post      = $dbPost;
             $useStatic = false;
+            // blog_posts is shared with the main CollegeKampus admin
+            // dashboard (ckampus-dasboard), which writes posts under
+            // different column names (content/author_name/meta_description)
+            // than this site's own admin (content_html/author/meta_desc) -
+            // without this fallback, a post published from that dashboard
+            // shows its title/date/views here but a completely empty body.
+            if (empty($post['content_html']) && !empty($post['content'])) {
+                $post['content_html'] = $post['content'];
+            }
+            if (empty($post['author']) && !empty($post['author_name'])) {
+                $post['author'] = $post['author_name'];
+            }
+            if (empty($post['meta_desc']) && !empty($post['meta_description'])) {
+                $post['meta_desc'] = $post['meta_description'];
+            }
             // increment views
             $pdo->prepare("UPDATE blog_posts SET views = views + 1 WHERE id = ?")->execute([$post['id']]);
             // related posts
             $relStmt = $pdo->prepare("SELECT slug,title,category,published_at FROM blog_posts WHERE status='published' AND id != ? AND category = ? LIMIT 3");
             $relStmt->execute([$post['id'], $post['category']]);
             $relatedPosts = $relStmt->fetchAll();
+        } elseif ($rawSlugForTitleMatch !== '') {
+            // No exact slug match - try the title (see
+            // $rawSlugForTitleMatch above) and 301-redirect to the real
+            // slug URL instead of dead-ending already-indexed/linked
+            // traffic on a URL that was never a valid slug to begin with.
+            // Tried as-is first (a raw title URL, spaces already restored
+            // from +), then again with hyphens read as spaces too (an
+            // already slug-shaped but not-quite-matching URL, e.g. one an
+            // external site auto-slugified from the title on its own).
+            $titleCandidates = array_unique(array_filter([
+                $rawSlugForTitleMatch,
+                str_replace('-', ' ', $rawSlugForTitleMatch),
+            ]));
+            $realSlug = null;
+            foreach ($titleCandidates as $candidate) {
+                $tStmt = $pdo->prepare("SELECT slug FROM blog_posts WHERE status = 'published' AND LOWER(title) = LOWER(?) LIMIT 1");
+                $tStmt->execute([$candidate]);
+                $realSlug = $tStmt->fetchColumn();
+                if ($realSlug) break;
+            }
+            if ($realSlug) {
+                header('Location: ' . SITE_BASE . '/blog/' . urlencode($realSlug), true, 301);
+                exit;
+            }
         }
     }
 } catch (Exception $e) { /* silent */ }

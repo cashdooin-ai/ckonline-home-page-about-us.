@@ -39,7 +39,14 @@ php_value max_execution_time 60
     # /college/some-university -> college-detail.php?slug=some-university
     RewriteRule ^college/([a-zA-Z0-9_-]+)/?$ college-detail.php?slug=$1 [L,QSA]
     # /blog/some-article -> blog-post.php?slug=some-article
-    RewriteRule ^blog/([a-zA-Z0-9_-]+)/?$ blog-post.php?slug=$1 [L,QSA]
+    # Matches any single path segment, not just [a-zA-Z0-9_-]+: some
+    # already-indexed/linked blog URLs use the raw title (spaces as +,
+    # mixed case) instead of a proper slug, and those never reached
+    # blog-post.php at all under the old narrower pattern - they hit
+    # Apache's generic 404 before any PHP ever ran. blog-post.php itself
+    # sanitizes/validates the slug and falls back to a title match, so
+    # it's safe to hand it anything that isn't a literal slash.
+    RewriteRule ^blog/([^/]+)/?$ blog-post.php?slug=$1 [L,QSA]
 
     # Clean URLs for top-level static/marketing pages (SEO-friendly, no
     # .php extension). courses/ is a real subdirectory serving its own
