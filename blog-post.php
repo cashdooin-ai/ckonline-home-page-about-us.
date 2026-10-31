@@ -46,12 +46,36 @@ try {
         if ($dbPost) {
             $post      = $dbPost;
             $useStatic = false;
-            // increment views
-            $pdo->prepare("UPDATE blog_posts SET views = views + 1 WHERE id = ?")->execute([$post['id']]);
-            // related posts
-            $relStmt = $pdo->prepare("SELECT slug,title,category,published_at FROM blog_posts WHERE status='published' AND id != ? AND category = ? LIMIT 3");
-            $relStmt->execute([$post['id'], $post['category']]);
-            $relatedPosts = $relStmt->fetchAll();
+            // blog_posts is shared with the main CollegeKampus admin
+            // dashboard (ckampus-dasboard), which writes posts under
+            // different column names (content/author_name/meta_description)
+            // than this site's own admin (content_html/author/meta_desc) -
+            // without this fallback, a post published from that dashboard
+            // shows its title/date/views here but a completely empty body.
+            if (empty($post['content_html']) && !empty($post['content'])) {
+                $post['content_html'] = $post['content'];
+            }
+            if (empty($post['author']) && !empty($post['author_name'])) {
+                $post['author'] = $post['author_name'];
+            }
+            if (empty($post['meta_desc']) && !empty($post['meta_description'])) {
+                $post['meta_desc'] = $post['meta_description'];
+            }
+
+            if (empty($post['content_html'])) {
+                // Still empty after the cross-admin fallback above - a
+                // genuinely blank/broken row, not just a column-name
+                // mismatch. Show "not found" instead of a page with a
+                // title, author and date but no article body.
+                $post = null;
+            } else {
+                // increment views
+                $pdo->prepare("UPDATE blog_posts SET views = views + 1 WHERE id = ?")->execute([$post['id']]);
+                // related posts
+                $relStmt = $pdo->prepare("SELECT slug,title,category,published_at FROM blog_posts WHERE status='published' AND id != ? AND category = ? LIMIT 3");
+                $relStmt->execute([$post['id'], $post['category']]);
+                $relatedPosts = $relStmt->fetchAll();
+            }
         }
     }
 } catch (Exception $e) { /* silent */ }
