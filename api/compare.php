@@ -3,6 +3,13 @@ header('Content-Type: application/json');
 
 require_once __DIR__ . '/../config/db.php';
 
+if (session_status() === PHP_SESSION_NONE) session_start();
+// Mirrors compare.php's own HTML-page gate (same $_SESSION key) - without
+// this, anyone could call this JSON endpoint directly and get every gated
+// field (fees, established year, accreditation, courses) for free,
+// bypassing the lead-capture form entirely (Codex finding on PR #18).
+$compareUnlocked = !empty($_SESSION['ck_compare_unlocked']);
+
 $idsParam = trim($_GET['ids'] ?? '');
 if ($idsParam === '') {
     echo json_encode(['success' => false, 'message' => 'No IDs provided']);
@@ -58,7 +65,19 @@ try {
     }
     unset($col);
 
-    echo json_encode(['success' => true, 'colleges' => $colleges]);
+    // Everything beyond basic identity (name/city/state/type) is gated,
+    // same as the HTML page's first-row-only view for a visitor who
+    // hasn't submitted the lead form.
+    if (!$compareUnlocked) {
+        $gatedFields = ['min_fees', 'max_fees', 'established_year', 'accreditation', 'total_seats', 'description', 'all_courses', 'fees_display'];
+        foreach ($colleges as &$col) {
+            foreach ($gatedFields as $f) unset($col[$f]);
+            $col['locked'] = true;
+        }
+        unset($col);
+    }
+
+    echo json_encode(['success' => true, 'unlocked' => $compareUnlocked, 'colleges' => $colleges]);
 
 } catch (Throwable $e) {
     http_response_code(500);
