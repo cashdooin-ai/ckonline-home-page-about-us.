@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/includes/rich-html-sanitizer.php';
 
 $id   = intval($_GET['id'] ?? 0);
 $slug = trim($_GET['slug'] ?? '');
@@ -170,6 +171,10 @@ $modeVal = $college['delivery_mode'] ?? $college['online_mode'] ?? '';
 ?>
 
 <style>
+.rich-desc p{margin:0 0 .9em;}
+.rich-desc p:last-child{margin-bottom:0;}
+.rich-desc ul,.rich-desc ol{margin:0 0 .9em;padding-left:1.4em;}
+.rich-desc a{color:#2563eb;}
 .college-detail-hero{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);padding:40px 0 0;color:#fff;position:relative;overflow:hidden;}
 .college-detail-hero::before{content:'';position:absolute;inset:0;background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="80" cy="20" r="40" fill="rgba(255,255,255,.03)"/><circle cx="20" cy="80" r="30" fill="rgba(255,255,255,.03)"/></svg>');background-size:cover;}
 .college-detail-hero .container{position:relative;}
@@ -308,7 +313,21 @@ $modeVal = $college['delivery_mode'] ?? $college['online_mode'] ?? '';
           <?php if (!empty($college['description'])): ?>
           <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin-bottom:20px;">
             <h2 style="font-size:1.05rem;font-weight:700;margin-bottom:12px;">About <?= htmlspecialchars($college['name']) ?></h2>
+            <?php if (strip_tags($college['description']) !== $college['description']): ?>
+            <!-- The admin's rich-text editor (admin/colleges.php) saves real
+                 HTML here. sanitizeRichHtml() (includes/rich-html-sanitizer.php)
+                 strips it down to a fixed tag/attribute allowlist before this
+                 ever reaches a visitor - description has no save-time
+                 validation of its own, so this is the only thing standing
+                 between a compromised/malicious admin write and stored XSS
+                 against every reader (Codex finding on PR #20). Older rows
+                 written as plain text (no tags) fall through to the nl2br
+                 branch below unchanged, so this doesn't break any
+                 description written before the rich-text editor existed. -->
+            <div class="rich-desc" style="font-size:.875rem;color:#374151;line-height:1.7;"><?= sanitizeRichHtml($college['description']) ?></div>
+            <?php else: ?>
             <p style="font-size:.875rem;color:#374151;line-height:1.7;"><?= nl2br(htmlspecialchars($college['description'])) ?></p>
+            <?php endif; ?>
           </div>
           <?php endif; ?>
 

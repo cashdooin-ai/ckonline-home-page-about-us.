@@ -99,7 +99,13 @@ if ($typeCol !== null) {
 <meta name="robots" content="noindex,nofollow">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css">
 <style>
+/* Rich text editor for Description - the field stores real HTML
+   (college-detail.php renders it unescaped), so admins need a WYSIWYG
+   editor instead of hand-typing tags into a plain textarea. */
+#collegeDescriptionEditor{background:#fff;border-radius:0 0 6px 6px;}
+#collegeDescriptionEditor .ql-editor{min-height:140px;font-size:.9rem;}
 body{background:#f1f5f9;font-family:'Inter',sans-serif;}
 .topbar{background:#0f172a;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:16px;}
 .topbar a{color:rgba(255,255,255,.7);text-decoration:none;font-size:.875rem;}
@@ -170,7 +176,7 @@ body{background:#f1f5f9;font-family:'Inter',sans-serif;}
             <?php if ($editCollege || $isNew): ?>
             <div class="admin-card mb-4">
                 <h5 class="fw-bold mb-3"><?= $editCollege ? '✏️ Edit: ' . htmlspecialchars($editCollege['name']) : '➕ New College' ?></h5>
-                <form method="POST" action="save-college.php">
+                <form method="POST" action="save-college.php" id="collegeForm" onsubmit="syncDescriptionField()">
                     <?php if ($editCollege): ?><input type="hidden" name="id" value="<?= $editCollege['id'] ?>"><?php endif; ?>
                     <div class="row g-3">
                         <div class="col-md-8">
@@ -211,7 +217,8 @@ body{background:#f1f5f9;font-family:'Inter',sans-serif;}
                                 <button type="button" class="btn btn-outline-primary btn-sm" id="aiDescBtn" onclick="aiRewriteDescription(<?= $editCollege['id'] ?>)">✨ AI Rewrite</button>
                                 <?php endif; ?>
                             </div>
-                            <textarea name="description" id="collegeDescription" class="form-control" rows="4"><?= htmlspecialchars($editCollege['description'] ?? '') ?></textarea>
+                            <textarea name="description" id="collegeDescription" style="display:none;"><?= htmlspecialchars($editCollege['description'] ?? '') ?></textarea>
+                            <div id="collegeDescriptionEditor"></div>
                             <small id="aiDescStatus" class="text-muted"></small>
                         </div>
                         <?php endif; ?>
@@ -275,9 +282,54 @@ body{background:#f1f5f9;font-family:'Inter',sans-serif;}
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
 <script>
 const AI_CATEGORIES = ['engineering','management','medical','law','arts','science','commerce','design','other'];
 const AI_LEVELS = ['certificate','diploma','ug','pg','phd'];
+
+// Description is stored as real HTML (college-detail.php renders it
+// unescaped) - Quill replaces the old plain textarea so admins get a
+// WYSIWYG editor instead of hand-typing <p>/<a> tags. The original
+// textarea (#collegeDescription) stays in the DOM, hidden, as the actual
+// form field Quill's HTML gets synced into on submit - save-college.php
+// still just reads $_POST['description'] unchanged.
+let collegeQuill = null;
+const collegeDescEditorEl = document.getElementById('collegeDescriptionEditor');
+if (collegeDescEditorEl) {
+    collegeQuill = new Quill('#collegeDescriptionEditor', {
+        theme: 'snow',
+        modules: { toolbar: [['bold', 'italic', 'underline'], [{ list: 'ordered' }, { list: 'bullet' }], ['link'], ['clean']] },
+    });
+    // Pre-existing plain-text rows (every description saved before this
+    // editor existed, including the AI Rewrite endpoint's own output) have
+    // no tags at all - dangerouslyPasteHTML() parses its input as HTML, so
+    // feeding it a blank-line-separated plain-text description collapses
+    // those line breaks into one run-on paragraph the moment the admin
+    // opens and re-saves the record (Codex finding on PR #20). setText()
+    // is the correct load path for that case, same as aiRewriteDescription()
+    // below already uses for the AI endpoint's fresh plain-text output.
+    const existingDesc = document.getElementById('collegeDescription').value;
+    if (existingDesc) {
+        const isHtml = /<[a-z][\s\S]*>/i.test(existingDesc);
+        if (isHtml) { collegeQuill.clipboard.dangerouslyPasteHTML(existingDesc); } else { collegeQuill.setText(existingDesc); }
+    }
+}
+
+function syncDescriptionField() {
+    if (collegeQuill) {
+        const empty = collegeQuill.getText().trim() === '';
+        // getSemanticHTML() (Quill 2.0+), not root.innerHTML - Quill 2
+        // renders BOTH bullet and ordered lists as <ol> internally,
+        // distinguishing them only via its own data-list attribute, which
+        // the public page (college-detail.php) has no Quill CSS to
+        // interpret - root.innerHTML would make every bullet list saved
+        // here render as a numbered list on the front end (Codex finding
+        // on PR #20). getSemanticHTML() converts that editor-internal DOM
+        // into real <ul>/<ol> markup any browser renders correctly on its
+        // own, with no extra CSS needed.
+        document.getElementById('collegeDescription').value = empty ? '' : collegeQuill.getSemanticHTML();
+    }
+}
 
 async function aiRewriteDescription(collegeId) {
     const btn = document.getElementById('aiDescBtn');
@@ -289,7 +341,11 @@ async function aiRewriteDescription(collegeId) {
         const r = await fetch('/dashboard/api/ai-rewrite-description.php', { method: 'POST', body });
         const d = await r.json();
         if (d.success) {
-            document.getElementById('collegeDescription').value = d.description;
+            // Plain text from the AI endpoint (it explicitly asks for no
+            // HTML/markdown) - setText() turns its blank-line-separated
+            // paragraphs into Quill's own <p> blocks correctly, same as
+            // typing them in by hand.
+            if (collegeQuill) { collegeQuill.setText(d.description); } else { document.getElementById('collegeDescription').value = d.description; }
             status.textContent = 'Draft inserted — review and Save College to keep it.';
             status.style.color = '#16a34a';
         } else {
