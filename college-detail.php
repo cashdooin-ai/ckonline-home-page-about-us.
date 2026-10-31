@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/includes/rich-html-sanitizer.php';
 
 $id   = intval($_GET['id'] ?? 0);
 $slug = trim($_GET['slug'] ?? '');
@@ -314,12 +315,16 @@ $modeVal = $college['delivery_mode'] ?? $college['online_mode'] ?? '';
             <h2 style="font-size:1.05rem;font-weight:700;margin-bottom:12px;">About <?= htmlspecialchars($college['name']) ?></h2>
             <?php if (strip_tags($college['description']) !== $college['description']): ?>
             <!-- The admin's rich-text editor (admin/colleges.php) saves real
-                 HTML here - rendering it unescaped is what the editor is
-                 for. Older rows written as plain text (no tags) fall
-                 through to the nl2br branch below unchanged, so this
-                 doesn't break any description written before the rich-text
-                 editor existed. -->
-            <div class="rich-desc" style="font-size:.875rem;color:#374151;line-height:1.7;"><?= $college['description'] ?></div>
+                 HTML here. sanitizeRichHtml() (includes/rich-html-sanitizer.php)
+                 strips it down to a fixed tag/attribute allowlist before this
+                 ever reaches a visitor - description has no save-time
+                 validation of its own, so this is the only thing standing
+                 between a compromised/malicious admin write and stored XSS
+                 against every reader (Codex finding on PR #20). Older rows
+                 written as plain text (no tags) fall through to the nl2br
+                 branch below unchanged, so this doesn't break any
+                 description written before the rich-text editor existed. -->
+            <div class="rich-desc" style="font-size:.875rem;color:#374151;line-height:1.7;"><?= sanitizeRichHtml($college['description']) ?></div>
             <?php else: ?>
             <p style="font-size:.875rem;color:#374151;line-height:1.7;"><?= nl2br(htmlspecialchars($college['description'])) ?></p>
             <?php endif; ?>
