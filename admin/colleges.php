@@ -300,14 +300,34 @@ if (collegeDescEditorEl) {
         theme: 'snow',
         modules: { toolbar: [['bold', 'italic', 'underline'], [{ list: 'ordered' }, { list: 'bullet' }], ['link'], ['clean']] },
     });
-    const existingHtml = document.getElementById('collegeDescription').value;
-    if (existingHtml) collegeQuill.clipboard.dangerouslyPasteHTML(existingHtml);
+    // Pre-existing plain-text rows (every description saved before this
+    // editor existed, including the AI Rewrite endpoint's own output) have
+    // no tags at all - dangerouslyPasteHTML() parses its input as HTML, so
+    // feeding it a blank-line-separated plain-text description collapses
+    // those line breaks into one run-on paragraph the moment the admin
+    // opens and re-saves the record (Codex finding on PR #20). setText()
+    // is the correct load path for that case, same as aiRewriteDescription()
+    // below already uses for the AI endpoint's fresh plain-text output.
+    const existingDesc = document.getElementById('collegeDescription').value;
+    if (existingDesc) {
+        const isHtml = /<[a-z][\s\S]*>/i.test(existingDesc);
+        if (isHtml) { collegeQuill.clipboard.dangerouslyPasteHTML(existingDesc); } else { collegeQuill.setText(existingDesc); }
+    }
 }
 
 function syncDescriptionField() {
     if (collegeQuill) {
         const empty = collegeQuill.getText().trim() === '';
-        document.getElementById('collegeDescription').value = empty ? '' : collegeQuill.root.innerHTML;
+        // getSemanticHTML() (Quill 2.0+), not root.innerHTML - Quill 2
+        // renders BOTH bullet and ordered lists as <ol> internally,
+        // distinguishing them only via its own data-list attribute, which
+        // the public page (college-detail.php) has no Quill CSS to
+        // interpret - root.innerHTML would make every bullet list saved
+        // here render as a numbered list on the front end (Codex finding
+        // on PR #20). getSemanticHTML() converts that editor-internal DOM
+        // into real <ul>/<ol> markup any browser renders correctly on its
+        // own, with no extra CSS needed.
+        document.getElementById('collegeDescription').value = empty ? '' : collegeQuill.getSemanticHTML();
     }
 }
 
